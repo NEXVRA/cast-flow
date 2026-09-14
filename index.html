@@ -691,18 +691,6 @@ async function openShiftModal(date){
 function closeShiftModal(){if(isSaving)return;document.getElementById("shiftModal").classList.add("hidden");document.body.classList.remove("modal-open")}
 function selectStatus(s){selectedStatus=s;["working","holiday","undecided"].forEach(x=>document.getElementById("status"+cap(x)).classList.toggle("selected",x===s));document.getElementById("workingFields").classList.toggle("hidden",s!=="working");document.getElementById("customerVisitFields").classList.toggle("hidden",s!=="working")}
 
-function addCustomerVisit(type){
- customerVisits.push({type,customerName:"",time:"",note:""});
- renderCustomerVisits();
-}
-function removeCustomerVisit(index){
- customerVisits.splice(index,1);
- renderCustomerVisits();
-}
-function updateCustomerVisit(index,field,value){
- if(!customerVisits[index])return;
- customerVisits[index][field]=value;
-}
 
 /* =====================================================
  * 12. 同伴・来店予定・時間入力
