@@ -121,10 +121,10 @@
       <div class="home-hero"><div class="home-hero-label">CAST MANAGEMENT SYSTEM</div><h1>ホーム</h1><p>CAST FLOWへようこそ。<br>使用する機能を選択してください。</p></div>
       <div class="home-user-card"><div class="home-user-label">LOGGED IN CAST</div><div id="homeCastName" class="home-user-name">-</div><div id="homeCastId" class="home-user-id">-</div></div>
       <div class="home-grid">
-        <button class="home-menu-card" onclick="showShiftView()"><div class="home-menu-icon">▣</div><strong>シフト提出</strong><small>月間シフトの入力・提出</small></button>
-        <button class="home-menu-card" onclick="showNotice('本日の出勤確認画面は準備中です')"><div class="home-menu-icon">✓</div><strong>出勤確認</strong><small>当日の出勤状況を確認</small></button>
-        <button id="homeAdminCard" class="home-menu-card hidden" onclick="openAdminPlaceholder('管理画面')"><div class="home-menu-icon">♟</div><strong>管理</strong><small>CAST FLOW管理メニュー</small></button>
-        <button class="home-menu-card" onclick="openSettingsPlaceholder()"><div class="home-menu-icon">⚙</div><strong>設定</strong><small>アカウント・各種設定</small></button>
+        <button class="home-menu-card" data-module="shift" onclick="navigateToModule('shift')"><div class="home-menu-icon">▣</div><strong>シフト提出</strong><small>月間シフトの入力・提出</small></button>
+        <button class="home-menu-card" data-module="attendance" onclick="openModulePlaceholder('attendance')"><div class="home-menu-icon">✓</div><strong>出勤確認</strong><small>当日の出勤状況を確認</small></button>
+        <button id="homeAdminCard" class="home-menu-card hidden" data-module="admin" data-admin-only="true" onclick="openModulePlaceholder('admin')"><div class="home-menu-icon">♟</div><strong>管理</strong><small>CAST FLOW管理メニュー</small></button>
+        <button class="home-menu-card" data-module="settings" onclick="openModulePlaceholder('settings')"><div class="home-menu-icon">⚙</div><strong>設定</strong><small>アカウント・各種設定</small></button>
       </div>
     </section>
   </main>
@@ -160,9 +160,9 @@
     <div class="drawer-brand"><div class="drawer-logo">CAST FLOW</div><div class="drawer-system">CAST MANAGEMENT SYSTEM</div></div>
     <div class="drawer-user"><div id="drawerCastName" class="drawer-user-name">-</div><div id="drawerCastId" class="drawer-user-id">-</div></div>
     <div class="drawer-section-title">MENU</div>
-    <button id="drawerHomeButton" class="drawer-item" onclick="showHomeView()"><span class="drawer-item-icon">⌂</span>ホーム</button>
-    <button id="drawerShiftButton" class="drawer-item" onclick="showShiftView()"><span class="drawer-item-icon">▣</span>シフト提出</button>
-    <div id="drawerAdminArea" class="hidden">
+    <button id="drawerHomeButton" class="drawer-item" data-module="home" onclick="navigateToModule('home')"><span class="drawer-item-icon">⌂</span>ホーム</button>
+    <button id="drawerShiftButton" class="drawer-item" data-module="shift" onclick="navigateToModule('shift')"><span class="drawer-item-icon">▣</span>シフト提出</button>
+    <div id="drawerAdminArea" class="hidden" data-module="admin" data-admin-only="true">
       <div class="drawer-divider"></div><div class="drawer-section-title">ADMIN</div>
       <button class="drawer-item" onclick="openAdminPlaceholder('本日の出勤確認')"><span class="drawer-item-icon">✓</span>本日の出勤確認</button>
       <button class="drawer-item" onclick="openAdminPlaceholder('月間提出状況')"><span class="drawer-item-icon">▤</span>月間提出状況</button>
@@ -170,7 +170,7 @@
       <button class="drawer-item" onclick="openAdminPlaceholder('キャスト管理')"><span class="drawer-item-icon">♟</span>キャスト管理</button>
     </div>
     <div class="drawer-divider"></div>
-    <button class="drawer-item" onclick="openSettingsPlaceholder()"><span class="drawer-item-icon">⚙</span>設定</button>
+    <button class="drawer-item" data-module="settings" onclick="openModulePlaceholder('settings')"><span class="drawer-item-icon">⚙</span>設定</button>
   </aside>
 </div>
 
@@ -405,6 +405,22 @@ function applyCastFlowIcons(){
  * ===================================================== */
 const LIFF_ID="2011488723-gI54Hlt3";
 const GAS_API_URL="https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec";
+
+// CAST FLOW Core設定。将来は同じ形の設定をGASから返し、店舗単位で上書きする。
+const CAST_FLOW_CONFIG={
+ store:{id:"royal",name:"ROYAL"},
+ modules:{
+  home:{enabled:true,label:"ホーム"},
+  shift:{enabled:true,label:"シフト提出"},
+  attendance:{enabled:true,label:"出勤確認"},
+  admin:{enabled:true,label:"管理",adminOnly:true},
+  settings:{enabled:true,label:"設定"},
+  payroll:{enabled:false,label:"給与明細",adminOnly:false},
+  dispatch:{enabled:false,label:"送り管理",adminOnly:true},
+  dataImport:{enabled:false,label:"データ取込",adminOnly:true},
+  blog:{enabled:false,label:"ブログ連携",adminOnly:true}
+ }
+};
 let currentIdToken="",currentLineDisplayName="",currentCast=null;
 let calendar=null,selectedDate="",selectedStatus="working",isSaving=false,isEndTimeLast=false,isLoadingMonth=false,currentMonthSubmitted=false;
 let currentCastDefaults={defaultStartTime:"20:00",defaultEndTime:"01:00"};
@@ -1909,11 +1925,7 @@ function setupCastFlowNavigation(){
   if(el)el.textContent=value;
  });
 
- const drawerAdminArea=document.getElementById("drawerAdminArea");
- const homeAdminCard=document.getElementById("homeAdminCard");
-
- if(drawerAdminArea)drawerAdminArea.classList.toggle("hidden",!isAdmin);
- if(homeAdminCard)homeAdminCard.classList.toggle("hidden",!isAdmin);
+ applyModuleVisibility(isAdmin);
 
  // CAST FLOWのアイコンを適用
  applyCastFlowIcons();
@@ -1922,6 +1934,30 @@ function setupCastFlowNavigation(){
 /* =====================================================
  * 14. ホーム画面
  * ===================================================== */
+function getModuleConfig(moduleId){
+ return CAST_FLOW_CONFIG.modules[moduleId]||null;
+}
+function isModuleAvailable(moduleId,isAdmin){
+ const module=getModuleConfig(moduleId);
+ if(!module||module.enabled!==true)return false;
+ return module.adminOnly!==true||isAdmin===true;
+}
+function applyModuleVisibility(isAdmin){
+ document.querySelectorAll("[data-module]").forEach(el=>{
+  const moduleId=el.getAttribute("data-module");
+  el.classList.toggle("hidden",!isModuleAvailable(moduleId,isAdmin));
+ });
+}
+function navigateToModule(moduleId){
+ const isAdmin=!!(currentCast&&(currentCast.isAdmin===true||currentCast.admin===true));
+ if(!isModuleAvailable(moduleId,isAdmin)){
+  showNotice("この機能は現在利用できません");
+  return;
+ }
+ if(moduleId==="home")return showHomeView();
+ if(moduleId==="shift")return showShiftView();
+ openModulePlaceholder(moduleId);
+}
 function showHomeView(){
  closeDrawer();
  document.getElementById("authView").classList.add("hidden");
@@ -1958,8 +1994,14 @@ function setDrawerActive(page){
  if(home)home.classList.toggle("active",page==="home");
  if(shift)shift.classList.toggle("active",page==="shift");
 }
+function openModulePlaceholder(moduleId){
+ closeDrawer();
+ const module=getModuleConfig(moduleId);
+ showNotice((module&&module.label?module.label:"この機能")+"は準備中です");
+}
+// 既存の呼び出しとの互換性を残す。
 function openAdminPlaceholder(title){closeDrawer();showNotice(title+"は準備中です")}
-function openSettingsPlaceholder(){closeDrawer();showNotice("設定画面は準備中です")}
+function openSettingsPlaceholder(){openModulePlaceholder("settings")}
 
 function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 </script>
