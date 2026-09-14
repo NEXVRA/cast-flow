@@ -704,119 +704,578 @@ function updateCustomerVisit(index,field,value){
  customerVisits[index][field]=value;
 }
 
-function getVisitTimePart(time,part){
- const m=String(time||"").match(/^(\d{1,2}):(\d{2})$/);
- if(!m)return "";
- return part==="hour"
-  ?m[1].padStart(2,"0")
-  :m[2];
+/* =====================================================
+ * 12. 同伴・来店予定・時間入力
+ * ===================================================== */
+
+function addCustomerVisit(type){
+
+  customerVisits.push({
+    type,
+    customerName:"",
+    time:"",
+    note:""
+  });
+
+  renderCustomerVisits();
+
 }
 
-function handleVisitTimeInput(index,part,el){
- el.value=el.value.replace(/\D/g,"").slice(0,2);
 
- const item=customerVisits[index];
- if(!item)return;
+function removeCustomerVisit(index){
 
- const m=String(item.time||"").match(/^(\d{0,2}):(\d{0,2})$/);
+  customerVisits.splice(
+    index,
+    1
+  );
 
- let hour=m?m[1]:"";
- let minute=m?m[2]:"";
+  renderCustomerVisits();
 
- if(part==="hour"){
-  hour=el.value;
- }else{
-  minute=el.value;
- }
-
- item.time=
-  hour||minute
-   ?hour+":"+minute
-   :"";
 }
 
-function handleVisitTimeBlur(index,part,el){
- if(el.value==="")return;
 
- let n=Number(el.value);
+function updateCustomerVisit(
+  index,
+  field,
+  value
+){
 
- if(part==="hour"){
-  if(n>29)n=29;
- }else{
-  if(n>59)n=59;
- }
+  if(!customerVisits[index])return;
 
- el.value=String(n).padStart(2,"0");
+  customerVisits[index][field]=value;
 
- const item=customerVisits[index];
- if(!item)return;
-
- const m=String(item.time||"").match(/^(\d{0,2}):(\d{0,2})$/);
-
- let hour=m?m[1]:"";
- let minute=m?m[2]:"";
-
- if(part==="hour"){
-  hour=el.value;
- }else{
-  minute=el.value;
- }
-
- item.time=
-  hour||minute
-   ?hour+":"+minute
-   :"";
 }
+
+
+/* =====================================================
+ * 同伴・来店 時間取得
+ * ===================================================== */
+
+function getVisitTimePart(
+  time,
+  part
+){
+
+  const m=
+    String(time||"")
+      .match(
+        /^(\d{1,2}):(\d{2})$/
+      );
+
+  if(!m)return "";
+
+  return part==="hour"
+    ?m[1].padStart(2,"0")
+    :m[2];
+
+}
+
+
+/* =====================================================
+ * 同伴・来店 時間フォーカス
+ * ===================================================== */
+
+function handleVisitTimeFocus(el){
+
+  /*
+   * 既存の数字を全選択。
+   * そのまま数字を入力すれば上書きできる。
+   */
+
+  setTimeout(()=>{
+
+    try{
+      el.select();
+    }catch(e){}
+
+  },0);
+
+}
+
+
+/* =====================================================
+ * 同伴・来店 時間入力
+ * ===================================================== */
+
+function handleVisitTimeInput(
+  index,
+  part,
+  el
+){
+
+  el.value=
+    el.value
+      .replace(/\D/g,"")
+      .slice(0,2);
+
+
+  const item=
+    customerVisits[index];
+
+  if(!item)return;
+
+
+  const m=
+    String(item.time||"")
+      .match(
+        /^(\d{0,2}):(\d{0,2})$/
+      );
+
+
+  let hour=
+    m
+      ?m[1]
+      :"";
+
+  let minute=
+    m
+      ?m[2]
+      :"";
+
+
+  if(part==="hour"){
+
+    hour=el.value;
+
+  }else{
+
+    minute=el.value;
+
+  }
+
+
+  item.time=
+    hour||minute
+      ?hour+":"+minute
+      :"";
+
+
+  /*
+   * HHを2桁入力
+   * ↓
+   * MMへ自動移動
+   */
+
+  if(
+    part==="hour" &&
+    el.value.length===2
+  ){
+
+    const wrapper=
+      el.closest(
+        ".visit-time-manual"
+      );
+
+    const inputs=
+      wrapper
+        ?wrapper.querySelectorAll(
+          ".visit-time-part"
+        )
+        :[];
+
+
+    if(inputs.length>=2){
+
+      const minuteInput=
+        inputs[1];
+
+      minuteInput.focus();
+
+      setTimeout(()=>{
+
+        try{
+          minuteInput.select();
+        }catch(e){}
+
+      },0);
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+ * 同伴・来店 Backspace移動
+ * ===================================================== */
+
+function handleVisitTimeKeyDown(
+  index,
+  part,
+  el,
+  event
+){
+
+  /*
+   * MMが空の状態でBackspace
+   * ↓
+   * HHへ戻る
+   */
+
+  if(
+    part==="minute" &&
+    event.key==="Backspace" &&
+    el.value===""
+  ){
+
+    const wrapper=
+      el.closest(
+        ".visit-time-manual"
+      );
+
+    const inputs=
+      wrapper
+        ?wrapper.querySelectorAll(
+          ".visit-time-part"
+        )
+        :[];
+
+
+    if(inputs.length>=2){
+
+      event.preventDefault();
+
+      const hourInput=
+        inputs[0];
+
+      hourInput.focus();
+
+      setTimeout(()=>{
+
+        try{
+          hourInput.select();
+        }catch(e){}
+
+      },0);
+
+    }
+
+  }
+
+}
+
+
+/* =====================================================
+ * 同伴・来店 時間確定
+ * ===================================================== */
+
+function handleVisitTimeBlur(
+  index,
+  part,
+  el
+){
+
+  if(el.value==="")return;
+
+
+  let n=
+    Number(el.value);
+
+
+  if(part==="hour"){
+
+    if(n>29)n=29;
+
+  }else{
+
+    if(n>59)n=59;
+
+  }
+
+
+  el.value=
+    String(n)
+      .padStart(2,"0");
+
+
+  const item=
+    customerVisits[index];
+
+  if(!item)return;
+
+
+  const m=
+    String(item.time||"")
+      .match(
+        /^(\d{0,2}):(\d{0,2})$/
+      );
+
+
+  let hour=
+    m
+      ?m[1]
+      :"";
+
+  let minute=
+    m
+      ?m[2]
+      :"";
+
+
+  if(part==="hour"){
+
+    hour=el.value;
+
+  }else{
+
+    minute=el.value;
+
+  }
+
+
+  item.time=
+    hour||minute
+      ?hour+":"+minute
+      :"";
+
+}
+
+
+/* =====================================================
+ * 同伴・来店 一覧描画
+ * ===================================================== */
+
 function renderCustomerVisits(){
- const companionContainer=document.getElementById("companionVisitList");
- const visitContainer=document.getElementById("customerVisitList");
- if(!companionContainer||!visitContainer)return;
 
- if(customerVisitsLoading){
-  const html='<div class="visit-loading">予定を読み込んでいます...</div>';
-  companionContainer.innerHTML=html;
-  visitContainer.innerHTML=html;
-  return;
- }
+  const companionContainer=
+    document.getElementById(
+      "companionVisitList"
+    );
 
- const indexed=customerVisits.map((item,index)=>({...item,originalIndex:index}));
- companionContainer.innerHTML=buildCustomerVisitListHtml(indexed.filter(x=>x.type==="同伴"),"同伴予定なし");
- visitContainer.innerHTML=buildCustomerVisitListHtml(indexed.filter(x=>x.type==="来店"),"来店予定なし");
+  const visitContainer=
+    document.getElementById(
+      "customerVisitList"
+    );
+
+
+  if(
+    !companionContainer ||
+    !visitContainer
+  ){
+    return;
+  }
+
+
+  if(customerVisitsLoading){
+
+    const html=
+      '<div class="visit-loading">'+
+      '予定を読み込んでいます...'+
+      '</div>';
+
+    companionContainer.innerHTML=
+      html;
+
+    visitContainer.innerHTML=
+      html;
+
+    return;
+
+  }
+
+
+  const indexed=
+    customerVisits.map(
+      (item,index)=>({
+        ...item,
+        originalIndex:index
+      })
+    );
+
+
+  companionContainer.innerHTML=
+    buildCustomerVisitListHtml(
+
+      indexed.filter(
+        item=>item.type==="同伴"
+      ),
+
+      "同伴予定なし"
+
+    );
+
+
+  visitContainer.innerHTML=
+    buildCustomerVisitListHtml(
+
+      indexed.filter(
+        item=>item.type==="来店"
+      ),
+
+      "来店予定なし"
+
+    );
+
 }
-function buildCustomerVisitListHtml(items,emptyText){
- if(!items.length)return `<div class="visit-empty">${escapeHtml(emptyText)}</div>`;
 
- return items.map(item=>`
-  <div class="visit-item">
-   <div class="visit-item-grid">
-    <input class="visit-input" type="text" maxlength="40" placeholder="顧客名"
-     value="${escapeHtml(item.customerName||"")}"
-     oninput="updateCustomerVisit(${item.originalIndex},'customerName',this.value)">
-    <div class="visit-time-manual">
-     <input
-      class="visit-time-part"
-      inputmode="numeric"
-      maxlength="2"
-      placeholder="HH"
-      value="${escapeHtml(getVisitTimePart(item.time,'hour'))}"
-      oninput="handleVisitTimeInput(${item.originalIndex},'hour',this)"
-      onblur="handleVisitTimeBlur(${item.originalIndex},'hour',this)"
-     >
-     <span class="visit-time-colon">:</span>
-     <input
-      class="visit-time-part"
-      inputmode="numeric"
-      maxlength="2"
-      placeholder="MM"
-      value="${escapeHtml(getVisitTimePart(item.time,'minute'))}"
-      oninput="handleVisitTimeInput(${item.originalIndex},'minute',this)"
-      onblur="handleVisitTimeBlur(${item.originalIndex},'minute',this)"
-     >
+
+/* =====================================================
+ * 同伴・来店 入力UI
+ * ===================================================== */
+
+function buildCustomerVisitListHtml(
+  items,
+  emptyText
+){
+
+  if(!items.length){
+
+    return `
+      <div class="visit-empty">
+        ${escapeHtml(emptyText)}
+      </div>
+    `;
+
+  }
+
+
+  return items.map(item=>`
+
+    <div class="visit-item">
+
+      <div class="visit-item-grid">
+
+        <input
+          class="visit-input"
+          type="text"
+          maxlength="40"
+          placeholder="顧客名"
+
+          value="${escapeHtml(
+            item.customerName||""
+          )}"
+
+          oninput="
+            updateCustomerVisit(
+              ${item.originalIndex},
+              'customerName',
+              this.value
+            )
+          "
+        >
+
+
+        <div class="visit-time-manual">
+
+          <input
+            class="visit-time-part"
+            inputmode="numeric"
+            maxlength="2"
+            placeholder="HH"
+
+            value="${escapeHtml(
+              getVisitTimePart(
+                item.time,
+                'hour'
+              )
+            )}"
+
+            onfocus="
+              handleVisitTimeFocus(
+                this
+              )
+            "
+
+            oninput="
+              handleVisitTimeInput(
+                ${item.originalIndex},
+                'hour',
+                this
+              )
+            "
+
+            onkeydown="
+              handleVisitTimeKeyDown(
+                ${item.originalIndex},
+                'hour',
+                this,
+                event
+              )
+            "
+
+            onblur="
+              handleVisitTimeBlur(
+                ${item.originalIndex},
+                'hour',
+                this
+              )
+            "
+          >
+
+
+          <span class="visit-time-colon">
+            :
+          </span>
+
+
+          <input
+            class="visit-time-part"
+            inputmode="numeric"
+            maxlength="2"
+            placeholder="MM"
+
+            value="${escapeHtml(
+              getVisitTimePart(
+                item.time,
+                'minute'
+              )
+            )}"
+
+            onfocus="
+              handleVisitTimeFocus(
+                this
+              )
+            "
+
+            oninput="
+              handleVisitTimeInput(
+                ${item.originalIndex},
+                'minute',
+                this
+              )
+            "
+
+            onkeydown="
+              handleVisitTimeKeyDown(
+                ${item.originalIndex},
+                'minute',
+                this,
+                event
+              )
+            "
+
+            onblur="
+              handleVisitTimeBlur(
+                ${item.originalIndex},
+                'minute',
+                this
+              )
+            "
+          >
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="visit-remove"
+
+        onclick="
+          removeCustomerVisit(
+            ${item.originalIndex}
+          )
+        "
+      >
+        ×
+      </button>
+
     </div>
-   </div>
-   <button type="button" class="visit-remove" onclick="removeCustomerVisit(${item.originalIndex})">×</button>
-  </div>
- `).join("");
+
+  `).join("");
+
 }
 
 async function saveSelectedDate(){
@@ -997,30 +1456,441 @@ async function saveBulkShifts(){
  }catch(e){showNotice(e.message||String(e))}finally{isBulkSaving=false;b.disabled=false;b.textContent="まとめて保存"}
 }
 function closeBulkModalForce(){document.getElementById("bulkModal").classList.add("hidden");document.body.classList.remove("modal-open")}
-function initializeManualInputs(){["start","end","bulkStart","bulkEnd"].forEach(p=>{const h=document.getElementById(p+"Hour"),m=document.getElementById(p+"Minute");h.addEventListener("input",()=>{digits(h);if(h.value.length===2)m.focus()});m.addEventListener("input",()=>digits(m));h.addEventListener("blur",()=>padPart(h,23));m.addEventListener("blur",()=>padPart(m,59))})}
-function digits(el){el.value=el.value.replace(/\D/g,"").slice(0,2)}
-function padPart(el,max){if(el.value==="")return;let n=Number(el.value);if(n>max)n=max;el.value=String(n).padStart(2,"0")}
-function setTime(prefix,t){if(t==="LAST")return;const [h,m]=normalizeTime(t,prefix.toLowerCase().includes("end")?"01:00":"20:00").split(":");document.getElementById(prefix+"Hour").value=h;document.getElementById(prefix+"Minute").value=m}
-function getTime(prefix){const h=document.getElementById(prefix+"Hour"),m=document.getElementById(prefix+"Minute");padPart(h,23);padPart(m,59);if(!h.value||!m.value)return"";return h.value+":"+m.value}
-function toggleEndTimeLast(){setEndTimeLastState(!isEndTimeLast)}
-function setEndTimeLastState(v){
- isEndTimeLast=!!v;
- const f=document.getElementById("endTimeField"),b=document.getElementById("endTimeLastButton");
- document.getElementById("endHour").disabled=isEndTimeLast;
- document.getElementById("endMinute").disabled=isEndTimeLast;
- f.classList.toggle("last-selected",isEndTimeLast);
- b.classList.toggle("selected",isEndTimeLast);
- b.textContent=isEndTimeLast?"LASTを解除する":"退勤時間をLASTにする";
+/* =====================================================
+ * 15. 共通時間入力
+ * ===================================================== */
+
+function initializeManualInputs(){
+
+  [
+    "start",
+    "end",
+    "bulkStart",
+    "bulkEnd"
+  ].forEach(prefix=>{
+
+    const hour=
+      document.getElementById(
+        prefix+"Hour"
+      );
+
+    const minute=
+      document.getElementById(
+        prefix+"Minute"
+      );
+
+
+    if(
+      !hour ||
+      !minute
+    ){
+      return;
+    }
+
+
+    /*
+     * 既存値をタップ
+     * ↓
+     * 数字を全選択
+     * ↓
+     * そのまま上書き可能
+     */
+
+    hour.addEventListener(
+      "focus",
+      ()=>{
+
+        setTimeout(()=>{
+
+          try{
+            hour.select();
+          }catch(e){}
+
+        },0);
+
+      }
+    );
+
+
+    minute.addEventListener(
+      "focus",
+      ()=>{
+
+        setTimeout(()=>{
+
+          try{
+            minute.select();
+          }catch(e){}
+
+        },0);
+
+      }
+    );
+
+
+    /*
+     * HH入力
+     */
+
+    hour.addEventListener(
+      "input",
+      ()=>{
+
+        digits(hour);
+
+
+        /*
+         * 2桁入力
+         * ↓
+         * MMへ自動移動
+         */
+
+        if(
+          hour.value.length===2
+        ){
+
+          minute.focus();
+
+          setTimeout(()=>{
+
+            try{
+              minute.select();
+            }catch(e){}
+
+          },0);
+
+        }
+
+      }
+    );
+
+
+    /*
+     * MM入力
+     */
+
+    minute.addEventListener(
+      "input",
+      ()=>{
+
+        digits(minute);
+
+      }
+    );
+
+
+    /*
+     * MMが空でBackspace
+     * ↓
+     * HHへ戻る
+     */
+
+    minute.addEventListener(
+      "keydown",
+      event=>{
+
+        if(
+          event.key==="Backspace" &&
+          minute.value===""
+        ){
+
+          event.preventDefault();
+
+          hour.focus();
+
+          setTimeout(()=>{
+
+            try{
+              hour.select();
+            }catch(e){}
+
+          },0);
+
+        }
+
+      }
+    );
+
+
+    /*
+     * 入力確定時
+     */
+
+    hour.addEventListener(
+      "blur",
+      ()=>padPart(
+        hour,
+        23
+      )
+    );
+
+
+    minute.addEventListener(
+      "blur",
+      ()=>padPart(
+        minute,
+        59
+      )
+    );
+
+  });
+
 }
-function toggleBulkEndTimeLast(){setBulkEndTimeLastState(!isBulkEndTimeLast)}
-function setBulkEndTimeLastState(v){
- isBulkEndTimeLast=!!v;
- const f=document.getElementById("bulkEndTimeField"),b=document.getElementById("bulkEndTimeLastButton");
- document.getElementById("bulkEndHour").disabled=isBulkEndTimeLast;
- document.getElementById("bulkEndMinute").disabled=isBulkEndTimeLast;
- f.classList.toggle("last-selected",isBulkEndTimeLast);
- b.classList.toggle("selected",isBulkEndTimeLast);
- b.textContent=isBulkEndTimeLast?"LASTを解除する":"退勤時間をLASTにする";
+
+
+/* =====================================================
+ * 数字入力補助
+ * ===================================================== */
+
+function digits(el){
+
+  el.value=
+    el.value
+      .replace(/\D/g,"")
+      .slice(0,2);
+
+}
+
+
+function padPart(
+  el,
+  max
+){
+
+  if(el.value==="")return;
+
+
+  let n=
+    Number(el.value);
+
+
+  if(n>max){
+    n=max;
+  }
+
+
+  el.value=
+    String(n)
+      .padStart(2,"0");
+
+}
+
+
+/* =====================================================
+ * 時刻セット・取得
+ * ===================================================== */
+
+function setTime(
+  prefix,
+  time
+){
+
+  if(time==="LAST")return;
+
+
+  const fallback=
+    prefix
+      .toLowerCase()
+      .includes("end")
+        ?"01:00"
+        :"20:00";
+
+
+  const [
+    hour,
+    minute
+  ]=
+    normalizeTime(
+      time,
+      fallback
+    )
+    .split(":");
+
+
+  document
+    .getElementById(
+      prefix+"Hour"
+    )
+    .value=
+      hour;
+
+
+  document
+    .getElementById(
+      prefix+"Minute"
+    )
+    .value=
+      minute;
+
+}
+
+
+function getTime(prefix){
+
+  const hour=
+    document.getElementById(
+      prefix+"Hour"
+    );
+
+  const minute=
+    document.getElementById(
+      prefix+"Minute"
+    );
+
+
+  padPart(
+    hour,
+    23
+  );
+
+  padPart(
+    minute,
+    59
+  );
+
+
+  if(
+    !hour.value ||
+    !minute.value
+  ){
+    return "";
+  }
+
+
+  return (
+    hour.value+
+    ":"+
+    minute.value
+  );
+
+}
+
+
+/* =====================================================
+ * LAST切替
+ * ===================================================== */
+
+function toggleEndTimeLast(){
+
+  setEndTimeLastState(
+    !isEndTimeLast
+  );
+
+}
+
+
+function setEndTimeLastState(value){
+
+  isEndTimeLast=
+    !!value;
+
+
+  const field=
+    document.getElementById(
+      "endTimeField"
+    );
+
+  const button=
+    document.getElementById(
+      "endTimeLastButton"
+    );
+
+
+  document
+    .getElementById(
+      "endHour"
+    )
+    .disabled=
+      isEndTimeLast;
+
+
+  document
+    .getElementById(
+      "endMinute"
+    )
+    .disabled=
+      isEndTimeLast;
+
+
+  field.classList.toggle(
+    "last-selected",
+    isEndTimeLast
+  );
+
+
+  button.classList.toggle(
+    "selected",
+    isEndTimeLast
+  );
+
+
+  button.textContent=
+    isEndTimeLast
+      ?"LASTを解除する"
+      :"退勤時間をLASTにする";
+
+}
+
+
+function toggleBulkEndTimeLast(){
+
+  setBulkEndTimeLastState(
+    !isBulkEndTimeLast
+  );
+
+}
+
+
+function setBulkEndTimeLastState(value){
+
+  isBulkEndTimeLast=
+    !!value;
+
+
+  const field=
+    document.getElementById(
+      "bulkEndTimeField"
+    );
+
+  const button=
+    document.getElementById(
+      "bulkEndTimeLastButton"
+    );
+
+
+  document
+    .getElementById(
+      "bulkEndHour"
+    )
+    .disabled=
+      isBulkEndTimeLast;
+
+
+  document
+    .getElementById(
+      "bulkEndMinute"
+    )
+    .disabled=
+      isBulkEndTimeLast;
+
+
+  field.classList.toggle(
+    "last-selected",
+    isBulkEndTimeLast
+  );
+
+
+  button.classList.toggle(
+    "selected",
+    isBulkEndTimeLast
+  );
+
+
+  button.textContent=
+    isBulkEndTimeLast
+      ?"LASTを解除する"
+      :"退勤時間をLASTにする";
+
 }
 function normalizeTime(v,f){const s=String(v||"").trim();return /^\d{2}:\d{2}$/.test(s)?s:f}
 function parseLocalDate(s){const p=s.split("-").map(Number);return new Date(p[0],p[1]-1,p[2])}
