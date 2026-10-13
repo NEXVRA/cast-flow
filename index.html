@@ -104,30 +104,213 @@
   <div id="adminArea" class="hidden"></div>
 </div>
 
-
 <!-- =====================================================
      04. CAST FLOW ホーム
 ===================================================== -->
+
 <div id="homeView" class="hidden">
+
   <header class="app-header">
+
     <div class="app-header-left">
-      <button class="menu-button" onclick="openDrawer()" aria-label="メニュー"><span></span><span></span><span></span></button>
-      <div><div class="header-logo">CAST FLOW</div><div class="header-subtitle">CAST MANAGEMENT SYSTEM</div></div>
-    </div>
-    <button class="header-diamond-button" onclick="showNotice('通知機能は準備中です')"><span class="header-diamond"></span></button>
-  </header>
-  <main class="main-content home-view">
-    <section>
-      <div class="home-hero"><div class="home-hero-label">CAST MANAGEMENT SYSTEM</div><h1>ホーム</h1><p>CAST FLOWへようこそ。<br>使用する機能を選択してください。</p></div>
-      <div class="home-user-card"><div class="home-user-label">LOGGED IN CAST</div><div id="homeCastName" class="home-user-name">-</div><div id="homeCastId" class="home-user-id">-</div></div>
-      <div class="home-grid">
-        <button class="home-menu-card" data-module="shift" onclick="navigateToModule('shift')"><div class="home-menu-icon">▣</div><strong>シフト提出</strong><small>月間シフトの入力・提出</small></button>
-        <button class="home-menu-card" data-module="attendance" onclick="openModulePlaceholder('attendance')"><div class="home-menu-icon">✓</div><strong>出勤確認</strong><small>当日の出勤状況を確認</small></button>
-        <button id="homeAdminCard" class="home-menu-card hidden" data-module="admin" data-admin-only="true" onclick="openModulePlaceholder('admin')"><div class="home-menu-icon">♟</div><strong>管理</strong><small>CAST FLOW管理メニュー</small></button>
-        <button class="home-menu-card" data-module="settings" onclick="openModulePlaceholder('settings')"><div class="home-menu-icon">⚙</div><strong>設定</strong><small>アカウント・各種設定</small></button>
+
+      <button
+        class="menu-button"
+        onclick="openDrawer()"
+        aria-label="メニュー"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div>
+        <div class="header-logo">
+          CAST FLOW
+        </div>
+
+        <div class="header-subtitle">
+          CAST MANAGEMENT SYSTEM
+        </div>
       </div>
+
+    </div>
+
+
+    <button
+      class="header-diamond-button"
+      onclick="showNotice('通知機能は準備中です')"
+    >
+      <span class="header-diamond"></span>
+    </button>
+
+  </header>
+
+
+  <main class="main-content home-view">
+
+    <section>
+
+      <div class="home-hero">
+
+        <div class="home-hero-label">
+          CAST MANAGEMENT SYSTEM
+        </div>
+
+        <h1>
+          ホーム
+        </h1>
+
+        <p>
+          CAST FLOWへようこそ。<br>
+          使用する機能を選択してください。
+        </p>
+
+      </div>
+
+
+      <div class="home-user-card">
+
+        <div class="home-user-label">
+          LOGGED IN CAST
+        </div>
+
+        <div
+          id="homeCastName"
+          class="home-user-name"
+        >
+          -
+        </div>
+
+        <div
+          id="homeCastId"
+          class="home-user-id"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div class="home-grid">
+
+        <button
+          class="home-menu-card"
+          data-module="shift"
+          onclick="navigateToModule('shift')"
+        >
+
+          <div class="home-menu-icon">
+            ▣
+          </div>
+
+          <strong>
+            シフト提出
+          </strong>
+
+          <small>
+            月間シフトの入力・提出
+          </small>
+
+        </button>
+
+
+        <button
+          class="home-menu-card"
+          data-module="attendance"
+          onclick="openModulePlaceholder('attendance')"
+        >
+
+          <div class="home-menu-icon">
+            ✓
+          </div>
+
+          <strong>
+            出勤確認
+          </strong>
+
+          <small>
+            当日の出勤状況を確認
+          </small>
+
+        </button>
+
+
+        <button
+          id="homeAdminCard"
+          class="home-menu-card hidden"
+          data-module="admin"
+          data-admin-only="true"
+          onclick="openAdminRegistrationRequests()"
+          style="position:relative;"
+        >
+
+          <span
+            id="homeRegistrationBadge"
+            class="hidden"
+            style="
+              position:absolute;
+              top:10px;
+              right:10px;
+              min-width:20px;
+              height:20px;
+              padding:0 6px;
+              border-radius:999px;
+              background:#e53935;
+              color:#fff;
+              font-size:10px;
+              font-weight:900;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              box-shadow:0 2px 6px #0003;
+              z-index:2;
+            "
+          >
+            0
+          </span>
+
+          <div class="home-menu-icon">
+            ♟
+          </div>
+
+          <strong>
+            管理
+          </strong>
+
+          <small>
+            登録申請・CAST FLOW管理
+          </small>
+
+        </button>
+
+
+        <button
+          class="home-menu-card"
+          data-module="settings"
+          onclick="openModulePlaceholder('settings')"
+        >
+
+          <div class="home-menu-icon">
+            ⚙
+          </div>
+
+          <strong>
+            設定
+          </strong>
+
+          <small>
+            アカウント・各種設定
+          </small>
+
+        </button>
+
+      </div>
+
     </section>
+
   </main>
+
 </div>
 
 <!-- =====================================================
@@ -209,11 +392,13 @@
       data-module="home"
       onclick="navigateToModule('home')"
     >
+
       <span class="drawer-item-icon">
         ⌂
       </span>
 
       ホーム
+
     </button>
 
 
@@ -223,11 +408,13 @@
       data-module="shift"
       onclick="navigateToModule('shift')"
     >
+
       <span class="drawer-item-icon">
         ▣
       </span>
 
       シフト提出
+
     </button>
 
 
@@ -249,11 +436,13 @@
         class="drawer-item"
         onclick="openAdminPlaceholder('本日の出勤確認')"
       >
+
         <span class="drawer-item-icon">
           ✓
         </span>
 
         本日の出勤確認
+
       </button>
 
 
@@ -261,23 +450,52 @@
         class="drawer-item"
         onclick="openAdminPlaceholder('月間提出状況')"
       >
+
         <span class="drawer-item-icon">
           ▤
         </span>
 
         月間提出状況
+
       </button>
 
 
       <button
+        id="drawerRegistrationButton"
         class="drawer-item"
         onclick="openAdminRegistrationRequests()"
+        style="position:relative;"
       >
+
         <span class="drawer-item-icon">
           ♙
         </span>
 
         登録申請
+
+
+        <span
+          id="drawerRegistrationBadge"
+          class="hidden"
+          style="
+            position:absolute;
+            right:12px;
+            min-width:20px;
+            height:20px;
+            padding:0 6px;
+            border-radius:999px;
+            background:#e53935;
+            color:#fff;
+            font-size:10px;
+            font-weight:900;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+          "
+        >
+          0
+        </span>
+
       </button>
 
 
@@ -285,11 +503,13 @@
         class="drawer-item"
         onclick="openAdminPlaceholder('キャスト管理')"
       >
+
         <span class="drawer-item-icon">
           ♟
         </span>
 
         キャスト管理
+
       </button>
 
     </div>
@@ -303,11 +523,13 @@
       data-module="settings"
       onclick="openModulePlaceholder('settings')"
     >
+
       <span class="drawer-item-icon">
         ⚙
       </span>
 
       設定
+
     </button>
 
   </aside>
@@ -2492,6 +2714,160 @@ function showPending(request){
  * 20. 管理者・登録申請
  * ===================================================== */
 
+
+/**
+ * 現在のユーザーが管理者か
+ */
+function isCurrentCastAdmin(){
+
+  return !!(
+    currentCast &&
+    (
+      currentCast.isAdmin===true ||
+      currentCast.admin===true
+    )
+  );
+
+}
+
+
+/**
+ * 登録申請の赤丸を更新
+ */
+function updateRegistrationBadge(
+  count
+){
+
+  let number=
+    Number(
+      count || 0
+    );
+
+
+  if(
+    !Number.isFinite(number) ||
+    number < 0
+  ){
+
+    number=0;
+
+  }
+
+
+  number=
+    Math.floor(
+      number
+    );
+
+
+  const label=
+    number>9
+      ?"9+"
+      :String(number);
+
+
+  [
+    "homeRegistrationBadge",
+    "drawerRegistrationBadge"
+  ].forEach(
+    id=>{
+
+      const element=
+        document.getElementById(
+          id
+        );
+
+
+      if(!element){
+        return;
+      }
+
+
+      element.textContent=
+        label;
+
+
+      element.classList.toggle(
+        "hidden",
+        number===0
+      );
+
+    }
+  );
+
+}
+
+
+/**
+ * 承認待ち件数だけ更新
+ *
+ * 管理者画面を開いていなくても
+ * ホームとサイドメニューに赤丸を表示する。
+ */
+async function refreshRegistrationBadge(){
+
+  if(
+    !isCurrentCastAdmin()
+  ){
+
+    updateRegistrationBadge(
+      0
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const result=
+      await callApi({
+
+        action:
+          "getRegistrationRequests",
+
+        idToken:
+          currentIdToken
+
+      });
+
+
+    if(
+      !result ||
+      result.success!==true
+    ){
+
+      return;
+
+    }
+
+
+    const requests=
+      Array.isArray(
+        result.requests
+      )
+        ?result.requests
+        :[];
+
+
+    updateRegistrationBadge(
+      requests.length
+    );
+
+
+  }catch(error){
+
+    console.warn(
+      "登録申請件数を取得できませんでした",
+      error
+    );
+
+  }
+
+}
+
+
 /**
  * 登録申請管理画面を開く
  */
@@ -2500,17 +2876,9 @@ async function openAdminRegistrationRequests(){
   closeDrawer();
 
 
-  const isAdmin=
-    !!(
-      currentCast &&
-      (
-        currentCast.isAdmin===true ||
-        currentCast.admin===true
-      )
-    );
-
-
-  if(!isAdmin){
+  if(
+    !isCurrentCastAdmin()
+  ){
 
     showNotice(
       "管理者権限がありません"
@@ -2700,6 +3068,11 @@ async function loadAdminRequests(){
         :[];
 
 
+    updateRegistrationBadge(
+      requests.length
+    );
+
+
     if(countElement){
 
       countElement.textContent=
@@ -2846,14 +3219,8 @@ function buildAdminRegistrationRequestHtml(
     );
 
 
-  const registrationType=
-    request?.registrationType==="existing"
-      ?"existing"
-      :"new";
-
-
   const isExisting=
-    registrationType==="existing";
+    request?.registrationType==="existing";
 
 
   const typeLabel=
@@ -2956,11 +3323,8 @@ function buildAdminRegistrationRequestHtml(
         isExisting
           ?`
 
-            <div
-              class="request-info"
-            >
-              登録済みCAST名：
-              ${existingCastName || "-"}
+            <div class="request-info">
+              登録済みCAST名：${existingCastName || "-"}
             </div>
 
           `
@@ -2972,9 +3336,7 @@ function buildAdminRegistrationRequestHtml(
         hasNameMismatch
           ?`
 
-            <div
-              class="error-message"
-            >
+            <div class="error-message">
               キャスト番号と登録済みキャスト名が一致していません。
               承認できません。
             </div>
@@ -2989,11 +3351,7 @@ function buildAdminRegistrationRequestHtml(
         <button
           type="button"
           class="approve-button"
-          onclick="
-            handleApproveRegistrationRequest(
-              '${requestId}'
-            )
-          "
+          onclick="handleApproveRegistrationRequest('${requestId}')"
           ${hasNameMismatch?"disabled":""}
           style="${hasNameMismatch?"opacity:.4;":""}"
         >
@@ -3004,12 +3362,7 @@ function buildAdminRegistrationRequestHtml(
         <button
           type="button"
           class="reject-button"
-          onclick="
-            handleRejectRegistrationRequest(
-              '${requestId}',
-              '${castName}'
-            )
-          "
+          onclick="handleRejectRegistrationRequest('${requestId}')"
         >
           却下
         </button>
@@ -3024,7 +3377,7 @@ function buildAdminRegistrationRequestHtml(
 
 
 /**
- * 承認ボタン
+ * 承認
  */
 async function handleApproveRegistrationRequest(
   requestId
@@ -3035,7 +3388,9 @@ async function handleApproveRegistrationRequest(
       "この登録申請を承認しますか？"
     )
   ){
+
     return;
+
   }
 
 
@@ -3052,14 +3407,10 @@ async function handleApproveRegistrationRequest(
       );
 
 
-    const message=
+    showNotice(
       result?.createdNewCast
         ?"新規CASTとして承認しました"
-        :"既存CASTへ紐付けて承認しました";
-
-
-    showNotice(
-      message
+        :"既存CASTへ紐付けて承認しました"
     );
 
 
@@ -3084,26 +3435,20 @@ async function handleApproveRegistrationRequest(
 
 
 /**
- * 却下ボタン
+ * 却下
  */
 async function handleRejectRegistrationRequest(
-  requestId,
-  castName
+  requestId
 ){
 
-  const confirmed=
-    confirm(
-      (
-        castName
-          ?castName+" さんの"
-          :"この"
-      )+
-      "登録申請を却下しますか？"
-    );
+  if(
+    !confirm(
+      "この登録申請を却下しますか？"
+    )
+  ){
 
-
-  if(!confirmed){
     return;
+
   }
 
 
@@ -3145,7 +3490,7 @@ async function handleRejectRegistrationRequest(
 
 
 /**
- * 登録申請承認API
+ * 承認API
  */
 async function approveRequest(
   requestId
@@ -3185,7 +3530,7 @@ async function approveRequest(
 
 
 /**
- * 登録申請却下API
+ * 却下API
  */
 async function rejectRequest(
   requestId
@@ -3229,20 +3574,98 @@ async function rejectRequest(
 /* =====================================================
  * 13. CAST FLOW ナビゲーション
  * ===================================================== */
+
 function setupCastFlowNavigation(){
- const castName=currentCast&&currentCast.castName?currentCast.castName:"";
- const castId=currentCast&&currentCast.castId?currentCast.castId:"";
- const isAdmin=!!(currentCast&&(currentCast.isAdmin===true||currentCast.admin===true));
 
- [["homeCastName",castName||"-"],["drawerCastName",castName||"-"],["homeCastId",castId?"CAST ID : "+castId:""],["drawerCastId",castId?"CAST ID : "+castId:""]].forEach(([id,value])=>{
-  const el=document.getElementById(id);
-  if(el)el.textContent=value;
- });
+  const castName=
+    currentCast &&
+    currentCast.castName
+      ?currentCast.castName
+      :"";
 
- applyModuleVisibility(isAdmin);
 
- // CAST FLOWのアイコンを適用
- applyCastFlowIcons();
+  const castId=
+    currentCast &&
+    currentCast.castId
+      ?currentCast.castId
+      :"";
+
+
+  const isAdmin=
+    !!(
+      currentCast &&
+      (
+        currentCast.isAdmin===true ||
+        currentCast.admin===true
+      )
+    );
+
+
+  [
+    [
+      "homeCastName",
+      castName || "-"
+    ],
+    [
+      "drawerCastName",
+      castName || "-"
+    ],
+    [
+      "homeCastId",
+      castId
+        ?"CAST ID : "+castId
+        :""
+    ],
+    [
+      "drawerCastId",
+      castId
+        ?"CAST ID : "+castId
+        :""
+    ]
+  ].forEach(
+    ([id,value])=>{
+
+      const element=
+        document.getElementById(
+          id
+        );
+
+
+      if(element){
+
+        element.textContent=
+          value;
+
+      }
+
+    }
+  );
+
+
+  applyModuleVisibility(
+    isAdmin
+  );
+
+
+  applyCastFlowIcons();
+
+
+  /*
+   * 管理者だけ
+   * 承認待ち登録申請件数を取得
+   */
+  if(isAdmin){
+
+    refreshRegistrationBadge();
+
+  }else{
+
+    updateRegistrationBadge(
+      0
+    );
+
+  }
+
 }
 
 /* =====================================================
