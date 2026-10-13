@@ -151,27 +151,167 @@
 </section></main>
 </div>
 
-
 <!-- =====================================================
      05. ヘッダー・サイドメニュー
 ===================================================== -->
-<div id="drawerOverlay" class="drawer-overlay" onclick="handleDrawerOverlayClick(event)">
-  <aside id="sideDrawer" class="side-drawer">
-    <div class="drawer-brand"><div class="drawer-logo">CAST FLOW</div><div class="drawer-system">CAST MANAGEMENT SYSTEM</div></div>
-    <div class="drawer-user"><div id="drawerCastName" class="drawer-user-name">-</div><div id="drawerCastId" class="drawer-user-id">-</div></div>
-    <div class="drawer-section-title">MENU</div>
-    <button id="drawerHomeButton" class="drawer-item" data-module="home" onclick="navigateToModule('home')"><span class="drawer-item-icon">⌂</span>ホーム</button>
-    <button id="drawerShiftButton" class="drawer-item" data-module="shift" onclick="navigateToModule('shift')"><span class="drawer-item-icon">▣</span>シフト提出</button>
-    <div id="drawerAdminArea" class="hidden" data-module="admin" data-admin-only="true">
-      <div class="drawer-divider"></div><div class="drawer-section-title">ADMIN</div>
-      <button class="drawer-item" onclick="openAdminPlaceholder('本日の出勤確認')"><span class="drawer-item-icon">✓</span>本日の出勤確認</button>
-      <button class="drawer-item" onclick="openAdminPlaceholder('月間提出状況')"><span class="drawer-item-icon">▤</span>月間提出状況</button>
-      <button class="drawer-item" onclick="openAdminPlaceholder('登録申請')"><span class="drawer-item-icon">♙</span>登録申請</button>
-      <button class="drawer-item" onclick="openAdminPlaceholder('キャスト管理')"><span class="drawer-item-icon">♟</span>キャスト管理</button>
+
+<div
+  id="drawerOverlay"
+  class="drawer-overlay"
+  onclick="handleDrawerOverlayClick(event)"
+>
+
+  <aside
+    id="sideDrawer"
+    class="side-drawer"
+  >
+
+    <div class="drawer-brand">
+
+      <div class="drawer-logo">
+        CAST FLOW
+      </div>
+
+      <div class="drawer-system">
+        CAST MANAGEMENT SYSTEM
+      </div>
+
     </div>
+
+
+    <div class="drawer-user">
+
+      <div
+        id="drawerCastName"
+        class="drawer-user-name"
+      >
+        -
+      </div>
+
+      <div
+        id="drawerCastId"
+        class="drawer-user-id"
+      >
+        -
+      </div>
+
+    </div>
+
+
+    <div class="drawer-section-title">
+      MENU
+    </div>
+
+
+    <button
+      id="drawerHomeButton"
+      class="drawer-item"
+      data-module="home"
+      onclick="navigateToModule('home')"
+    >
+      <span class="drawer-item-icon">
+        ⌂
+      </span>
+
+      ホーム
+    </button>
+
+
+    <button
+      id="drawerShiftButton"
+      class="drawer-item"
+      data-module="shift"
+      onclick="navigateToModule('shift')"
+    >
+      <span class="drawer-item-icon">
+        ▣
+      </span>
+
+      シフト提出
+    </button>
+
+
+    <div
+      id="drawerAdminArea"
+      class="hidden"
+      data-module="admin"
+      data-admin-only="true"
+    >
+
+      <div class="drawer-divider"></div>
+
+      <div class="drawer-section-title">
+        ADMIN
+      </div>
+
+
+      <button
+        class="drawer-item"
+        onclick="openAdminPlaceholder('本日の出勤確認')"
+      >
+        <span class="drawer-item-icon">
+          ✓
+        </span>
+
+        本日の出勤確認
+      </button>
+
+
+      <button
+        class="drawer-item"
+        onclick="openAdminPlaceholder('月間提出状況')"
+      >
+        <span class="drawer-item-icon">
+          ▤
+        </span>
+
+        月間提出状況
+      </button>
+
+
+      <button
+        class="drawer-item"
+        onclick="openAdminRegistrationRequests()"
+      >
+        <span class="drawer-item-icon">
+          ♙
+        </span>
+
+        登録申請
+      </button>
+
+
+      <button
+        class="drawer-item"
+        onclick="openAdminPlaceholder('キャスト管理')"
+      >
+        <span class="drawer-item-icon">
+          ♟
+        </span>
+
+        キャスト管理
+      </button>
+
+    </div>
+
+
     <div class="drawer-divider"></div>
-    <button class="drawer-item" data-module="settings" onclick="openModulePlaceholder('settings')"><span class="drawer-item-icon">⚙</span>設定</button>
+
+
+    <button
+      class="drawer-item"
+      data-module="settings"
+      onclick="openModulePlaceholder('settings')"
+    >
+      <span class="drawer-item-icon">
+        ⚙
+      </span>
+
+      設定
+    </button>
+
   </aside>
+
 </div>
 
 <!-- =====================================================
@@ -2348,34 +2488,594 @@ function showPending(request){
 
 }
 
-
 /* =====================================================
- * 20. 管理者・登録申請API
+ * 20. 管理者・登録申請
  * ===================================================== */
 
+/**
+ * 登録申請管理画面を開く
+ */
+async function openAdminRegistrationRequests(){
+
+  closeDrawer();
+
+
+  const isAdmin=
+    !!(
+      currentCast &&
+      (
+        currentCast.isAdmin===true ||
+        currentCast.admin===true
+      )
+    );
+
+
+  if(!isAdmin){
+
+    showNotice(
+      "管理者権限がありません"
+    );
+
+    return;
+
+  }
+
+
+  document
+    .getElementById("homeView")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+
+  document
+    .getElementById("authApp")
+    .innerHTML=`
+
+      <div class="admin-header">
+
+        <div>
+
+          <div
+            style="
+              font-size:10px;
+              color:#999;
+              letter-spacing:1.5px;
+              font-weight:800;
+            "
+          >
+            ADMIN
+          </div>
+
+          <h1
+            style="
+              text-align:left;
+              margin:4px 0 0;
+            "
+          >
+            登録申請
+          </h1>
+
+        </div>
+
+
+        <div
+          id="registrationRequestCount"
+          class="request-count"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div
+        style="
+          margin-top:10px;
+          color:#888;
+          font-size:12px;
+          line-height:1.6;
+        "
+      >
+        承認待ちの登録申請を確認できます。
+      </div>
+
+
+      <button
+        type="button"
+        onclick="showHomeView()"
+        style="
+          width:100%;
+          min-height:42px;
+          margin-top:18px;
+          border:1px solid #ddd;
+          border-radius:11px;
+          background:#fff;
+          color:#333;
+          font-weight:800;
+        "
+      >
+        ← ホームへ戻る
+      </button>
+
+
+      <div
+        id="registrationRequestsList"
+        style="margin-top:14px;"
+      >
+
+        <div class="loading">
+
+          <div class="spinner"></div>
+
+          登録申請を読み込んでいます...
+
+        </div>
+
+      </div>
+
+    `;
+
+
+  await loadAdminRequests();
+
+}
+
+
+/**
+ * 承認待ち申請一覧を取得
+ */
 async function loadAdminRequests(){
 
-  /*
-   * 現在はAPIだけ保持。
-   * 次の工程で管理画面と接続する。
-   */
+  const container=
+    document.getElementById(
+      "registrationRequestsList"
+    );
+
+
+  const countElement=
+    document.getElementById(
+      "registrationRequestCount"
+    );
+
+
+  if(!container){
+    return;
+  }
+
+
+  container.innerHTML=`
+
+    <div class="loading">
+
+      <div class="spinner"></div>
+
+      登録申請を読み込んでいます...
+
+    </div>
+
+  `;
+
 
   try{
 
-    await callApi({
+    const result=
+      await callApi({
 
-      action:
-        "getRegistrationRequests",
+        action:
+          "getRegistrationRequests",
 
-      idToken:
-        currentIdToken
+        idToken:
+          currentIdToken
 
-    });
+      });
+
+
+    if(
+      !result ||
+      result.success!==true
+    ){
+
+      throw new Error(
+        result?.error ||
+        "登録申請を取得できませんでした"
+      );
+
+    }
+
+
+    const requests=
+      Array.isArray(
+        result.requests
+      )
+        ?result.requests
+        :[];
+
+
+    if(countElement){
+
+      countElement.textContent=
+        requests.length;
+
+    }
+
+
+    renderAdminRegistrationRequests(
+      requests
+    );
+
 
   }catch(error){
 
-    console.warn(
+    console.error(
       error
+    );
+
+
+    container.innerHTML=`
+
+      <div class="error-message">
+
+        ${
+          escapeHtml(
+            error?.message ||
+            String(error)
+          )
+        }
+
+      </div>
+
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="loadAdminRequests()"
+      >
+        再読み込み
+      </button>
+
+    `;
+
+  }
+
+}
+
+
+/**
+ * 登録申請一覧描画
+ */
+function renderAdminRegistrationRequests(
+  requests
+){
+
+  const container=
+    document.getElementById(
+      "registrationRequestsList"
+    );
+
+
+  if(!container){
+    return;
+  }
+
+
+  if(
+    !Array.isArray(requests) ||
+    requests.length===0
+  ){
+
+    container.innerHTML=`
+
+      <div
+        style="
+          margin-top:18px;
+          padding:28px 16px;
+          background:#f5f5f5;
+          border-radius:14px;
+          text-align:center;
+          color:#888;
+          font-size:13px;
+          line-height:1.7;
+        "
+      >
+        現在、承認待ちの登録申請はありません。
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML=
+    requests
+      .map(
+        request=>
+          buildAdminRegistrationRequestHtml(
+            request
+          )
+      )
+      .join("");
+
+}
+
+
+/**
+ * 登録申請カード
+ */
+function buildAdminRegistrationRequestHtml(
+  request
+){
+
+  const requestId=
+    escapeHtml(
+      request?.requestId || ""
+    );
+
+
+  const castId=
+    escapeHtml(
+      request?.castId || ""
+    );
+
+
+  const castName=
+    escapeHtml(
+      request?.castName || ""
+    );
+
+
+  const lineDisplayName=
+    escapeHtml(
+      request?.lineDisplayName || ""
+    );
+
+
+  const requestedAt=
+    escapeHtml(
+      request?.requestedAt || ""
+    );
+
+
+  const registrationType=
+    request?.registrationType==="existing"
+      ?"existing"
+      :"new";
+
+
+  const isExisting=
+    registrationType==="existing";
+
+
+  const typeLabel=
+    isExisting
+      ?"既存CAST"
+      :"新規CAST";
+
+
+  const existingCastName=
+    escapeHtml(
+      request?.existingCastName || ""
+    );
+
+
+  const nameMatches=
+    request?.nameMatches;
+
+
+  const hasNameMismatch=
+    isExisting &&
+    nameMatches===false;
+
+
+  const approveLabel=
+    isExisting
+      ?"このCASTに紐付けて承認"
+      :"新規CASTとして承認";
+
+
+  return `
+
+    <div
+      class="request-item"
+      data-request-id="${requestId}"
+    >
+
+      <div
+        style="
+          display:flex;
+          align-items:flex-start;
+          justify-content:space-between;
+          gap:12px;
+        "
+      >
+
+        <div>
+
+          <div
+            style="
+              font-size:11px;
+              color:#999;
+              margin-bottom:4px;
+            "
+          >
+            ${requestedAt}
+          </div>
+
+
+          <div class="request-name">
+            ${castName || "名称未設定"}
+          </div>
+
+        </div>
+
+
+        <div
+          style="
+            padding:5px 9px;
+            border-radius:999px;
+            background:${isExisting?"#ececec":"#202020"};
+            color:${isExisting?"#333":"#fff"};
+            font-size:10px;
+            font-weight:800;
+            white-space:nowrap;
+          "
+        >
+          ${typeLabel}
+        </div>
+
+      </div>
+
+
+      <div
+        class="request-cast-id"
+        style="margin-top:8px;"
+      >
+        CAST ID : ${castId || "-"}
+      </div>
+
+
+      <div
+        class="request-info"
+        style="margin-top:8px;"
+      >
+        LINE表示名：${lineDisplayName || "-"}
+      </div>
+
+
+      ${
+        isExisting
+          ?`
+
+            <div
+              class="request-info"
+            >
+              登録済みCAST名：
+              ${existingCastName || "-"}
+            </div>
+
+          `
+          :""
+      }
+
+
+      ${
+        hasNameMismatch
+          ?`
+
+            <div
+              class="error-message"
+            >
+              キャスト番号と登録済みキャスト名が一致していません。
+              承認できません。
+            </div>
+
+          `
+          :""
+      }
+
+
+      <div class="request-buttons">
+
+        <button
+          type="button"
+          class="approve-button"
+          onclick="
+            handleApproveRegistrationRequest(
+              '${requestId}'
+            )
+          "
+          ${hasNameMismatch?"disabled":""}
+          style="${hasNameMismatch?"opacity:.4;":""}"
+        >
+          ${approveLabel}
+        </button>
+
+
+        <button
+          type="button"
+          class="reject-button"
+          onclick="
+            handleRejectRegistrationRequest(
+              '${requestId}',
+              '${castName}'
+            )
+          "
+        >
+          却下
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/**
+ * 承認ボタン
+ */
+async function handleApproveRegistrationRequest(
+  requestId
+){
+
+  if(
+    !confirm(
+      "この登録申請を承認しますか？"
+    )
+  ){
+    return;
+  }
+
+
+  try{
+
+    showNotice(
+      "承認処理中..."
+    );
+
+
+    const result=
+      await approveRequest(
+        requestId
+      );
+
+
+    const message=
+      result?.createdNewCast
+        ?"新規CASTとして承認しました"
+        :"既存CASTへ紐付けて承認しました";
+
+
+    showNotice(
+      message
+    );
+
+
+    await loadAdminRequests();
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    showNotice(
+      error?.message ||
+      "登録申請を承認できませんでした"
     );
 
   }
@@ -2383,6 +3083,70 @@ async function loadAdminRequests(){
 }
 
 
+/**
+ * 却下ボタン
+ */
+async function handleRejectRegistrationRequest(
+  requestId,
+  castName
+){
+
+  const confirmed=
+    confirm(
+      (
+        castName
+          ?castName+" さんの"
+          :"この"
+      )+
+      "登録申請を却下しますか？"
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  try{
+
+    showNotice(
+      "却下処理中..."
+    );
+
+
+    await rejectRequest(
+      requestId
+    );
+
+
+    showNotice(
+      "登録申請を却下しました"
+    );
+
+
+    await loadAdminRequests();
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    showNotice(
+      error?.message ||
+      "登録申請を却下できませんでした"
+    );
+
+  }
+
+}
+
+
+/**
+ * 登録申請承認API
+ */
 async function approveRequest(
   requestId
 ){
@@ -2403,11 +3167,12 @@ async function approveRequest(
 
 
   if(
-    !result.success
+    !result ||
+    result.success!==true
   ){
 
     throw new Error(
-      result.error ||
+      result?.error ||
       "登録申請を承認できませんでした"
     );
 
@@ -2419,6 +3184,9 @@ async function approveRequest(
 }
 
 
+/**
+ * 登録申請却下API
+ */
 async function rejectRequest(
   requestId
 ){
@@ -2442,11 +3210,12 @@ async function rejectRequest(
 
 
   if(
-    !result.success
+    !result ||
+    result.success!==true
   ){
 
     throw new Error(
-      result.error ||
+      result?.error ||
       "登録申請を却下できませんでした"
     );
 
@@ -2456,6 +3225,7 @@ async function rejectRequest(
   return result;
 
 }
+
 /* =====================================================
  * 13. CAST FLOW ナビゲーション
  * ===================================================== */
