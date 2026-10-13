@@ -75,19 +75,311 @@
 
     @media(max-width:420px){.main-content{padding-left:12px;padding-right:12px}.fc .fc-daygrid-day-frame{min-height:65px}.modal-card{padding-left:16px;padding-right:16px}.visit-item-grid{grid-template-columns:minmax(0,1fr) 96px}}
 
-    /* =====================================================
-     * 04-05. CAST FLOW ホーム・サイドメニュー
-     * ===================================================== */
-    .app-header-left{display:flex;align-items:center;gap:11px}
-    .menu-button{width:38px;height:38px;border:0;border-radius:10px;background:#2a2a2a;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:0}
-    .menu-button span{display:block;width:17px;height:2px;border-radius:99px;background:#fff}
-    .home-view{min-height:calc(100vh - 66px)}
-    .home-hero{margin-bottom:22px}.home-hero-label{font-size:9px;letter-spacing:1.8px;color:#999}.home-hero h1{margin:5px 0 7px;font-size:30px}.home-hero p{margin:0;color:#777;font-size:12px;line-height:1.7}
-    .home-user-card{background:#202020;color:#fff;border-radius:19px;padding:20px;margin-bottom:14px}.home-user-label{font-size:9px;letter-spacing:1.6px;opacity:.55}.home-user-name{margin-top:6px;font-size:25px;font-weight:900}.home-user-id{margin-top:5px;font-size:11px;opacity:.55}
-    .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.home-menu-card{min-height:130px;border:0;border-radius:17px;background:#fff;box-shadow:0 4px 18px #0000000b;padding:17px;text-align:left;color:#222}.home-menu-card:active{transform:scale(.98)}.home-menu-icon{width:38px;height:38px;border-radius:11px;background:#222;color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:18px}.home-menu-card strong{display:block;font-size:15px}.home-menu-card small{display:block;margin-top:5px;color:#999;font-size:9px;line-height:1.5}
-    .drawer-overlay{position:fixed;inset:0;z-index:1200;background:#0008;opacity:0;pointer-events:none;transition:.22s}.drawer-overlay.open{opacity:1;pointer-events:auto}.side-drawer{position:absolute;left:0;top:0;bottom:0;width:min(82vw,330px);background:#fff;transform:translateX(-102%);transition:.25s ease;padding:calc(22px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));overflow-y:auto}.drawer-overlay.open .side-drawer{transform:translateX(0)}
-    .drawer-brand{padding:5px 8px 21px}.drawer-logo{font-size:22px;font-weight:900;letter-spacing:2px}.drawer-system{margin-top:3px;color:#999;font-size:8px;letter-spacing:1.4px}.drawer-user{border-radius:14px;background:#f3f3f3;padding:13px 14px;margin-bottom:18px}.drawer-user-name{font-size:16px;font-weight:900}.drawer-user-id{margin-top:3px;font-size:9px;color:#999}.drawer-section-title{margin:18px 10px 8px;font-size:8px;color:#aaa;letter-spacing:1.5px;font-weight:900}.drawer-item{width:100%;min-height:48px;border:0;border-radius:11px;background:transparent;display:flex;align-items:center;gap:13px;padding:0 12px;text-align:left;font-weight:800;color:#333}.drawer-item:active,.drawer-item.active{background:#ededed}.drawer-item-icon{width:26px;text-align:center;font-size:17px}.drawer-divider{height:1px;background:#eee;margin:14px 7px}
+/* =====================================================
+ * 04-05. CAST FLOW ホーム・サイドメニュー
+ * ===================================================== */
 
+.app-header-left{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+
+/* =====================================================
+ * ハンバーガーメニュー
+ * ===================================================== */
+
+.menu-button{
+  position:relative;
+  width:38px;
+  height:38px;
+  border:0;
+  border-radius:10px;
+  background:#2a2a2a;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:4px;
+  padding:0;
+  overflow:visible;
+}
+
+
+.menu-button span{
+  display:block;
+  width:17px;
+  height:2px;
+  border-radius:99px;
+  background:#fff;
+}
+
+
+/*
+ * 未処理通知あり
+ */
+.menu-button.has-notification::after{
+  content:"";
+  position:absolute;
+  top:-3px;
+  right:-3px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#e53935;
+  border:2px solid #fff;
+  box-sizing:content-box;
+}
+
+
+/* =====================================================
+ * ホーム
+ * ===================================================== */
+
+.home-view{
+  min-height:calc(100vh - 66px);
+}
+
+
+.home-hero{
+  margin-bottom:22px;
+}
+
+
+.home-hero-label{
+  font-size:9px;
+  letter-spacing:1.8px;
+  color:#999;
+}
+
+
+.home-hero h1{
+  margin:5px 0 7px;
+  font-size:30px;
+}
+
+
+.home-hero p{
+  margin:0;
+  color:#777;
+  font-size:12px;
+  line-height:1.7;
+}
+
+
+.home-user-card{
+  background:#202020;
+  color:#fff;
+  border-radius:19px;
+  padding:20px;
+  margin-bottom:14px;
+}
+
+
+.home-user-label{
+  font-size:9px;
+  letter-spacing:1.6px;
+  opacity:.55;
+}
+
+
+.home-user-name{
+  margin-top:6px;
+  font-size:25px;
+  font-weight:900;
+}
+
+
+.home-user-id{
+  margin-top:5px;
+  font-size:11px;
+  opacity:.55;
+}
+
+
+.home-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+}
+
+
+.home-menu-card{
+  min-height:130px;
+  border:0;
+  border-radius:17px;
+  background:#fff;
+  box-shadow:0 4px 18px #0000000b;
+  padding:17px;
+  text-align:left;
+  color:#222;
+}
+
+
+.home-menu-card:active{
+  transform:scale(.98);
+}
+
+
+.home-menu-icon{
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:#222;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:17px;
+  margin-bottom:18px;
+}
+
+
+.home-menu-card strong{
+  display:block;
+  font-size:15px;
+}
+
+
+.home-menu-card small{
+  display:block;
+  margin-top:5px;
+  color:#999;
+  font-size:9px;
+  line-height:1.5;
+}
+
+
+/* =====================================================
+ * サイドメニュー
+ * ===================================================== */
+
+.drawer-overlay{
+  position:fixed;
+  inset:0;
+  z-index:1200;
+  background:#0008;
+  opacity:0;
+  pointer-events:none;
+  transition:.22s;
+}
+
+
+.drawer-overlay.open{
+  opacity:1;
+  pointer-events:auto;
+}
+
+
+.side-drawer{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:min(82vw,330px);
+  background:#fff;
+  transform:translateX(-102%);
+  transition:.25s ease;
+  padding:
+    calc(22px + env(safe-area-inset-top,0px))
+    16px
+    calc(24px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;
+}
+
+
+.drawer-overlay.open .side-drawer{
+  transform:translateX(0);
+}
+
+
+.drawer-brand{
+  padding:5px 8px 21px;
+}
+
+
+.drawer-logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+
+.drawer-system{
+  margin-top:3px;
+  color:#999;
+  font-size:8px;
+  letter-spacing:1.4px;
+}
+
+
+.drawer-user{
+  border-radius:14px;
+  background:#f3f3f3;
+  padding:13px 14px;
+  margin-bottom:18px;
+}
+
+
+.drawer-user-name{
+  font-size:16px;
+  font-weight:900;
+}
+
+
+.drawer-user-id{
+  margin-top:3px;
+  font-size:9px;
+  color:#999;
+}
+
+
+.drawer-section-title{
+  margin:18px 10px 8px;
+  font-size:8px;
+  color:#aaa;
+  letter-spacing:1.5px;
+  font-weight:900;
+}
+
+
+.drawer-item{
+  position:relative;
+  width:100%;
+  min-height:48px;
+  border:0;
+  border-radius:11px;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:0 12px;
+  text-align:left;
+  font-weight:800;
+  color:#333;
+}
+
+
+.drawer-item:active,
+.drawer-item.active{
+  background:#ededed;
+}
+
+
+.drawer-item-icon{
+  width:26px;
+  text-align:center;
+  font-size:17px;
+}
+
+
+.drawer-divider{
+  height:1px;
+  background:#eee;
+  margin:14px 7px;
+}
   </style>
 </head>
 <body>
@@ -2732,7 +3024,7 @@ function isCurrentCastAdmin(){
 
 
 /**
- * 登録申請の赤丸を更新
+ * 登録申請通知バッジ更新
  */
 function updateRegistrationBadge(
   count
@@ -2766,6 +3058,10 @@ function updateRegistrationBadge(
       :String(number);
 
 
+  /*
+   * ホーム管理カード
+   * サイドメニュー登録申請
+   */
   [
     "homeRegistrationBadge",
     "drawerRegistrationBadge"
@@ -2795,14 +3091,33 @@ function updateRegistrationBadge(
     }
   );
 
+
+  /*
+   * 全画面のハンバーガーメニュー
+   *
+   * 件数表示ではなく
+   * 小さい赤丸のみ表示
+   */
+  document
+    .querySelectorAll(
+      ".menu-button"
+    )
+    .forEach(
+      button=>{
+
+        button.classList.toggle(
+          "has-notification",
+          number>0
+        );
+
+      }
+    );
+
 }
 
 
 /**
- * 承認待ち件数だけ更新
- *
- * 管理者画面を開いていなくても
- * ホームとサイドメニューに赤丸を表示する。
+ * 承認待ち件数のみ更新
  */
 async function refreshRegistrationBadge(){
 
@@ -2869,7 +3184,7 @@ async function refreshRegistrationBadge(){
 
 
 /**
- * 登録申請管理画面を開く
+ * 登録申請管理画面
  */
 async function openAdminRegistrationRequests(){
 
@@ -2999,7 +3314,7 @@ async function openAdminRegistrationRequests(){
 
 
 /**
- * 承認待ち申請一覧を取得
+ * 承認待ち一覧取得
  */
 async function loadAdminRequests(){
 
@@ -3068,6 +3383,10 @@ async function loadAdminRequests(){
         :[];
 
 
+    /*
+     * 取得した件数を
+     * 全通知バッジへ反映
+     */
     updateRegistrationBadge(
       requests.length
     );
@@ -3123,7 +3442,7 @@ async function loadAdminRequests(){
 
 
 /**
- * 登録申請一覧描画
+ * 一覧描画
  */
 function renderAdminRegistrationRequests(
   requests
@@ -3244,12 +3563,6 @@ function buildAdminRegistrationRequestHtml(
     nameMatches===false;
 
 
-  const approveLabel=
-    isExisting
-      ?"このCASTに紐付けて承認"
-      :"新規CASTとして承認";
-
-
   return `
 
     <div
@@ -3355,7 +3668,7 @@ function buildAdminRegistrationRequestHtml(
           ${hasNameMismatch?"disabled":""}
           style="${hasNameMismatch?"opacity:.4;":""}"
         >
-          ${approveLabel}
+          承認
         </button>
 
 
@@ -3401,19 +3714,21 @@ async function handleApproveRegistrationRequest(
     );
 
 
-    const result=
-      await approveRequest(
-        requestId
-      );
-
-
-    showNotice(
-      result?.createdNewCast
-        ?"新規CASTとして承認しました"
-        :"既存CASTへ紐付けて承認しました"
+    await approveRequest(
+      requestId
     );
 
 
+    showNotice(
+      "登録申請を承認しました"
+    );
+
+
+    /*
+     * 一覧再取得
+     * ↓
+     * 赤丸件数も同時更新
+     */
     await loadAdminRequests();
 
 
