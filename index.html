@@ -2233,13 +2233,64 @@ function showPending(request){
 
   document.getElementById("authApp").innerHTML=`
 
-    <div class="status-icon pending">
-      ⏳
+    <div
+      class="status-icon pending"
+      style="
+        background:#fff;
+        border:1px solid #e8e8e8;
+      "
+    >
+
+      <svg
+        viewBox="0 0 24 24"
+        width="32"
+        height="32"
+        aria-hidden="true"
+      >
+
+        <path
+          fill="#202020"
+          d="
+            M6 3
+            h12
+            v3
+            c0 2.7-1.7 4.5-3.7 6
+            2 1.5 3.7 3.3 3.7 6
+            v3
+            H6
+            v-3
+            c0-2.7 1.7-4.5 3.7-6
+            C7.7 10.5 6 8.7 6 6
+            V3
+            Z
+
+            M8 5
+            v1
+            c0 2.1 1.6 3.5 4 5
+            2.4-1.5 4-2.9 4-5
+            V5
+            H8
+            Z
+
+            M12 13
+            c-2.4 1.5-4 2.9-4 5
+            v1
+            h8
+            v-1
+            c0-2.1-1.6-3.5-4-5
+            Z
+          "
+        />
+
+      </svg>
+
     </div>
+
 
     <h1>
       登録申請済み
     </h1>
+
 
     <div class="description">
       登録申請を受け付けました。<br>
