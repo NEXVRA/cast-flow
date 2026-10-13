@@ -1903,15 +1903,488 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 function showNotice(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3000)}
 function setLoadingMessage(msg){const el=document.getElementById("loadingMessage");if(el)el.textContent=msg||"読み込んでいます…"}
 function hideLoading(){document.getElementById("loadingScreen").classList.add("hide")}
-function showAuthLoading(msg){document.getElementById("authApp").innerHTML=`<div class="loading"><div class="spinner"></div>${escapeHtml(msg)}</div>`}
-function showError(msg){document.getElementById("authView").classList.remove("hidden");document.getElementById("shiftView").classList.add("hidden");document.getElementById("authApp").innerHTML=`<div class="status-icon error">!</div><h1>エラー</h1><div class="description">CAST FLOWを開けませんでした</div><div class="error-message">${escapeHtml(msg)}</div>`}
-function showRegistrationForm(){document.getElementById("authApp").innerHTML=`<div class="status-icon">✓</div><h1>LINE認証成功</h1><div class="description">初回登録を行います。<br>CASTに登録されている名前を入力してください。</div><div class="form-group"><label>キャスト名</label><input id="castName" placeholder="例：えま" autocomplete="off"></div><button id="submitButton" class="primary-button" onclick="submitRegistration()">登録申請する</button><div id="formError" class="error-message hidden"></div>`}
-async function submitRegistration(){const input=document.getElementById("castName"),b=document.getElementById("submitButton"),er=document.getElementById("formError"),name=input.value.trim();if(!name){er.textContent="お名前を入力してください";er.classList.remove("hidden");return}b.disabled=true;b.textContent="申請中...";try{const r=await callApi({action:"submitRegistrationRequest",idToken:currentIdToken,castName:name});if(!r.success)throw new Error(r.error||"登録申請に失敗しました");if(r.alreadyRegistered){await checkAuthStatus();return}showPending({castName:r.castName||name})}catch(e){er.textContent=e.message||String(e);er.classList.remove("hidden");b.disabled=false;b.textContent="登録申請する"}}
-function showPending(r){document.getElementById("authApp").innerHTML=`<div class="status-icon pending">⏳</div><h1>登録申請済み</h1><div class="description">登録申請を受け付けました。<br>管理者の承認をお待ちください。</div>${r&&r.castName?`<div class="user-name">${escapeHtml(r.castName)}</div>`:""}<div class="badge">承認待ち</div>`}
-async function loadAdminRequests(){/* 管理者承認機能は認証ロジックを保持。管理画面を別導線にするまでは非表示。 */ try{await callApi({action:"getRegistrationRequests",idToken:currentIdToken})}catch(e){console.warn(e)}}
-async function approveRequest(id){const r=await callApi({action:"approveRegistrationRequest",idToken:currentIdToken,requestId:id});if(!r.success)throw new Error(r.error)}
-async function rejectRequest(id){const r=await callApi({action:"rejectRegistrationRequest",idToken:currentIdToken,requestId:id,note:""});if(!r.success)throw new Error(r.error)}
+/* =====================================================
+ * 16. 共通表示
+ * ===================================================== */
 
+function showAuthLoading(msg){
+
+  document.getElementById("authApp").innerHTML=`
+    <div class="loading">
+      <div class="spinner"></div>
+      ${escapeHtml(msg)}
+    </div>
+  `;
+
+}
+
+
+function showError(msg){
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+
+  document.getElementById("authApp").innerHTML=`
+    <div class="status-icon error">!</div>
+
+    <h1>エラー</h1>
+
+    <div class="description">
+      CAST FLOWを開けませんでした
+    </div>
+
+    <div class="error-message">
+      ${escapeHtml(msg)}
+    </div>
+  `;
+
+}
+
+
+/* =====================================================
+ * 17. 初回登録画面
+ * ===================================================== */
+
+function showRegistrationForm(){
+
+  document.getElementById("authApp").innerHTML=`
+
+    <div class="status-icon">
+      ✓
+    </div>
+
+    <h1>
+      LINE認証成功
+    </h1>
+
+    <div class="description">
+      初回登録を行います。<br>
+      キャスト番号とキャスト名を入力してください。
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        キャスト番号
+      </label>
+
+      <input
+        id="castId"
+        type="text"
+        placeholder="キャスト番号"
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        キャスト名
+      </label>
+
+      <input
+        id="castName"
+        type="text"
+        placeholder="例：えま"
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <button
+      id="submitButton"
+      class="primary-button"
+      onclick="submitRegistration()"
+    >
+      登録申請する
+    </button>
+
+
+    <div
+      id="formError"
+      class="error-message hidden"
+    ></div>
+
+  `;
+
+}
+
+
+/* =====================================================
+ * 18. 初回登録申請
+ * ===================================================== */
+
+async function submitRegistration(){
+
+  const castIdInput=
+    document.getElementById(
+      "castId"
+    );
+
+  const castNameInput=
+    document.getElementById(
+      "castName"
+    );
+
+  const button=
+    document.getElementById(
+      "submitButton"
+    );
+
+  const errorBox=
+    document.getElementById(
+      "formError"
+    );
+
+
+  const castId=
+    String(
+      castIdInput?.value || ""
+    ).trim();
+
+
+  const castName=
+    String(
+      castNameInput?.value || ""
+    ).trim();
+
+
+  /*
+   * 前回のエラー表示を消す
+   */
+  errorBox.classList.add(
+    "hidden"
+  );
+
+  errorBox.textContent=
+    "";
+
+
+  /*
+   * キャスト番号チェック
+   */
+  if(!castId){
+
+    errorBox.textContent=
+      "キャスト番号を入力してください";
+
+    errorBox.classList.remove(
+      "hidden"
+    );
+
+    castIdInput.focus();
+
+    return;
+
+  }
+
+
+  /*
+   * キャスト名チェック
+   */
+  if(!castName){
+
+    errorBox.textContent=
+      "キャスト名を入力してください";
+
+    errorBox.classList.remove(
+      "hidden"
+    );
+
+    castNameInput.focus();
+
+    return;
+
+  }
+
+
+  /*
+   * 二重送信防止
+   */
+  button.disabled=
+    true;
+
+  button.textContent=
+    "申請中...";
+
+
+  try{
+
+    const result=
+      await callApi({
+
+        action:
+          "submitRegistrationRequest",
+
+        idToken:
+          currentIdToken,
+
+        castId:
+          castId,
+
+        castName:
+          castName
+
+      });
+
+
+    if(
+      !result ||
+      result.success !== true
+    ){
+
+      throw new Error(
+        result?.error ||
+        "登録申請に失敗しました"
+      );
+
+    }
+
+
+    /*
+     * すでに登録済みだった場合
+     */
+    if(
+      result.alreadyRegistered
+    ){
+
+      await checkAuthStatus();
+
+      return;
+
+    }
+
+
+    /*
+     * 承認待ち画面へ
+     */
+    showPending({
+
+      castId:
+        result.castId ||
+        castId,
+
+      castName:
+        result.castName ||
+        castName,
+
+      lineDisplayName:
+        result.lineDisplayName ||
+        currentLineDisplayName
+
+    });
+
+
+  }catch(error){
+
+    console.error(
+      error
+    );
+
+
+    errorBox.textContent=
+      error?.message ||
+      String(error);
+
+
+    errorBox.classList.remove(
+      "hidden"
+    );
+
+
+    button.disabled=
+      false;
+
+    button.textContent=
+      "登録申請する";
+
+  }
+
+}
+
+
+/* =====================================================
+ * 19. 登録承認待ち画面
+ * ===================================================== */
+
+function showPending(request){
+
+  const castId=
+    request?.castId
+      ?escapeHtml(request.castId)
+      :"";
+
+
+  const castName=
+    request?.castName
+      ?escapeHtml(request.castName)
+      :"";
+
+
+  document.getElementById("authApp").innerHTML=`
+
+    <div class="status-icon pending">
+      ⏳
+    </div>
+
+    <h1>
+      登録申請済み
+    </h1>
+
+    <div class="description">
+      登録申請を受け付けました。<br>
+      管理者の承認をお待ちください。
+    </div>
+
+
+    ${
+      castName
+        ?`
+          <div class="user-name">
+            ${castName}
+          </div>
+        `
+        :""
+    }
+
+
+    ${
+      castId
+        ?`
+          <div class="cast-id">
+            CAST ID : ${castId}
+          </div>
+        `
+        :""
+    }
+
+
+    <div class="badge">
+      承認待ち
+    </div>
+
+  `;
+
+}
+
+
+/* =====================================================
+ * 20. 管理者・登録申請API
+ * ===================================================== */
+
+async function loadAdminRequests(){
+
+  /*
+   * 現在はAPIだけ保持。
+   * 次の工程で管理画面と接続する。
+   */
+
+  try{
+
+    await callApi({
+
+      action:
+        "getRegistrationRequests",
+
+      idToken:
+        currentIdToken
+
+    });
+
+  }catch(error){
+
+    console.warn(
+      error
+    );
+
+  }
+
+}
+
+
+async function approveRequest(
+  requestId
+){
+
+  const result=
+    await callApi({
+
+      action:
+        "approveRegistrationRequest",
+
+      idToken:
+        currentIdToken,
+
+      requestId:
+        requestId
+
+    });
+
+
+  if(
+    !result.success
+  ){
+
+    throw new Error(
+      result.error ||
+      "登録申請を承認できませんでした"
+    );
+
+  }
+
+
+  return result;
+
+}
+
+
+async function rejectRequest(
+  requestId
+){
+
+  const result=
+    await callApi({
+
+      action:
+        "rejectRegistrationRequest",
+
+      idToken:
+        currentIdToken,
+
+      requestId:
+        requestId,
+
+      note:
+        ""
+
+    });
+
+
+  if(
+    !result.success
+  ){
+
+    throw new Error(
+      result.error ||
+      "登録申請を却下できませんでした"
+    );
+
+  }
+
+
+  return result;
+
+}
 /* =====================================================
  * 13. CAST FLOW ナビゲーション
  * ===================================================== */
