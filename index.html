@@ -7234,7 +7234,19 @@ function openAdminPlaceholder(title) {
 function openSettingsPlaceholder() {
   openModulePlaceholder("settings");
 }
-function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+/* =====================================================
+ * 35. HTMLエスケープ処理
+ * ===================================================== */
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 </script>
 </body>
 </html>
