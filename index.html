@@ -2812,7 +2812,7 @@ let customerVisits = [];
 let customerVisitsLoading = false;
 
 /* =====================================================
- * 18. アプリ起動
+ * 18. アプリ起動・API通信・認証確認
  * ===================================================== */
 
 /* ---------- 初期起動 ---------- */
@@ -2861,21 +2861,71 @@ async function initializeApp() {
   }
 }
 
- const params=new URLSearchParams();
- Object.keys(data).forEach(k=>params.append(k,data[k]==null?"":String(data[k])));
- const response=await fetch(GAS_API_URL,{method:"POST",body:params});
- const text=await response.text();
- try{return JSON.parse(text)}catch(e){throw new Error("サーバーから正しい応答を取得できませんでした")}
+
+/* ---------- GAS API通信 ---------- */
+
+async function callApi(data) {
+  const params = new URLSearchParams();
+
+  Object.keys(data).forEach(key => {
+    params.append(
+      key,
+      data[key] == null ? "" : String(data[key])
+    );
+  });
+
+  const response = await fetch(GAS_API_URL, {
+    method: "POST",
+    body: params
+  });
+
+  const text = await response.text();
+
+  try {
+    return JSON.parse(text);
+
+  } catch (error) {
+    throw new Error(
+      "サーバーから正しい応答を取得できませんでした"
+    );
+  }
 }
-async function checkAuthStatus(){
- setLoadingMessage("登録情報を確認しています…");
- showAuthLoading("登録情報を確認しています...");
- const r=await callApi({action:"authStatus",idToken:currentIdToken});
- if(!r.success)throw new Error(r.error||"認証状態を確認できませんでした");
- if(r.registered){currentCast=r.cast||{};await startRegisteredApp();return}
- currentLineDisplayName=r.lineDisplayName||"";
- if(r.pending){showPending(r.pendingRequest);hideLoading();return}
- showRegistrationForm();hideLoading();
+
+
+/* ---------- 登録状態確認 ---------- */
+
+async function checkAuthStatus() {
+  setLoadingMessage("登録情報を確認しています…");
+  showAuthLoading("登録情報を確認しています...");
+
+  const result = await callApi({
+    action: "authStatus",
+    idToken: currentIdToken
+  });
+
+  if (!result.success) {
+    throw new Error(
+      result.error || "認証状態を確認できませんでした"
+    );
+  }
+
+  if (result.registered) {
+    currentCast = result.cast || {};
+    await startRegisteredApp();
+    return;
+  }
+
+  currentLineDisplayName =
+    result.lineDisplayName || "";
+
+  if (result.pending) {
+    showPending(result.pendingRequest);
+    hideLoading();
+    return;
+  }
+
+  showRegistrationForm();
+  hideLoading();
 }
 /* =====================================================
  * 11-A. 登録済みアプリ起動
