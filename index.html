@@ -2683,35 +2683,133 @@ function applyCastFlowIcons() {
 }
 
 /* =====================================================
- * 11. 基本設定・状態管理
+ * 17. 基本設定・状態管理
  * ===================================================== */
-const LIFF_ID="2011488723-gI54Hlt3";
-const GAS_API_URL="https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec";
 
-// CAST FLOW Core設定。将来は同じ形の設定をGASから返し、店舗単位で上書きする。
-const CAST_FLOW_CONFIG={
- store:{id:"royal",name:"ROYAL"},
- modules:{
-  home:{enabled:true,label:"ホーム"},
-  shift:{enabled:true,label:"シフト提出"},
-  attendance:{enabled:true,label:"出勤確認"},
-  admin:{enabled:true,label:"管理",adminOnly:true},
-  settings:{enabled:true,label:"設定"},
-  payroll:{enabled:false,label:"給与明細",adminOnly:false},
-  dispatch:{enabled:false,label:"送り管理",adminOnly:true},
-  dataImport:{enabled:false,label:"データ取込",adminOnly:true},
-  blog:{enabled:false,label:"ブログ連携",adminOnly:true}
- }
+/* ---------- 接続設定 ---------- */
+
+const LIFF_ID = "2011488723-gI54Hlt3";
+
+const GAS_API_URL =
+  "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec";
+
+
+/* ---------- CAST FLOW Core設定 ---------- */
+
+// 将来は同じ形の設定をGASから返し、店舗単位で上書きする。
+const CAST_FLOW_CONFIG = {
+  store: {
+    id: "royal",
+    name: "ROYAL"
+  },
+
+  modules: {
+    home: {
+      enabled: true,
+      label: "ホーム"
+    },
+
+    shift: {
+      enabled: true,
+      label: "シフト提出"
+    },
+
+    attendance: {
+      enabled: true,
+      label: "出勤確認"
+    },
+
+    admin: {
+      enabled: true,
+      label: "管理",
+      adminOnly: true
+    },
+
+    settings: {
+      enabled: true,
+      label: "設定"
+    },
+
+    payroll: {
+      enabled: false,
+      label: "給与明細",
+      adminOnly: false
+    },
+
+    dispatch: {
+      enabled: false,
+      label: "送り管理",
+      adminOnly: true
+    },
+
+    dataImport: {
+      enabled: false,
+      label: "データ取込",
+      adminOnly: true
+    },
+
+    blog: {
+      enabled: false,
+      label: "ブログ連携",
+      adminOnly: true
+    }
+  }
 };
-let currentIdToken="",currentLineDisplayName="",currentCast=null;
-let calendar=null,selectedDate="",selectedStatus="working",isSaving=false,isEndTimeLast=false,isLoadingMonth=false,currentMonthSubmitted=false;
-let currentCastDefaults={defaultStartTime:"20:00",defaultEndTime:"01:00"};
-const shiftEntries={};
-let bulkMode="selectedDates",bulkStatus="working",bulkWeekdays=[],multiSelectedDates=[],isMultiSelectMode=false,isBulkSaving=false,isBulkEndTimeLast=false,toastTimer=null;
-let attendanceChangeDate="";
-let suppressNextMonthAutoLoad=false;
-let customerVisits=[];
-let customerVisitsLoading=false;
+
+
+/* ---------- 認証・CAST ---------- */
+
+let currentIdToken = "";
+let currentLineDisplayName = "";
+let currentCast = null;
+
+
+/* ---------- カレンダー・シフト ---------- */
+
+let calendar = null;
+let selectedDate = "";
+let selectedStatus = "working";
+
+let isSaving = false;
+let isEndTimeLast = false;
+let isLoadingMonth = false;
+let currentMonthSubmitted = false;
+
+let currentCastDefaults = {
+  defaultStartTime: "20:00",
+  defaultEndTime: "01:00"
+};
+
+const shiftEntries = {};
+
+
+/* ---------- 一括入力 ---------- */
+
+let bulkMode = "selectedDates";
+let bulkStatus = "working";
+let bulkWeekdays = [];
+let multiSelectedDates = [];
+
+let isMultiSelectMode = false;
+let isBulkSaving = false;
+let isBulkEndTimeLast = false;
+
+
+/* ---------- 共通UI ---------- */
+
+let toastTimer = null;
+
+
+/* ---------- 出勤確認 ---------- */
+
+let attendanceChangeDate = "";
+let suppressNextMonthAutoLoad = false;
+
+
+/* ---------- 同伴・来店予定 ---------- */
+
+let customerVisits = [];
+let customerVisitsLoading = false;
 
 window.addEventListener("load",initializeApp);
 setTimeout(()=>{
