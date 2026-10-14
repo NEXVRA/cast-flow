@@ -1488,13 +1488,36 @@ body.modal-open {
   </style>
 </head>
 <body>
-<div id="loadingScreen" class="loading-screen">
-  <div class="loading-spinner" aria-hidden="true"></div>
-  <div class="loading-logo">CAST FLOW</div>
-  <div id="loadingMessage" class="loading-text">LINEと接続しています…</div>
-  <div class="loading-dots"><i></i><i></i><i></i></div>
-</div>
+<!-- =====================================================
+     10. ローディング画面
+===================================================== -->
 
+<div
+  id="loadingScreen"
+  class="loading-screen"
+>
+  <div
+    class="loading-spinner"
+    aria-hidden="true"
+  ></div>
+
+  <div class="loading-logo">
+    CAST FLOW
+  </div>
+
+  <div
+    id="loadingMessage"
+    class="loading-text"
+  >
+    LINEと接続しています…
+  </div>
+
+  <div class="loading-dots">
+    <i></i>
+    <i></i>
+    <i></i>
+  </div>
+</div>
 <div id="authView" class="auth-wrap">
   <div class="auth-logo">CAST FLOW</div><div class="auth-sub">CAST MANAGEMENT SYSTEM</div>
   <div id="authApp" class="auth-card"><div class="loading"><div class="spinner"></div>LINE認証中...</div></div>
