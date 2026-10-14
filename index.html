@@ -3749,432 +3749,321 @@ function selectStatus(s) {
     );
 }
 /* =====================================================
- * 12. 同伴・来店予定・時間入力
+ * 23. 同伴・来店予定・時間入力
  * ===================================================== */
 
-function addCustomerVisit(type){
+/* ---------- 予定追加 ---------- */
 
+function addCustomerVisit(type) {
   customerVisits.push({
     type,
-    customerName:"",
-    time:"",
-    note:""
+    customerName: "",
+    time: "",
+    note: ""
   });
 
   renderCustomerVisits();
-
 }
 
 
-function removeCustomerVisit(index){
+/* ---------- 予定削除 ---------- */
 
-  customerVisits.splice(
-    index,
-    1
-  );
-
+function removeCustomerVisit(index) {
+  customerVisits.splice(index, 1);
   renderCustomerVisits();
-
 }
 
 
-function updateCustomerVisit(
-  index,
-  field,
-  value
-){
+/* ---------- 予定内容更新 ---------- */
 
-  if(!customerVisits[index])return;
-
-  customerVisits[index][field]=value;
-
-}
-
-
-/* =====================================================
- * 同伴・来店 時間取得
- * ===================================================== */
-
-function getVisitTimePart(
-  time,
-  part
-){
-
-  const m=
-    String(time||"")
-      .match(
-        /^(\d{1,2}):(\d{2})$/
-      );
-
-  if(!m)return "";
-
-  return part==="hour"
-    ?m[1].padStart(2,"0")
-    :m[2];
-
-}
-
-
-/* =====================================================
- * 同伴・来店 時間フォーカス
- * ===================================================== */
-
-function handleVisitTimeFocus(el){
-
-  /*
-   * 既存の数字を全選択。
-   * そのまま数字を入力すれば上書きできる。
-   */
-
-  setTimeout(()=>{
-
-    try{
-      el.select();
-    }catch(e){}
-
-  },0);
-
-}
-
-
-/* =====================================================
- * 同伴・来店 時間入力
- * ===================================================== */
-
-function handleVisitTimeInput(
-  index,
-  part,
-  el
-){
-
-  el.value=
-    el.value
-      .replace(/\D/g,"")
-      .slice(0,2);
-
-
-  const item=
-    customerVisits[index];
-
-  if(!item)return;
-
-
-  const m=
-    String(item.time||"")
-      .match(
-        /^(\d{0,2}):(\d{0,2})$/
-      );
-
-
-  let hour=
-    m
-      ?m[1]
-      :"";
-
-  let minute=
-    m
-      ?m[2]
-      :"";
-
-
-  if(part==="hour"){
-
-    hour=el.value;
-
-  }else{
-
-    minute=el.value;
-
+function updateCustomerVisit(index, field, value) {
+  if (!customerVisits[index]) {
+    return;
   }
 
-
-  item.time=
-    hour||minute
-      ?hour+":"+minute
-      :"";
+  customerVisits[index][field] = value;
+}
 
 
-  /*
-   * HHを2桁入力
-   * ↓
-   * MMへ自動移動
-   */
+/* ---------- 時間取得 ---------- */
 
-  if(
-    part==="hour" &&
-    el.value.length===2
-  ){
+function getVisitTimePart(time, part) {
+  const m =
+    String(time || "")
+      .match(/^(\d{1,2}):(\d{2})$/);
 
-    const wrapper=
-      el.closest(
-        ".visit-time-manual"
-      );
+  if (!m) {
+    return "";
+  }
 
-    const inputs=
+  return part === "hour"
+    ? m[1].padStart(2, "0")
+    : m[2];
+}
+
+
+/* ---------- 時間入力フォーカス ---------- */
+
+function handleVisitTimeFocus(el) {
+  // 既存の数字を全選択して、そのまま上書きできるようにする
+  setTimeout(() => {
+    try {
+      el.select();
+    } catch (e) {}
+  }, 0);
+}
+
+
+/* ---------- 時間入力 ---------- */
+
+function handleVisitTimeInput(index, part, el) {
+  el.value =
+    el.value
+      .replace(/\D/g, "")
+      .slice(0, 2);
+
+  const item = customerVisits[index];
+
+  if (!item) {
+    return;
+  }
+
+  const m =
+    String(item.time || "")
+      .match(/^(\d{0,2}):(\d{0,2})$/);
+
+  let hour =
+    m
+      ? m[1]
+      : "";
+
+  let minute =
+    m
+      ? m[2]
+      : "";
+
+  if (part === "hour") {
+    hour = el.value;
+
+  } else {
+    minute = el.value;
+  }
+
+  item.time =
+    hour || minute
+      ? hour + ":" + minute
+      : "";
+
+
+  // HHを2桁入力したらMMへ自動移動
+  if (
+    part === "hour" &&
+    el.value.length === 2
+  ) {
+    const wrapper =
+      el.closest(".visit-time-manual");
+
+    const inputs =
       wrapper
-        ?wrapper.querySelectorAll(
-          ".visit-time-part"
-        )
-        :[];
+        ? wrapper.querySelectorAll(".visit-time-part")
+        : [];
 
-
-    if(inputs.length>=2){
-
-      const minuteInput=
-        inputs[1];
+    if (inputs.length >= 2) {
+      const minuteInput = inputs[1];
 
       minuteInput.focus();
 
-      setTimeout(()=>{
-
-        try{
+      setTimeout(() => {
+        try {
           minuteInput.select();
-        }catch(e){}
-
-      },0);
-
+        } catch (e) {}
+      }, 0);
     }
-
   }
-
 }
 
 
-/* =====================================================
- * 同伴・来店 Backspace移動
- * ===================================================== */
+/* ---------- Backspace移動 ---------- */
 
 function handleVisitTimeKeyDown(
   index,
   part,
   el,
   event
-){
+) {
+  // MMが空の状態でBackspace → HHへ戻る
+  if (
+    part === "minute" &&
+    event.key === "Backspace" &&
+    el.value === ""
+  ) {
+    const wrapper =
+      el.closest(".visit-time-manual");
 
-  /*
-   * MMが空の状態でBackspace
-   * ↓
-   * HHへ戻る
-   */
-
-  if(
-    part==="minute" &&
-    event.key==="Backspace" &&
-    el.value===""
-  ){
-
-    const wrapper=
-      el.closest(
-        ".visit-time-manual"
-      );
-
-    const inputs=
+    const inputs =
       wrapper
-        ?wrapper.querySelectorAll(
-          ".visit-time-part"
-        )
-        :[];
+        ? wrapper.querySelectorAll(".visit-time-part")
+        : [];
 
-
-    if(inputs.length>=2){
-
+    if (inputs.length >= 2) {
       event.preventDefault();
 
-      const hourInput=
-        inputs[0];
+      const hourInput = inputs[0];
 
       hourInput.focus();
 
-      setTimeout(()=>{
-
-        try{
+      setTimeout(() => {
+        try {
           hourInput.select();
-        }catch(e){}
-
-      },0);
-
+        } catch (e) {}
+      }, 0);
     }
-
   }
-
 }
 
 
-/* =====================================================
- * 同伴・来店 時間確定
- * ===================================================== */
+/* ---------- 時間入力確定 ---------- */
 
 function handleVisitTimeBlur(
   index,
   part,
   el
-){
-
-  if(el.value==="")return;
-
-
-  let n=
-    Number(el.value);
-
-
-  if(part==="hour"){
-
-    if(n>29)n=29;
-
-  }else{
-
-    if(n>59)n=59;
-
+) {
+  if (el.value === "") {
+    return;
   }
 
+  let n = Number(el.value);
 
-  el.value=
-    String(n)
-      .padStart(2,"0");
+  if (part === "hour") {
+    if (n > 29) {
+      n = 29;
+    }
 
-
-  const item=
-    customerVisits[index];
-
-  if(!item)return;
-
-
-  const m=
-    String(item.time||"")
-      .match(
-        /^(\d{0,2}):(\d{0,2})$/
-      );
-
-
-  let hour=
-    m
-      ?m[1]
-      :"";
-
-  let minute=
-    m
-      ?m[2]
-      :"";
-
-
-  if(part==="hour"){
-
-    hour=el.value;
-
-  }else{
-
-    minute=el.value;
-
+  } else {
+    if (n > 59) {
+      n = 59;
+    }
   }
 
+  el.value =
+    String(n).padStart(2, "0");
 
-  item.time=
-    hour||minute
-      ?hour+":"+minute
-      :"";
+  const item = customerVisits[index];
 
+  if (!item) {
+    return;
+  }
+
+  const m =
+    String(item.time || "")
+      .match(/^(\d{0,2}):(\d{0,2})$/);
+
+  let hour =
+    m
+      ? m[1]
+      : "";
+
+  let minute =
+    m
+      ? m[2]
+      : "";
+
+  if (part === "hour") {
+    hour = el.value;
+
+  } else {
+    minute = el.value;
+  }
+
+  item.time =
+    hour || minute
+      ? hour + ":" + minute
+      : "";
 }
 
 
-/* =====================================================
- * 同伴・来店 一覧描画
- * ===================================================== */
+/* ---------- 同伴・来店予定一覧描画 ---------- */
 
-function renderCustomerVisits(){
+function renderCustomerVisits() {
+  const companionContainer =
+    document.getElementById("companionVisitList");
 
-  const companionContainer=
-    document.getElementById(
-      "companionVisitList"
-    );
+  const visitContainer =
+    document.getElementById("customerVisitList");
 
-  const visitContainer=
-    document.getElementById(
-      "customerVisitList"
-    );
-
-
-  if(
+  if (
     !companionContainer ||
     !visitContainer
-  ){
+  ) {
     return;
   }
 
 
-  if(customerVisitsLoading){
+  /* 読み込み中 */
 
-    const html=
-      '<div class="visit-loading">'+
-      '予定を読み込んでいます...'+
+  if (customerVisitsLoading) {
+    const html =
+      '<div class="visit-loading">' +
+      '予定を読み込んでいます...' +
       '</div>';
 
-    companionContainer.innerHTML=
-      html;
-
-    visitContainer.innerHTML=
-      html;
+    companionContainer.innerHTML = html;
+    visitContainer.innerHTML = html;
 
     return;
-
   }
 
 
-  const indexed=
+  /* 元配列のindexを保持 */
+
+  const indexed =
     customerVisits.map(
-      (item,index)=>({
+      (item, index) => ({
         ...item,
-        originalIndex:index
+        originalIndex: index
       })
     );
 
 
-  companionContainer.innerHTML=
+  /* 同伴予定 */
+
+  companionContainer.innerHTML =
     buildCustomerVisitListHtml(
-
       indexed.filter(
-        item=>item.type==="同伴"
+        item => item.type === "同伴"
       ),
-
       "同伴予定なし"
-
     );
 
 
-  visitContainer.innerHTML=
+  /* 来店予定 */
+
+  visitContainer.innerHTML =
     buildCustomerVisitListHtml(
-
       indexed.filter(
-        item=>item.type==="来店"
+        item => item.type === "来店"
       ),
-
       "来店予定なし"
-
     );
-
 }
 
 
-/* =====================================================
- * 同伴・来店 入力UI
- * ===================================================== */
+/* ---------- 同伴・来店予定入力UI ---------- */
 
 function buildCustomerVisitListHtml(
   items,
   emptyText
-){
-
-  if(!items.length){
-
+) {
+  if (!items.length) {
     return `
       <div class="visit-empty">
         ${escapeHtml(emptyText)}
       </div>
     `;
-
   }
 
-
-  return items.map(item=>`
+  return items.map(item => `
 
     <div class="visit-item">
 
@@ -4185,11 +4074,7 @@ function buildCustomerVisitListHtml(
           type="text"
           maxlength="40"
           placeholder="顧客名"
-
-          value="${escapeHtml(
-            item.customerName||""
-          )}"
-
+          value="${escapeHtml(item.customerName || "")}"
           oninput="
             updateCustomerVisit(
               ${item.originalIndex},
@@ -4207,20 +4092,15 @@ function buildCustomerVisitListHtml(
             inputmode="numeric"
             maxlength="2"
             placeholder="HH"
-
             value="${escapeHtml(
               getVisitTimePart(
                 item.time,
                 'hour'
               )
             )}"
-
             onfocus="
-              handleVisitTimeFocus(
-                this
-              )
+              handleVisitTimeFocus(this)
             "
-
             oninput="
               handleVisitTimeInput(
                 ${item.originalIndex},
@@ -4228,7 +4108,6 @@ function buildCustomerVisitListHtml(
                 this
               )
             "
-
             onkeydown="
               handleVisitTimeKeyDown(
                 ${item.originalIndex},
@@ -4237,7 +4116,6 @@ function buildCustomerVisitListHtml(
                 event
               )
             "
-
             onblur="
               handleVisitTimeBlur(
                 ${item.originalIndex},
@@ -4247,31 +4125,22 @@ function buildCustomerVisitListHtml(
             "
           >
 
-
-          <span class="visit-time-colon">
-            :
-          </span>
-
+          <span class="visit-time-colon">:</span>
 
           <input
             class="visit-time-part"
             inputmode="numeric"
             maxlength="2"
             placeholder="MM"
-
             value="${escapeHtml(
               getVisitTimePart(
                 item.time,
                 'minute'
               )
             )}"
-
             onfocus="
-              handleVisitTimeFocus(
-                this
-              )
+              handleVisitTimeFocus(this)
             "
-
             oninput="
               handleVisitTimeInput(
                 ${item.originalIndex},
@@ -4279,7 +4148,6 @@ function buildCustomerVisitListHtml(
                 this
               )
             "
-
             onkeydown="
               handleVisitTimeKeyDown(
                 ${item.originalIndex},
@@ -4288,7 +4156,6 @@ function buildCustomerVisitListHtml(
                 event
               )
             "
-
             onblur="
               handleVisitTimeBlur(
                 ${item.originalIndex},
@@ -4306,7 +4173,6 @@ function buildCustomerVisitListHtml(
       <button
         type="button"
         class="visit-remove"
-
         onclick="
           removeCustomerVisit(
             ${item.originalIndex}
@@ -4319,7 +4185,6 @@ function buildCustomerVisitListHtml(
     </div>
 
   `).join("");
-
 }
 
 async function saveSelectedDate(){
