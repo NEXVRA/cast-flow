@@ -1549,15 +1549,13 @@ body.modal-open {
     class="hidden"
   ></div>
 </div>
-
 <!-- =====================================================
-     04. CAST FLOW ホーム
+     12. ホーム画面
 ===================================================== -->
 
 <div id="homeView" class="hidden">
 
   <header class="app-header">
-
     <div class="app-header-left">
 
       <button
@@ -1571,17 +1569,11 @@ body.modal-open {
       </button>
 
       <div>
-        <div class="header-logo">
-          CAST FLOW
-        </div>
-
-        <div class="header-subtitle">
-          CAST MANAGEMENT SYSTEM
-        </div>
+        <div class="header-logo">CAST FLOW</div>
+        <div class="header-subtitle">CAST MANAGEMENT SYSTEM</div>
       </div>
 
     </div>
-
 
     <button
       class="header-diamond-button"
@@ -1589,37 +1581,30 @@ body.modal-open {
     >
       <span class="header-diamond"></span>
     </button>
-
   </header>
 
 
   <main class="main-content home-view">
-
     <section>
 
+      <!-- ---------- ホーム見出し ---------- -->
+
       <div class="home-hero">
+        <div class="home-hero-label">CAST MANAGEMENT SYSTEM</div>
 
-        <div class="home-hero-label">
-          CAST MANAGEMENT SYSTEM
-        </div>
-
-        <h1>
-          ホーム
-        </h1>
+        <h1>ホーム</h1>
 
         <p>
           CAST FLOWへようこそ。<br>
           使用する機能を選択してください。
         </p>
-
       </div>
 
 
-      <div class="home-user-card">
+      <!-- ---------- ログイン中CAST ---------- -->
 
-        <div class="home-user-label">
-          LOGGED IN CAST
-        </div>
+      <div class="home-user-card">
+        <div class="home-user-label">LOGGED IN CAST</div>
 
         <div
           id="homeCastName"
@@ -1634,9 +1619,10 @@ body.modal-open {
         >
           -
         </div>
-
       </div>
 
+
+      <!-- ---------- 機能メニュー ---------- -->
 
       <div class="home-grid">
 
@@ -1645,19 +1631,9 @@ body.modal-open {
           data-module="shift"
           onclick="navigateToModule('shift')"
         >
-
-          <div class="home-menu-icon">
-            ▣
-          </div>
-
-          <strong>
-            シフト提出
-          </strong>
-
-          <small>
-            月間シフトの入力・提出
-          </small>
-
+          <div class="home-menu-icon">▣</div>
+          <strong>シフト提出</strong>
+          <small>月間シフトの入力・提出</small>
         </button>
 
 
@@ -1666,19 +1642,9 @@ body.modal-open {
           data-module="attendance"
           onclick="openModulePlaceholder('attendance')"
         >
-
-          <div class="home-menu-icon">
-            ✓
-          </div>
-
-          <strong>
-            出勤確認
-          </strong>
-
-          <small>
-            当日の出勤状況を確認
-          </small>
-
+          <div class="home-menu-icon">✓</div>
+          <strong>出勤確認</strong>
+          <small>当日の出勤状況を確認</small>
         </button>
 
 
@@ -1690,7 +1656,6 @@ body.modal-open {
           onclick="openAdminRegistrationRequests()"
           style="position:relative;"
         >
-
           <span
             id="homeRegistrationBadge"
             class="hidden"
@@ -1716,18 +1681,9 @@ body.modal-open {
             0
           </span>
 
-          <div class="home-menu-icon">
-            ♟
-          </div>
-
-          <strong>
-            管理
-          </strong>
-
-          <small>
-            登録申請・CAST FLOW管理
-          </small>
-
+          <div class="home-menu-icon">♟</div>
+          <strong>管理</strong>
+          <small>登録申請・CAST FLOW管理</small>
         </button>
 
 
@@ -1736,29 +1692,17 @@ body.modal-open {
           data-module="settings"
           onclick="openModulePlaceholder('settings')"
         >
-
-          <div class="home-menu-icon">
-            ⚙
-          </div>
-
-          <strong>
-            設定
-          </strong>
-
-          <small>
-            アカウント・各種設定
-          </small>
-
+          <div class="home-menu-icon">⚙</div>
+          <strong>設定</strong>
+          <small>アカウント・各種設定</small>
         </button>
 
       </div>
 
     </section>
-
   </main>
 
 </div>
-
 <!-- =====================================================
      06. シフト提出画面
 ===================================================== -->
