@@ -396,7 +396,51 @@ textarea {
 .reject-button {
   background: #eee;
 }
-    .app-header{position:sticky;top:0;z-index:100;background:#171717;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}.header-logo{font-size:19px;font-weight:900;letter-spacing:2px}.header-subtitle{font-size:8px;letter-spacing:1.8px;opacity:.55}.header-diamond-button{width:38px;height:38px;border:0;border-radius:10px;background:#2a2a2a}.header-diamond{display:block;width:9px;height:9px;background:#fff;transform:rotate(45deg);margin:auto}.main-content{max-width:720px;margin:auto;padding:22px 14px 90px}.shift-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}.page-label,.modal-label{font-size:8px;letter-spacing:1.8px;color:#999}.shift-top h1{margin:3px 0 0;font-size:28px}.month-status{font-size:11px;font-weight:800;padding:7px 11px;background:#e8e8e8;border-radius:99px}.month-status.submitted{background:#222;color:#fff}.progress-card,.calendar-card{background:#fff;border-radius:17px;box-shadow:0 4px 18px #0000000b}.progress-card{padding:16px;margin-bottom:14px}.progress-header>div{display:flex;justify-content:space-between}.progress-header p{font-size:10px;color:#888}.progress-track{height:6px;background:#eee;border-radius:99px;overflow:hidden}.progress-bar{height:100%;width:0;background:#222;transition:.25s}.calendar-card{padding:12px 9px}.legend{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin:13px 0 17px;font-size:9px;color:#777}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.working{background:#333}.holiday{background:#a95b5b}.undecided{background:#999}.empty{background:#ddd}.bulk-button,.submit-button{width:100%;min-height:50px;border-radius:13px;font-weight:800}.bulk-button{background:#fff;border:1px solid #ddd;margin-bottom:10px}.submit-button{background:#202020;color:#fff;border:0}.submit-button:disabled{opacity:.45}
+/* =====================================================
+ * 03. ヘッダー
+ * ===================================================== */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: #171717;
+  color: #fff;
+}
+
+.header-logo {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.header-subtitle {
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  opacity: .55;
+}
+
+.header-diamond-button {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2a2a;
+}
+
+.header-diamond {
+  display: block;
+  width: 9px;
+  height: 9px;
+  margin: auto;
+  background: #fff;
+  transform: rotate(45deg);
+}
+.main-content{max-width:720px;margin:auto;padding:22px 14px 90px}.shift-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}.page-label,.modal-label{font-size:8px;letter-spacing:1.8px;color:#999}.shift-top h1{margin:3px 0 0;font-size:28px}.month-status{font-size:11px;font-weight:800;padding:7px 11px;background:#e8e8e8;border-radius:99px}.month-status.submitted{background:#222;color:#fff}.progress-card,.calendar-card{background:#fff;border-radius:17px;box-shadow:0 4px 18px #0000000b}.progress-card{padding:16px;margin-bottom:14px}.progress-header>div{display:flex;justify-content:space-between}.progress-header p{font-size:10px;color:#888}.progress-track{height:6px;background:#eee;border-radius:99px;overflow:hidden}.progress-bar{height:100%;width:0;background:#222;transition:.25s}.calendar-card{padding:12px 9px}.legend{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin:13px 0 17px;font-size:9px;color:#777}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.working{background:#333}.holiday{background:#a95b5b}.undecided{background:#999}.empty{background:#ddd}.bulk-button,.submit-button{width:100%;min-height:50px;border-radius:13px;font-weight:800}.bulk-button{background:#fff;border:1px solid #ddd;margin-bottom:10px}.submit-button{background:#202020;color:#fff;border:0}.submit-button:disabled{opacity:.45}
     .fc{--fc-border-color:#ededed;--fc-today-bg-color:#f3f3f3}.fc .fc-toolbar-title{font-size:17px;font-weight:800}.fc .fc-button{background:#202020;border:0;border-radius:9px}.fc .fc-daygrid-day-frame{min-height:70px;padding:3px}.fc .fc-daygrid-day-number{font-size:11px;color:#333;text-decoration:none}.fc .fc-daygrid-event{font-size:8px;font-weight:800;text-align:center;border:0;border-radius:6px;padding:3px}.fc .fc-day-other{opacity:.35}.fc .multi-selected-day .fc-daygrid-day-frame{box-shadow:inset 0 0 0 2px #222;background:#efefef}
     .modal-overlay{position:fixed;inset:0;z-index:500;background:#0007;display:flex;align-items:flex-end;justify-content:center}.modal-card{width:100%;max-width:620px;max-height:92vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:12px 18px calc(22px + var(--safe-bottom))}.modal-handle{width:42px;height:5px;border-radius:99px;background:#ddd;margin:0 auto 15px}.modal-header{display:flex;justify-content:space-between}.modal-header h2{margin:4px 0;font-size:22px}.modal-header p{margin:0;color:#888;font-size:11px}.modal-close{width:38px;height:38px;border:0;border-radius:50%;background:#eee;font-size:24px}.form-section{margin-top:18px}.status-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.status-button,.bulk-status-button,.weekday-button{min-height:44px;border:1px solid #ddd;border-radius:11px;background:#f4f4f4;color:#666;font-weight:800}.status-button.selected,.bulk-status-button.selected,.weekday-button.selected{background:#222;color:#fff;border-color:#222}.time-grid{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end;gap:4px}.time-separator{text-align:center;padding-bottom:15px}.manual-time-field{display:flex;align-items:center;background:#f5f5f5;border:1px solid #ddd;border-radius:12px;overflow:hidden}.manual-time-part{width:100%;min-width:0;height:48px;border:0;background:transparent;text-align:center;font-size:18px;font-weight:800}.manual-time-colon{font-weight:800}.manual-time-field.last-selected{position:relative;background:#242424}
 .manual-time-field.last-selected input,.manual-time-field.last-selected span{visibility:hidden}
