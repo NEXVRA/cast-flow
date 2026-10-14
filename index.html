@@ -2539,13 +2539,14 @@ body.modal-open {
 ></div>
 
 <script>
+
 /* =====================================================
- * CAST FLOW ICONS
+ * 16. CAST FLOWアイコン
  * ===================================================== */
 
-const CAST_FLOW_ICONS={
+const CAST_FLOW_ICONS = {
 
-  home:`
+  home: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <path d="M3 10.5 12 3l9 7.5"/>
       <path d="M5 9.5V21h14V9.5"/>
@@ -2553,7 +2554,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  shift:`
+  shift: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <rect x="3" y="5" width="18" height="16" rx="2"/>
       <path d="M16 3v4M8 3v4M3 10h18"/>
@@ -2561,7 +2562,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  attendance:`
+  attendance: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <circle cx="9" cy="7" r="4"/>
       <path d="M2.5 21c.5-5 3-7 6.5-7 2 0 3.6.6 4.7 1.7"/>
@@ -2569,7 +2570,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  admin:`
+  admin: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <circle cx="9" cy="8" r="4"/>
       <path d="M2 21c.6-5 3-7 7-7 1.7 0 3 .4 4.1 1"/>
@@ -2578,7 +2579,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  calendar:`
+  calendar: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <rect x="3" y="5" width="18" height="16" rx="2"/>
       <path d="M16 3v4M8 3v4M3 10h18"/>
@@ -2586,7 +2587,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  register:`
+  register: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <circle cx="9" cy="8" r="4"/>
       <path d="M2 21c.6-5 3-7 7-7 2.2 0 4 .7 5.2 2"/>
@@ -2594,7 +2595,7 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  casts:`
+  casts: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <circle cx="9" cy="8" r="4"/>
       <circle cx="17" cy="9" r="3"/>
@@ -2603,14 +2604,14 @@ const CAST_FLOW_ICONS={
     </svg>
   `,
 
-  settings:`
+  settings: `
     <svg class="cf-icon" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="3"/>
       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>
     </svg>
   `,
 
-  bell:`
+  bell: `
     <svg
       class="cf-icon"
       viewBox="0 0 24 24"
@@ -2625,98 +2626,62 @@ const CAST_FLOW_ICONS={
 };
 
 
-function applyCastFlowIcons(){
+/* ---------- アイコン反映 ---------- */
 
-  const iconMap={
-    "⌂":"home",
-    "▣":"shift",
-    "✓":"attendance",
-    "▤":"calendar",
-    "♙":"register",
-    "♟":"casts",
-    "⚙":"settings"
+function applyCastFlowIcons() {
+
+  const iconMap = {
+    "⌂": "home",
+    "▣": "shift",
+    "✓": "attendance",
+    "▤": "calendar",
+    "♙": "register",
+    "♟": "casts",
+    "⚙": "settings"
   };
 
 
-  /*
-   * ホーム・サイドメニュー
-   */
-
+  // ホーム・サイドメニュー
   document
-    .querySelectorAll(
-      ".home-menu-icon, .drawer-item-icon"
-    )
-    .forEach(el=>{
+    .querySelectorAll(".home-menu-icon, .drawer-item-icon")
+    .forEach(el => {
+      const symbol = el.textContent.trim();
+      const iconName = iconMap[symbol];
 
-      const symbol=
-        el.textContent.trim();
-
-      const iconName=
-        iconMap[symbol];
-
-      if(
-        iconName &&
-        CAST_FLOW_ICONS[iconName]
-      ){
-        el.innerHTML=
-          CAST_FLOW_ICONS[iconName];
+      if (iconName && CAST_FLOW_ICONS[iconName]) {
+        el.innerHTML = CAST_FLOW_ICONS[iconName];
       }
-
     });
 
 
-  /*
-   * ホーム「管理」
-   */
+  // ホーム「管理」
+  const adminCard = document.getElementById("homeAdminCard");
 
-  const adminCard=
-    document.getElementById(
-      "homeAdminCard"
-    );
+  if (adminCard) {
+    const icon = adminCard.querySelector(".home-menu-icon");
 
-  if(adminCard){
-
-    const icon=
-      adminCard.querySelector(
-        ".home-menu-icon"
-      );
-
-    if(icon){
-      icon.innerHTML=
-        CAST_FLOW_ICONS.admin;
+    if (icon) {
+      icon.innerHTML = CAST_FLOW_ICONS.admin;
     }
-
   }
 
 
-  /*
-   * ヘッダー通知
-   * ダイヤ → 白ベル
-   */
-
+  // ヘッダー通知：ダイヤ → 白ベル
   document
-    .querySelectorAll(
-      ".header-diamond-button"
-    )
-    .forEach(button=>{
+    .querySelectorAll(".header-diamond-button")
+    .forEach(button => {
+      button.innerHTML = CAST_FLOW_ICONS.bell;
 
-      button.innerHTML=
-        CAST_FLOW_ICONS.bell;
+      button.style.color = "#fff";
+      button.style.display = "flex";
+      button.style.alignItems = "center";
+      button.style.justifyContent = "center";
 
-      button.style.color="#fff";
-
-      button.style.display="flex";
-      button.style.alignItems="center";
-      button.style.justifyContent="center";
-
-      button.setAttribute(
-        "aria-label",
-        "通知"
-      );
-
+      button.setAttribute("aria-label", "通知");
     });
 
 }
+
 /* =====================================================
  * 11. 基本設定・状態管理
  * ===================================================== */
