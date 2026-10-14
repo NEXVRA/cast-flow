@@ -1047,22 +1047,135 @@ textarea {
 body.modal-open {
   overflow: hidden;
 }
+/* =====================================================
+ * 07. 同伴・来店予定UI
+ * ===================================================== */
 
-    /* 同伴・来店予定 */
-    .visit-section{margin-top:22px;padding-top:18px;border-top:1px solid #eee}
-    .visit-section-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
-    .visit-section-title{font-size:13px;font-weight:900}
-    .visit-add-button{border:0;border-radius:9px;background:#222;color:#fff;min-height:34px;padding:0 12px;font-size:11px;font-weight:800;white-space:nowrap}
-    .visit-empty,.visit-loading{padding:14px;background:#f5f5f5;border-radius:11px;text-align:center;color:#999;font-size:11px}
-    .visit-item{position:relative;padding:13px;margin-top:9px;background:#f5f5f5;border-radius:13px}
-    .visit-item-grid{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:8px;padding-right:34px}
-    .visit-input{width:100%;min-width:0;height:44px;border:1px solid #ddd;border-radius:10px;padding:0 11px;background:#fff;font-size:13px}
-    .visit-time{text-align:center;font-weight:800}
+.visit-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #eee;
+}
 
-    .visit-time-manual{display:grid;grid-template-columns:1fr 12px 1fr;align-items:center;height:44px;border:1px solid #ddd;border-radius:10px;background:#fff;overflow:hidden}
-    .visit-time-part{width:100%;min-width:0;height:42px;border:0;background:transparent;text-align:center;font-size:16px;font-weight:800;padding:0}
-    .visit-time-colon{text-align:center;font-weight:800}
-    .visit-remove{position:absolute;right:10px;top:21px;width:28px;height:28px;border:0;border-radius:50%;background:#ddd;color:#555;font-size:18px;line-height:28px}
+.visit-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.visit-section-title {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.visit-add-button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: #222;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+
+/* ---------- 空表示・読み込み ---------- */
+
+.visit-empty,
+.visit-loading {
+  padding: 14px;
+  border-radius: 11px;
+  background: #f5f5f5;
+  color: #999;
+  font-size: 11px;
+  text-align: center;
+}
+
+
+/* ---------- 予定カード ---------- */
+
+.visit-item {
+  position: relative;
+  margin-top: 9px;
+  padding: 13px;
+  border-radius: 13px;
+  background: #f5f5f5;
+}
+
+.visit-item-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 8px;
+  padding-right: 34px;
+}
+
+.visit-input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 11px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+}
+
+
+/* ---------- 時間入力 ---------- */
+
+.visit-time {
+  font-weight: 800;
+  text-align: center;
+}
+
+.visit-time-manual {
+  display: grid;
+  grid-template-columns: 1fr 12px 1fr;
+  align-items: center;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.visit-time-part {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.visit-time-colon {
+  font-weight: 800;
+  text-align: center;
+}
+
+
+/* ---------- 削除ボタン ---------- */
+
+.visit-remove {
+  position: absolute;
+  top: 21px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: #ddd;
+  color: #555;
+  font-size: 18px;
+  line-height: 28px;
+}
 
     @media(max-width:420px){.main-content{padding-left:12px;padding-right:12px}.fc .fc-daygrid-day-frame{min-height:65px}.modal-card{padding-left:16px;padding-right:16px}.visit-item-grid{grid-template-columns:minmax(0,1fr) 96px}}
 
