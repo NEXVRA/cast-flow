@@ -2811,27 +2811,56 @@ let suppressNextMonthAutoLoad = false;
 let customerVisits = [];
 let customerVisitsLoading = false;
 
-window.addEventListener("load",initializeApp);
-setTimeout(()=>{
- const screen=document.getElementById("loadingScreen");
- if(screen&&!screen.classList.contains("hide")){
-  setLoadingMessage("もう少しだけお待ちください");
- }
-},3500);
-async function initializeApp(){
- try{
-  setLoadingMessage("LINEと接続しています…");
-  await liff.init({
-   liffId:LIFF_ID,
-   withLoginOnExternalBrowser:true
-  });
-  if(!liff.isInClient()&&!liff.isLoggedIn()){liff.login();return}
-  currentIdToken=liff.getIDToken();
-  if(!currentIdToken)throw new Error("LINE認証情報を取得できませんでした");
-  await checkAuthStatus();
- }catch(e){hideLoading();showError(e.message||String(e))}
+/* =====================================================
+ * 18. アプリ起動
+ * ===================================================== */
+
+/* ---------- 初期起動 ---------- */
+
+window.addEventListener("load", initializeApp);
+
+
+/* ---------- 読み込み長時間時の案内 ---------- */
+
+setTimeout(() => {
+  const screen = document.getElementById("loadingScreen");
+
+  if (screen && !screen.classList.contains("hide")) {
+    setLoadingMessage("もう少しだけお待ちください");
+  }
+}, 3500);
+
+
+/* ---------- LIFF初期化 ---------- */
+
+async function initializeApp() {
+  try {
+    setLoadingMessage("LINEと接続しています…");
+
+    await liff.init({
+      liffId: LIFF_ID,
+      withLoginOnExternalBrowser: true
+    });
+
+    if (!liff.isInClient() && !liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    currentIdToken = liff.getIDToken();
+
+    if (!currentIdToken) {
+      throw new Error("LINE認証情報を取得できませんでした");
+    }
+
+    await checkAuthStatus();
+
+  } catch (error) {
+    hideLoading();
+    showError(error.message || String(error));
+  }
 }
-async function callApi(data){
+
  const params=new URLSearchParams();
  Object.keys(data).forEach(k=>params.append(k,data[k]==null?"":String(data[k])));
  const response=await fetch(GAS_API_URL,{method:"POST",body:params});
