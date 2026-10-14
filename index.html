@@ -1997,52 +1997,546 @@ body.modal-open {
   </aside>
 
 </div>
+
 <!-- =====================================================
-     10. 共通UI
+     15. 共通UI・モーダル
 ===================================================== -->
-<div id="multiSelectBar" class="multi-select-bar hidden"><div class="multi-select-info"><span>複数日選択中</span><strong id="multiSelectCount">0日選択</strong></div><div class="multi-select-actions"><button class="multi-select-cancel" onclick="cancelMultiSelect()">キャンセル</button><button id="multiSelectNextButton" class="multi-select-next" onclick="openSelectedDatesInput()" disabled>まとめて入力</button></div></div>
 
-<div id="shiftModal" class="modal-overlay hidden" onclick="if(event.target===this)closeShiftModal()"><div class="modal-card"><div class="modal-handle"></div>
-<div class="modal-header"><div><span class="modal-label">SHIFT SETTINGS</span><h2 id="modalDateTitle"></h2><p id="modalWeekday"></p></div><button class="modal-close" onclick="closeShiftModal()">×</button></div>
-<div class="form-section"><label class="form-label">勤務区分</label><div class="status-selector"><button id="statusWorking" class="status-button selected" onclick="selectStatus('working')">出勤</button><button id="statusHoliday" class="status-button" onclick="selectStatus('holiday')">休み</button><button id="statusUndecided" class="status-button" onclick="selectStatus('undecided')">未定</button></div></div>
-<div id="workingFields"><div class="time-grid"><div class="form-section"><label class="form-label">出勤時間</label><div class="manual-time-field"><input id="startHour" class="manual-time-part" inputmode="numeric" maxlength="2"><span class="manual-time-colon">:</span><input id="startMinute" class="manual-time-part" inputmode="numeric" maxlength="2"><input id="startTime" type="hidden"></div></div><div class="time-separator">〜</div><div class="form-section"><label class="form-label">退勤時間</label><div id="endTimeField" class="manual-time-field"><input id="endHour" class="manual-time-part" inputmode="numeric" maxlength="2"><span class="manual-time-colon">:</span><input id="endMinute" class="manual-time-part" inputmode="numeric" maxlength="2"><input id="endTime" type="hidden"></div></div></div><button id="endTimeLastButton" class="last-time-button" onclick="toggleEndTimeLast()">退勤時間をLASTにする</button></div>
+<!-- ---------- 複数日選択バー ---------- -->
 
-<div id="customerVisitFields">
-  <div class="visit-section">
-    <div class="visit-section-header">
-      <div class="visit-section-title">同伴予定</div>
-      <button type="button" class="visit-add-button" onclick="addCustomerVisit('同伴')">＋ 同伴を追加</button>
-    </div>
-    <div id="companionVisitList"><div class="visit-empty">同伴予定なし</div></div>
+<div
+  id="multiSelectBar"
+  class="multi-select-bar hidden"
+>
+  <div class="multi-select-info">
+    <span>複数日選択中</span>
+    <strong id="multiSelectCount">0日選択</strong>
   </div>
 
-  <div class="visit-section">
-    <div class="visit-section-header">
-      <div class="visit-section-title">来店予定</div>
-      <button type="button" class="visit-add-button" onclick="addCustomerVisit('来店')">＋ 来店を追加</button>
-    </div>
-    <div id="customerVisitList"><div class="visit-empty">来店予定なし</div></div>
+  <div class="multi-select-actions">
+    <button
+      class="multi-select-cancel"
+      onclick="cancelMultiSelect()"
+    >
+      キャンセル
+    </button>
+
+    <button
+      id="multiSelectNextButton"
+      class="multi-select-next"
+      onclick="openSelectedDatesInput()"
+      disabled
+    >
+      まとめて入力
+    </button>
   </div>
 </div>
 
-<div class="form-section"><label class="form-label">備考</label><textarea id="shiftNote" class="form-control textarea" maxlength="100"></textarea></div>
-<button id="saveSelectedDateButton" class="modal-save-button" onclick="saveSelectedDate()">この日の内容を保存</button><button id="clearDateButton" class="clear-button hidden" onclick="clearSelectedDate()">入力を削除</button>
-</div></div>
 
-<div id="bulkModal" class="modal-overlay hidden" onclick="if(event.target===this)closeBulkModal()"><div class="modal-card"><div class="modal-handle"></div>
-<div class="modal-header"><div><span class="modal-label">BULK SHIFT SETTINGS</span><h2>一括入力</h2><p id="bulkTargetMonthText"></p></div><button class="modal-close" onclick="closeBulkModal()">×</button></div>
-<div class="form-section"><label class="form-label">入力方法</label><div class="bulk-mode-selector"><button id="bulkModeSelectedDates" class="bulk-mode-button selected" onclick="selectBulkMode('selectedDates')"><span class="bulk-mode-text"><strong>選択した日</strong><small>カレンダーから自由に選択</small></span></button><button id="bulkModeWeekdays" class="bulk-mode-button" onclick="selectBulkMode('weekdays')"><span class="bulk-mode-text"><strong>曜日でまとめて</strong><small>毎週同じ曜日に入力</small></span></button></div></div>
-<div id="selectedDatesModePanel"><div class="selected-dates-guide"><div><strong>カレンダーから日付を選択</strong><p>入力したい日をすべてタップしてください</p></div></div><button class="calendar-select-button" onclick="startMultiSelect()">日付の選択を開始</button><div id="selectedDatesSummary" class="hidden"><strong id="selectedDatesSummaryCount">0日</strong></div></div>
-<div id="weekdaysModePanel" class="hidden"><div class="form-section"><label class="form-label">入力する曜日</label><div class="weekday-selector"><button id="bulkWeekday0" class="weekday-button" onclick="toggleBulkWeekday(0)">日</button><button id="bulkWeekday1" class="weekday-button" onclick="toggleBulkWeekday(1)">月</button><button id="bulkWeekday2" class="weekday-button" onclick="toggleBulkWeekday(2)">火</button><button id="bulkWeekday3" class="weekday-button" onclick="toggleBulkWeekday(3)">水</button><button id="bulkWeekday4" class="weekday-button" onclick="toggleBulkWeekday(4)">木</button><button id="bulkWeekday5" class="weekday-button" onclick="toggleBulkWeekday(5)">金</button><button id="bulkWeekday6" class="weekday-button" onclick="toggleBulkWeekday(6)">土</button></div></div></div>
-<div id="bulkInputFields">
-<div class="form-section"><label class="form-label">勤務区分</label><div class="status-selector"><button id="bulkStatusWorking" class="bulk-status-button selected" onclick="selectBulkStatus('working')">出勤</button><button id="bulkStatusHoliday" class="bulk-status-button" onclick="selectBulkStatus('holiday')">休み</button><button id="bulkStatusUndecided" class="bulk-status-button" onclick="selectBulkStatus('undecided')">未定</button></div></div>
-<div id="bulkWorkingFields"><div class="time-grid"><div class="form-section"><label class="form-label">出勤時間</label><div class="manual-time-field"><input id="bulkStartHour" class="manual-time-part" inputmode="numeric" maxlength="2"><span class="manual-time-colon">:</span><input id="bulkStartMinute" class="manual-time-part" inputmode="numeric" maxlength="2"><input id="bulkStartTime" type="hidden"></div></div><div class="time-separator">〜</div><div class="form-section"><label class="form-label">退勤時間</label><div id="bulkEndTimeField" class="manual-time-field"><input id="bulkEndHour" class="manual-time-part" inputmode="numeric" maxlength="2"><span class="manual-time-colon">:</span><input id="bulkEndMinute" class="manual-time-part" inputmode="numeric" maxlength="2"><input id="bulkEndTime" type="hidden"></div></div></div><button id="bulkEndTimeLastButton" class="last-time-button" onclick="toggleBulkEndTimeLast()">退勤時間をLASTにする</button></div>
-<div class="form-section"><label class="form-label">備考</label><textarea id="bulkNote" class="form-control textarea" maxlength="100"></textarea></div>
-<label class="overwrite-box"><input id="bulkOverwrite" type="checkbox"><span class="overwrite-text"><strong>入力済みの日も上書きする</strong><small>OFFの場合、すでに入力済みの日はスキップします</small></span></label>
-<div class="bulk-preview"><span>登録対象</span><strong id="bulkPreviewCount">0日</strong></div><button id="bulkSaveButton" class="modal-save-button" onclick="saveBulkShifts()">まとめて保存</button>
-</div></div></div>
+<!-- ---------- シフト入力モーダル ---------- -->
 
-<div id="toast" class="toast"></div>
+<div
+  id="shiftModal"
+  class="modal-overlay hidden"
+  onclick="if(event.target===this)closeShiftModal()"
+>
+  <div class="modal-card">
+
+    <div class="modal-handle"></div>
+
+
+    <div class="modal-header">
+      <div>
+        <span class="modal-label">SHIFT SETTINGS</span>
+        <h2 id="modalDateTitle"></h2>
+        <p id="modalWeekday"></p>
+      </div>
+
+      <button
+        class="modal-close"
+        onclick="closeShiftModal()"
+      >
+        ×
+      </button>
+    </div>
+
+
+    <!-- 勤務区分 -->
+
+    <div class="form-section">
+      <label class="form-label">勤務区分</label>
+
+      <div class="status-selector">
+        <button
+          id="statusWorking"
+          class="status-button selected"
+          onclick="selectStatus('working')"
+        >
+          出勤
+        </button>
+
+        <button
+          id="statusHoliday"
+          class="status-button"
+          onclick="selectStatus('holiday')"
+        >
+          休み
+        </button>
+
+        <button
+          id="statusUndecided"
+          class="status-button"
+          onclick="selectStatus('undecided')"
+        >
+          未定
+        </button>
+      </div>
+    </div>
+
+
+    <!-- 出退勤時間 -->
+
+    <div id="workingFields">
+
+      <div class="time-grid">
+
+        <div class="form-section">
+          <label class="form-label">出勤時間</label>
+
+          <div class="manual-time-field">
+            <input
+              id="startHour"
+              class="manual-time-part"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <span class="manual-time-colon">:</span>
+
+            <input
+              id="startMinute"
+              class="manual-time-part"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              id="startTime"
+              type="hidden"
+            >
+          </div>
+        </div>
+
+
+        <div class="time-separator">〜</div>
+
+
+        <div class="form-section">
+          <label class="form-label">退勤時間</label>
+
+          <div
+            id="endTimeField"
+            class="manual-time-field"
+          >
+            <input
+              id="endHour"
+              class="manual-time-part"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <span class="manual-time-colon">:</span>
+
+            <input
+              id="endMinute"
+              class="manual-time-part"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              id="endTime"
+              type="hidden"
+            >
+          </div>
+        </div>
+
+      </div>
+
+
+      <button
+        id="endTimeLastButton"
+        class="last-time-button"
+        onclick="toggleEndTimeLast()"
+      >
+        退勤時間をLASTにする
+      </button>
+
+    </div>
+
+
+    <!-- 同伴・来店予定 -->
+
+    <div id="customerVisitFields">
+
+      <div class="visit-section">
+        <div class="visit-section-header">
+          <div class="visit-section-title">同伴予定</div>
+
+          <button
+            type="button"
+            class="visit-add-button"
+            onclick="addCustomerVisit('同伴')"
+          >
+            ＋ 同伴を追加
+          </button>
+        </div>
+
+        <div id="companionVisitList">
+          <div class="visit-empty">同伴予定なし</div>
+        </div>
+      </div>
+
+
+      <div class="visit-section">
+        <div class="visit-section-header">
+          <div class="visit-section-title">来店予定</div>
+
+          <button
+            type="button"
+            class="visit-add-button"
+            onclick="addCustomerVisit('来店')"
+          >
+            ＋ 来店を追加
+          </button>
+        </div>
+
+        <div id="customerVisitList">
+          <div class="visit-empty">来店予定なし</div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- 備考 -->
+
+    <div class="form-section">
+      <label class="form-label">備考</label>
+
+      <textarea
+        id="shiftNote"
+        class="form-control textarea"
+        maxlength="100"
+      ></textarea>
+    </div>
+
+
+    <!-- 保存・削除 -->
+
+    <button
+      id="saveSelectedDateButton"
+      class="modal-save-button"
+      onclick="saveSelectedDate()"
+    >
+      この日の内容を保存
+    </button>
+
+    <button
+      id="clearDateButton"
+      class="clear-button hidden"
+      onclick="clearSelectedDate()"
+    >
+      入力を削除
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ---------- 一括入力モーダル ---------- -->
+
+<div
+  id="bulkModal"
+  class="modal-overlay hidden"
+  onclick="if(event.target===this)closeBulkModal()"
+>
+  <div class="modal-card">
+
+    <div class="modal-handle"></div>
+
+
+    <div class="modal-header">
+      <div>
+        <span class="modal-label">BULK SHIFT SETTINGS</span>
+        <h2>一括入力</h2>
+        <p id="bulkTargetMonthText"></p>
+      </div>
+
+      <button
+        class="modal-close"
+        onclick="closeBulkModal()"
+      >
+        ×
+      </button>
+    </div>
+
+
+    <!-- 入力方法 -->
+
+    <div class="form-section">
+      <label class="form-label">入力方法</label>
+
+      <div class="bulk-mode-selector">
+
+        <button
+          id="bulkModeSelectedDates"
+          class="bulk-mode-button selected"
+          onclick="selectBulkMode('selectedDates')"
+        >
+          <span class="bulk-mode-text">
+            <strong>選択した日</strong>
+            <small>カレンダーから自由に選択</small>
+          </span>
+        </button>
+
+
+        <button
+          id="bulkModeWeekdays"
+          class="bulk-mode-button"
+          onclick="selectBulkMode('weekdays')"
+        >
+          <span class="bulk-mode-text">
+            <strong>曜日でまとめて</strong>
+            <small>毎週同じ曜日に入力</small>
+          </span>
+        </button>
+
+      </div>
+    </div>
+
+
+    <!-- 日付選択 -->
+
+    <div id="selectedDatesModePanel">
+
+      <div class="selected-dates-guide">
+        <div>
+          <strong>カレンダーから日付を選択</strong>
+          <p>入力したい日をすべてタップしてください</p>
+        </div>
+      </div>
+
+      <button
+        class="calendar-select-button"
+        onclick="startMultiSelect()"
+      >
+        日付の選択を開始
+      </button>
+
+      <div
+        id="selectedDatesSummary"
+        class="hidden"
+      >
+        <strong id="selectedDatesSummaryCount">0日</strong>
+      </div>
+
+    </div>
+
+
+    <!-- 曜日選択 -->
+
+    <div
+      id="weekdaysModePanel"
+      class="hidden"
+    >
+      <div class="form-section">
+        <label class="form-label">入力する曜日</label>
+
+        <div class="weekday-selector">
+          <button id="bulkWeekday0" class="weekday-button" onclick="toggleBulkWeekday(0)">日</button>
+          <button id="bulkWeekday1" class="weekday-button" onclick="toggleBulkWeekday(1)">月</button>
+          <button id="bulkWeekday2" class="weekday-button" onclick="toggleBulkWeekday(2)">火</button>
+          <button id="bulkWeekday3" class="weekday-button" onclick="toggleBulkWeekday(3)">水</button>
+          <button id="bulkWeekday4" class="weekday-button" onclick="toggleBulkWeekday(4)">木</button>
+          <button id="bulkWeekday5" class="weekday-button" onclick="toggleBulkWeekday(5)">金</button>
+          <button id="bulkWeekday6" class="weekday-button" onclick="toggleBulkWeekday(6)">土</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 一括入力内容 -->
+
+    <div id="bulkInputFields">
+
+      <div class="form-section">
+        <label class="form-label">勤務区分</label>
+
+        <div class="status-selector">
+          <button
+            id="bulkStatusWorking"
+            class="bulk-status-button selected"
+            onclick="selectBulkStatus('working')"
+          >
+            出勤
+          </button>
+
+          <button
+            id="bulkStatusHoliday"
+            class="bulk-status-button"
+            onclick="selectBulkStatus('holiday')"
+          >
+            休み
+          </button>
+
+          <button
+            id="bulkStatusUndecided"
+            class="bulk-status-button"
+            onclick="selectBulkStatus('undecided')"
+          >
+            未定
+          </button>
+        </div>
+      </div>
+
+
+      <!-- 一括出退勤時間 -->
+
+      <div id="bulkWorkingFields">
+
+        <div class="time-grid">
+
+          <div class="form-section">
+            <label class="form-label">出勤時間</label>
+
+            <div class="manual-time-field">
+              <input
+                id="bulkStartHour"
+                class="manual-time-part"
+                inputmode="numeric"
+                maxlength="2"
+              >
+
+              <span class="manual-time-colon">:</span>
+
+              <input
+                id="bulkStartMinute"
+                class="manual-time-part"
+                inputmode="numeric"
+                maxlength="2"
+              >
+
+              <input
+                id="bulkStartTime"
+                type="hidden"
+              >
+            </div>
+          </div>
+
+
+          <div class="time-separator">〜</div>
+
+
+          <div class="form-section">
+            <label class="form-label">退勤時間</label>
+
+            <div
+              id="bulkEndTimeField"
+              class="manual-time-field"
+            >
+              <input
+                id="bulkEndHour"
+                class="manual-time-part"
+                inputmode="numeric"
+                maxlength="2"
+              >
+
+              <span class="manual-time-colon">:</span>
+
+              <input
+                id="bulkEndMinute"
+                class="manual-time-part"
+                inputmode="numeric"
+                maxlength="2"
+              >
+
+              <input
+                id="bulkEndTime"
+                type="hidden"
+              >
+            </div>
+          </div>
+
+        </div>
+
+
+        <button
+          id="bulkEndTimeLastButton"
+          class="last-time-button"
+          onclick="toggleBulkEndTimeLast()"
+        >
+          退勤時間をLASTにする
+        </button>
+
+      </div>
+
+
+      <!-- 備考 -->
+
+      <div class="form-section">
+        <label class="form-label">備考</label>
+
+        <textarea
+          id="bulkNote"
+          class="form-control textarea"
+          maxlength="100"
+        ></textarea>
+      </div>
+
+
+      <!-- 上書き設定 -->
+
+      <label class="overwrite-box">
+        <input
+          id="bulkOverwrite"
+          type="checkbox"
+        >
+
+        <span class="overwrite-text">
+          <strong>入力済みの日も上書きする</strong>
+          <small>OFFの場合、すでに入力済みの日はスキップします</small>
+        </span>
+      </label>
+
+
+      <!-- 登録対象 -->
+
+      <div class="bulk-preview">
+        <span>登録対象</span>
+        <strong id="bulkPreviewCount">0日</strong>
+      </div>
+
+      <button
+        id="bulkSaveButton"
+        class="modal-save-button"
+        onclick="saveBulkShifts()"
+      >
+        まとめて保存
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ---------- Toast ---------- -->
+
+<div
+  id="toast"
+  class="toast"
+></div>
 
 <script>
 /* =====================================================
