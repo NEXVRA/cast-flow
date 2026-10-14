@@ -5505,23 +5505,24 @@ function hideLoading() {
     .classList.add("hide");
 }
 /* =====================================================
- * 16. 共通表示
+ * 27. 共通表示・初回登録画面
  * ===================================================== */
 
-function showAuthLoading(msg){
+/* ---------- 認証ローディング ---------- */
 
-  document.getElementById("authApp").innerHTML=`
+function showAuthLoading(msg) {
+  document.getElementById("authApp").innerHTML = `
     <div class="loading">
       <div class="spinner"></div>
       ${escapeHtml(msg)}
     </div>
   `;
-
 }
 
 
-function showError(msg){
+/* ---------- エラー表示 ---------- */
 
+function showError(msg) {
   document
     .getElementById("authView")
     .classList.remove("hidden");
@@ -5530,8 +5531,7 @@ function showError(msg){
     .getElementById("shiftView")
     .classList.add("hidden");
 
-
-  document.getElementById("authApp").innerHTML=`
+  document.getElementById("authApp").innerHTML = `
     <div class="status-icon error">!</div>
 
     <h1>エラー</h1>
@@ -5544,16 +5544,13 @@ function showError(msg){
       ${escapeHtml(msg)}
     </div>
   `;
-
 }
 
-/* =====================================================
- * 17. 初回登録画面
- * ===================================================== */
 
-function showRegistrationForm(){
+/* ---------- 初回登録画面 ---------- */
 
-  document.getElementById("authApp").innerHTML=`
+function showRegistrationForm() {
+  document.getElementById("authApp").innerHTML = `
 
     <div class="status-icon">
       ✓
@@ -5570,7 +5567,6 @@ function showRegistrationForm(){
 
 
     <div class="form-group">
-
       <label>
         キャスト番号
       </label>
@@ -5580,12 +5576,10 @@ function showRegistrationForm(){
         type="text"
         autocomplete="off"
       >
-
     </div>
 
 
     <div class="form-group">
-
       <label>
         キャスト名
       </label>
@@ -5595,7 +5589,6 @@ function showRegistrationForm(){
         type="text"
         autocomplete="off"
       >
-
     </div>
 
 
@@ -5614,9 +5607,7 @@ function showRegistrationForm(){
     ></div>
 
   `;
-
 }
-
 /* =====================================================
  * 18. 初回登録申請
  * ===================================================== */
