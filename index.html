@@ -6938,53 +6938,58 @@ async function approveRequest(
   return result;
 
 }
+/* =====================================================
+ * 32. 承認・却下API処理
+ * ===================================================== */
+
+/* ---------- 登録申請承認API ---------- */
+
+async function approveRequest(requestId) {
+  const result = await callApi({
+    action: "approveRegistrationRequest",
+    idToken: currentIdToken,
+    requestId: requestId
+  });
+
+  if (
+    !result ||
+    result.success !== true
+  ) {
+    throw new Error(
+      result?.error ||
+      "登録申請を承認できませんでした"
+    );
+  }
+
+  return result;
+}
 
 
-/**
- * 却下API
- */
+/* ---------- 登録申請却下API ---------- */
+
 async function rejectRequest(
   requestId,
   note
-){
+) {
+  const result = await callApi({
+    action: "rejectRegistrationRequest",
+    idToken: currentIdToken,
+    requestId: requestId,
+    note: String(note || "").trim()
+  });
 
-  const result=
-    await callApi({
-
-      action:
-        "rejectRegistrationRequest",
-
-      idToken:
-        currentIdToken,
-
-      requestId:
-        requestId,
-
-      note:
-        String(
-          note || ""
-        ).trim()
-
-    });
-
-
-  if(
+  if (
     !result ||
-    result.success!==true
-  ){
-
+    result.success !== true
+  ) {
     throw new Error(
       result?.error ||
       "登録申請を却下できませんでした"
     );
-
   }
 
-
   return result;
-
 }
-
 /* =====================================================
  * 13. CAST FLOW ナビゲーション
  * ===================================================== */
