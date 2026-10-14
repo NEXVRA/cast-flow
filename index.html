@@ -656,7 +656,397 @@ textarea {
 }
     .modal-overlay{position:fixed;inset:0;z-index:500;background:#0007;display:flex;align-items:flex-end;justify-content:center}.modal-card{width:100%;max-width:620px;max-height:92vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:12px 18px calc(22px + var(--safe-bottom))}.modal-handle{width:42px;height:5px;border-radius:99px;background:#ddd;margin:0 auto 15px}.modal-header{display:flex;justify-content:space-between}.modal-header h2{margin:4px 0;font-size:22px}.modal-header p{margin:0;color:#888;font-size:11px}.modal-close{width:38px;height:38px;border:0;border-radius:50%;background:#eee;font-size:24px}.form-section{margin-top:18px}.status-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.status-button,.bulk-status-button,.weekday-button{min-height:44px;border:1px solid #ddd;border-radius:11px;background:#f4f4f4;color:#666;font-weight:800}.status-button.selected,.bulk-status-button.selected,.weekday-button.selected{background:#222;color:#fff;border-color:#222}.time-grid{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end;gap:4px}.time-separator{text-align:center;padding-bottom:15px}.manual-time-field{display:flex;align-items:center;background:#f5f5f5;border:1px solid #ddd;border-radius:12px;overflow:hidden}.manual-time-part{width:100%;min-width:0;height:48px;border:0;background:transparent;text-align:center;font-size:18px;font-weight:800}.manual-time-colon{font-weight:800}.manual-time-field.last-selected{position:relative;background:#242424}
 .manual-time-field.last-selected input,.manual-time-field.last-selected span{visibility:hidden}
-.manual-time-field.last-selected::after{content:"LAST";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:900;letter-spacing:1.5px;pointer-events:none}.last-time-button{width:100%;min-height:42px;margin-top:10px;border:1px solid #ddd;border-radius:11px;background:#f2f2f2;font-size:11px;font-weight:800}.last-time-button.selected{background:#222;color:#fff}.textarea{min-height:78px;padding:12px;resize:none}.modal-save-button,.clear-button{width:100%;min-height:50px;border-radius:13px;font-weight:800}.modal-save-button{margin-top:18px;background:#222;color:#fff;border:0}.clear-button{margin-top:9px;background:#fff;color:#8c3535;border:1px solid #d6bebe}.bulk-mode-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px}.bulk-mode-button{min-height:72px;border:1px solid #ddd;border-radius:12px;background:#f5f5f5}.bulk-mode-button.selected{border:2px solid #222;background:#fff}.bulk-mode-text{display:flex;flex-direction:column}.bulk-mode-text small{font-size:9px;color:#888}.calendar-select-button{width:100%;min-height:46px;border:1px solid #ddd;border-radius:11px;background:#fff;font-weight:800}.selected-dates-guide{display:flex;gap:10px;padding:13px;background:#f4f4f4;border-radius:12px;margin-top:14px}.selected-dates-guide p{margin:3px 0;font-size:10px;color:#777}.weekday-selector{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.weekday-button{min-width:0}.overwrite-box{display:flex;gap:10px;padding:13px;background:#f5f5f5;border-radius:12px;margin:15px 0}.overwrite-box input{width:20px}.overwrite-text{display:flex;flex-direction:column;font-size:11px}.overwrite-text small{color:#888}.bulk-preview{display:flex;justify-content:space-between;padding:14px;background:#eee;border-radius:12px}.multi-select-bar{position:fixed;z-index:700;left:50%;bottom:calc(12px + var(--safe-bottom));transform:translateX(-50%);width:calc(100% - 24px);max-width:696px;padding:12px;background:#1b1b1bf7;color:#fff;border-radius:16px;display:flex;justify-content:space-between;align-items:center}.multi-select-info{display:flex;flex-direction:column;font-size:10px}.multi-select-actions{display:flex;gap:7px}.multi-select-actions button{min-height:38px;border:0;border-radius:9px;font-weight:800}.multi-select-cancel{background:#444;color:#fff}.multi-select-next{background:#fff;color:#222}.toast{position:fixed;left:50%;bottom:24px;z-index:10000;transform:translate(-50%,14px);opacity:0;pointer-events:none;background:#222;color:#fff;padding:11px 16px;border-radius:99px;font-size:11px;transition:.2s;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}body.modal-open{overflow:hidden}
+/* =====================================================
+ * 06. モーダル・一括入力UI
+ * ===================================================== */
+
+/* ---------- モーダル本体 ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: #0007;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 620px;
+  max-height: 92vh;
+  overflow: auto;
+  padding: 12px 18px calc(22px + var(--safe-bottom));
+  border-radius: 22px 22px 0 0;
+  background: #fff;
+}
+
+.modal-handle {
+  width: 42px;
+  height: 5px;
+  margin: 0 auto 15px;
+  border-radius: 99px;
+  background: #ddd;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-header h2 {
+  margin: 4px 0;
+  font-size: 22px;
+}
+
+.modal-header p {
+  margin: 0;
+  color: #888;
+  font-size: 11px;
+}
+
+.modal-close {
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #eee;
+  font-size: 24px;
+}
+
+
+/* ---------- フォーム ---------- */
+
+.form-section {
+  margin-top: 18px;
+}
+
+.status-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.status-button,
+.bulk-status-button,
+.weekday-button {
+  min-height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #f4f4f4;
+  color: #666;
+  font-weight: 800;
+}
+
+.status-button.selected,
+.bulk-status-button.selected,
+.weekday-button.selected {
+  border-color: #222;
+  background: #222;
+  color: #fff;
+}
+
+
+/* ---------- 時間入力 ---------- */
+
+.time-grid {
+  display: grid;
+  grid-template-columns: 1fr 20px 1fr;
+  align-items: end;
+  gap: 4px;
+}
+
+.time-separator {
+  padding-bottom: 15px;
+  text-align: center;
+}
+
+.manual-time-field {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+
+.manual-time-part {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.manual-time-colon {
+  font-weight: 800;
+}
+
+
+/* ---------- LAST ---------- */
+
+.manual-time-field.last-selected {
+  position: relative;
+  background: #242424;
+}
+
+.manual-time-field.last-selected input,
+.manual-time-field.last-selected span {
+  visibility: hidden;
+}
+
+.manual-time-field.last-selected::after {
+  content: "LAST";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  pointer-events: none;
+}
+
+.last-time-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #f2f2f2;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.last-time-button.selected {
+  background: #222;
+  color: #fff;
+}
+
+
+/* ---------- 備考・保存 ---------- */
+
+.textarea {
+  min-height: 78px;
+  padding: 12px;
+  resize: none;
+}
+
+.modal-save-button,
+.clear-button {
+  width: 100%;
+  min-height: 50px;
+  border-radius: 13px;
+  font-weight: 800;
+}
+
+.modal-save-button {
+  margin-top: 18px;
+  border: 0;
+  background: #222;
+  color: #fff;
+}
+
+.clear-button {
+  margin-top: 9px;
+  border: 1px solid #d6bebe;
+  background: #fff;
+  color: #8c3535;
+}
+
+
+/* ---------- 一括入力モード ---------- */
+
+.bulk-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.bulk-mode-button {
+  min-height: 72px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+
+.bulk-mode-button.selected {
+  border: 2px solid #222;
+  background: #fff;
+}
+
+.bulk-mode-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.bulk-mode-text small {
+  color: #888;
+  font-size: 9px;
+}
+
+.calendar-select-button {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  font-weight: 800;
+}
+
+
+/* ---------- 選択ガイド ---------- */
+
+.selected-dates-guide {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 13px;
+  border-radius: 12px;
+  background: #f4f4f4;
+}
+
+.selected-dates-guide p {
+  margin: 3px 0;
+  color: #777;
+  font-size: 10px;
+}
+
+
+/* ---------- 曜日選択 ---------- */
+
+.weekday-selector {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.weekday-button {
+  min-width: 0;
+}
+
+
+/* ---------- 上書き設定 ---------- */
+
+.overwrite-box {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 13px;
+  border-radius: 12px;
+  background: #f5f5f5;
+}
+
+.overwrite-box input {
+  width: 20px;
+}
+
+.overwrite-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+}
+
+.overwrite-text small {
+  color: #888;
+}
+
+
+/* ---------- 一括入力プレビュー ---------- */
+
+.bulk-preview {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  border-radius: 12px;
+  background: #eee;
+}
+
+
+/* ---------- 複数日選択バー ---------- */
+
+.multi-select-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + var(--safe-bottom));
+  z-index: 700;
+  width: calc(100% - 24px);
+  max-width: 696px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #1b1b1bf7;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translateX(-50%);
+}
+
+.multi-select-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+}
+
+.multi-select-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.multi-select-actions button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 9px;
+  font-weight: 800;
+}
+
+.multi-select-cancel {
+  background: #444;
+  color: #fff;
+}
+
+.multi-select-next {
+  background: #fff;
+  color: #222;
+}
+
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 10000;
+  padding: 11px 16px;
+  border-radius: 99px;
+  background: #222;
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 14px);
+  transition: .2s;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+
+/* ---------- モーダル表示中 ---------- */
+
+body.modal-open {
+  overflow: hidden;
+}
 
     /* 同伴・来店予定 */
     .visit-section{margin-top:22px;padding-top:18px;border-top:1px solid #eee}
