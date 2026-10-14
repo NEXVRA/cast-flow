@@ -1703,27 +1703,141 @@ body.modal-open {
   </main>
 
 </div>
-<!-- =====================================================
-     06. シフト提出画面
-===================================================== -->
-<div id="shiftView" class="hidden">
-<header class="app-header">
-  <div class="app-header-left">
-    <button class="menu-button" onclick="openDrawer()" aria-label="メニュー"><span></span><span></span><span></span></button>
-    <div><div class="header-logo">CAST FLOW</div><div class="header-subtitle">SHIFT SUBMISSION</div></div>
-  </div>
-  <button class="header-diamond-button" onclick="showNotice('通知機能は準備中です')"><span class="header-diamond"></span></button>
-</header>
-<main class="main-content"><section>
-  <div class="shift-top"><div><span class="page-label">SHIFT SUBMISSION</span><h1>シフト提出</h1></div><div id="monthStatus" class="month-status">未提出</div></div>
-  <div class="progress-card"><div class="progress-header"><div><span>入力状況</span><strong id="progressPercent">0%</strong></div><p id="progressMessage">日付を選択して入力してください</p></div><div class="progress-track"><div id="progressBar" class="progress-bar"></div></div></div>
-  <div class="calendar-card"><div id="calendar"></div></div>
-  <div class="legend"><div><span class="legend-dot working"></span>出勤</div><div><span class="legend-dot holiday"></span>休み</div><div><span class="legend-dot undecided"></span>未定</div><div><span class="legend-dot empty"></span>未入力</div></div>
-  <button class="bulk-button" onclick="openBulkModal()">一括入力</button>
-  <button id="submitMonthButton" class="submit-button" onclick="submitMonth()">この内容で提出する</button>
-</section></main>
-</div>
 
+<!-- =====================================================
+     13. シフト提出画面
+===================================================== -->
+
+<div
+  id="shiftView"
+  class="hidden"
+>
+
+  <header class="app-header">
+    <div class="app-header-left">
+
+      <button
+        class="menu-button"
+        onclick="openDrawer()"
+        aria-label="メニュー"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div>
+        <div class="header-logo">CAST FLOW</div>
+        <div class="header-subtitle">SHIFT SUBMISSION</div>
+      </div>
+
+    </div>
+
+    <button
+      class="header-diamond-button"
+      onclick="showNotice('通知機能は準備中です')"
+    >
+      <span class="header-diamond"></span>
+    </button>
+  </header>
+
+
+  <main class="main-content">
+    <section>
+
+      <!-- ---------- ページ上部 ---------- -->
+
+      <div class="shift-top">
+        <div>
+          <span class="page-label">SHIFT SUBMISSION</span>
+          <h1>シフト提出</h1>
+        </div>
+
+        <div
+          id="monthStatus"
+          class="month-status"
+        >
+          未提出
+        </div>
+      </div>
+
+
+      <!-- ---------- 入力進捗 ---------- -->
+
+      <div class="progress-card">
+        <div class="progress-header">
+          <div>
+            <span>入力状況</span>
+            <strong id="progressPercent">0%</strong>
+          </div>
+
+          <p id="progressMessage">
+            日付を選択して入力してください
+          </p>
+        </div>
+
+        <div class="progress-track">
+          <div
+            id="progressBar"
+            class="progress-bar"
+          ></div>
+        </div>
+      </div>
+
+
+      <!-- ---------- カレンダー ---------- -->
+
+      <div class="calendar-card">
+        <div id="calendar"></div>
+      </div>
+
+
+      <!-- ---------- 凡例 ---------- -->
+
+      <div class="legend">
+        <div>
+          <span class="legend-dot working"></span>
+          出勤
+        </div>
+
+        <div>
+          <span class="legend-dot holiday"></span>
+          休み
+        </div>
+
+        <div>
+          <span class="legend-dot undecided"></span>
+          未定
+        </div>
+
+        <div>
+          <span class="legend-dot empty"></span>
+          未入力
+        </div>
+      </div>
+
+
+      <!-- ---------- 操作 ---------- -->
+
+      <button
+        class="bulk-button"
+        onclick="openBulkModal()"
+      >
+        一括入力
+      </button>
+
+      <button
+        id="submitMonthButton"
+        class="submit-button"
+        onclick="submitMonth()"
+      >
+        この内容で提出する
+      </button>
+
+    </section>
+  </main>
+
+</div>
 <!-- =====================================================
      05. ヘッダー・サイドメニュー
 ===================================================== -->
