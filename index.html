@@ -1204,307 +1204,286 @@ body.modal-open {
 }
 
 /* =====================================================
- * 04-05. CAST FLOW ホーム・サイドメニュー
+ * 09. ホーム・サイドメニュー
  * ===================================================== */
 
-.app-header-left{
-  display:flex;
-  align-items:center;
-  gap:11px;
+/* ---------- ヘッダー左側 ---------- */
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 11px;
 }
 
 
-/* =====================================================
- * ハンバーガーメニュー
- * ===================================================== */
+/* ---------- ハンバーガーメニュー ---------- */
 
-.menu-button{
-  position:relative;
-  width:38px;
-  height:38px;
-  border:0;
-  border-radius:10px;
-  background:#2a2a2a;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:4px;
-  padding:0;
-  overflow:visible;
+.menu-button {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 10px;
+  background: #2a2a2a;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.menu-button span {
+  display: block;
+  width: 17px;
+  height: 2px;
+  border-radius: 99px;
+  background: #fff;
+}
+
+/* 未処理通知あり */
+.menu-button.has-notification::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e53935;
 }
 
 
-.menu-button span{
-  display:block;
-  width:17px;
-  height:2px;
-  border-radius:99px;
-  background:#fff;
+/* ---------- ホーム ---------- */
+
+.home-view {
+  min-height: calc(100vh - 66px);
+}
+
+.home-hero {
+  margin-bottom: 22px;
+}
+
+.home-hero-label {
+  color: #999;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+}
+
+.home-hero h1 {
+  margin: 5px 0 7px;
+  font-size: 30px;
+}
+
+.home-hero p {
+  margin: 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.7;
 }
 
 
-/*
- * 未処理通知あり
- */
-.menu-button.has-notification::after{
-  content:"";
-  position:absolute;
-  top:-2px;
-  right:-2px;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#e53935;
+/* ---------- ログイン中CAST ---------- */
+
+.home-user-card {
+  margin-bottom: 14px;
+  padding: 20px;
+  border-radius: 19px;
+  background: #202020;
+  color: #fff;
+}
+
+.home-user-label {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  opacity: .55;
+}
+
+.home-user-name {
+  margin-top: 6px;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.home-user-id {
+  margin-top: 5px;
+  font-size: 11px;
+  opacity: .55;
 }
 
 
-/* =====================================================
- * ホーム
- * ===================================================== */
+/* ---------- ホームメニュー ---------- */
 
-.home-view{
-  min-height:calc(100vh - 66px);
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.home-menu-card {
+  min-height: 130px;
+  padding: 17px;
+  border: 0;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 4px 18px #0000000b;
+  color: #222;
+  text-align: left;
+}
+
+.home-menu-card:active {
+  transform: scale(.98);
+}
+
+.home-menu-icon {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 18px;
+  border-radius: 11px;
+  background: #222;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.home-menu-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.home-menu-card small {
+  display: block;
+  margin-top: 5px;
+  color: #999;
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 
-.home-hero{
-  margin-bottom:22px;
+/* ---------- サイドメニュー ---------- */
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: #0008;
+  opacity: 0;
+  pointer-events: none;
+  transition: .22s;
 }
 
-
-.home-hero-label{
-  font-size:9px;
-  letter-spacing:1.8px;
-  color:#999;
+.drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-
-.home-hero h1{
-  margin:5px 0 7px;
-  font-size:30px;
-}
-
-
-.home-hero p{
-  margin:0;
-  color:#777;
-  font-size:12px;
-  line-height:1.7;
-}
-
-
-.home-user-card{
-  background:#202020;
-  color:#fff;
-  border-radius:19px;
-  padding:20px;
-  margin-bottom:14px;
-}
-
-
-.home-user-label{
-  font-size:9px;
-  letter-spacing:1.6px;
-  opacity:.55;
-}
-
-
-.home-user-name{
-  margin-top:6px;
-  font-size:25px;
-  font-weight:900;
-}
-
-
-.home-user-id{
-  margin-top:5px;
-  font-size:11px;
-  opacity:.55;
-}
-
-
-.home-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:11px;
-}
-
-
-.home-menu-card{
-  min-height:130px;
-  border:0;
-  border-radius:17px;
-  background:#fff;
-  box-shadow:0 4px 18px #0000000b;
-  padding:17px;
-  text-align:left;
-  color:#222;
-}
-
-
-.home-menu-card:active{
-  transform:scale(.98);
-}
-
-
-.home-menu-icon{
-  width:38px;
-  height:38px;
-  border-radius:11px;
-  background:#222;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:17px;
-  margin-bottom:18px;
-}
-
-
-.home-menu-card strong{
-  display:block;
-  font-size:15px;
-}
-
-
-.home-menu-card small{
-  display:block;
-  margin-top:5px;
-  color:#999;
-  font-size:9px;
-  line-height:1.5;
-}
-
-
-/* =====================================================
- * サイドメニュー
- * ===================================================== */
-
-.drawer-overlay{
-  position:fixed;
-  inset:0;
-  z-index:1200;
-  background:#0008;
-  opacity:0;
-  pointer-events:none;
-  transition:.22s;
-}
-
-
-.drawer-overlay.open{
-  opacity:1;
-  pointer-events:auto;
-}
-
-
-.side-drawer{
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:min(82vw,330px);
-  background:#fff;
-  transform:translateX(-102%);
-  transition:.25s ease;
+.side-drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(82vw, 330px);
   padding:
-    calc(22px + env(safe-area-inset-top,0px))
+    calc(22px + env(safe-area-inset-top, 0px))
     16px
-    calc(24px + env(safe-area-inset-bottom,0px));
-  overflow-y:auto;
+    calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  background: #fff;
+  transform: translateX(-102%);
+  transition: .25s ease;
+}
+
+.drawer-overlay.open .side-drawer {
+  transform: translateX(0);
 }
 
 
-.drawer-overlay.open .side-drawer{
-  transform:translateX(0);
+/* ---------- サイドメニュー・ブランド ---------- */
+
+.drawer-brand {
+  padding: 5px 8px 21px;
+}
+
+.drawer-logo {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.drawer-system {
+  margin-top: 3px;
+  color: #999;
+  font-size: 8px;
+  letter-spacing: 1.4px;
 }
 
 
-.drawer-brand{
-  padding:5px 8px 21px;
+/* ---------- サイドメニュー・ユーザー ---------- */
+
+.drawer-user {
+  margin-bottom: 18px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #f3f3f3;
+}
+
+.drawer-user-name {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.drawer-user-id {
+  margin-top: 3px;
+  color: #999;
+  font-size: 9px;
 }
 
 
-.drawer-logo{
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:2px;
+/* ---------- サイドメニュー・項目 ---------- */
+
+.drawer-section-title {
+  margin: 18px 10px 8px;
+  color: #aaa;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
 }
 
-
-.drawer-system{
-  margin-top:3px;
-  color:#999;
-  font-size:8px;
-  letter-spacing:1.4px;
+.drawer-item {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-weight: 800;
+  text-align: left;
 }
-
-
-.drawer-user{
-  border-radius:14px;
-  background:#f3f3f3;
-  padding:13px 14px;
-  margin-bottom:18px;
-}
-
-
-.drawer-user-name{
-  font-size:16px;
-  font-weight:900;
-}
-
-
-.drawer-user-id{
-  margin-top:3px;
-  font-size:9px;
-  color:#999;
-}
-
-
-.drawer-section-title{
-  margin:18px 10px 8px;
-  font-size:8px;
-  color:#aaa;
-  letter-spacing:1.5px;
-  font-weight:900;
-}
-
-
-.drawer-item{
-  position:relative;
-  width:100%;
-  min-height:48px;
-  border:0;
-  border-radius:11px;
-  background:transparent;
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:0 12px;
-  text-align:left;
-  font-weight:800;
-  color:#333;
-}
-
 
 .drawer-item:active,
-.drawer-item.active{
-  background:#ededed;
+.drawer-item.active {
+  background: #ededed;
 }
 
-
-.drawer-item-icon{
-  width:26px;
-  text-align:center;
-  font-size:17px;
+.drawer-item-icon {
+  width: 26px;
+  font-size: 17px;
+  text-align: center;
 }
 
-
-.drawer-divider{
-  height:1px;
-  background:#eee;
-  margin:14px 7px;
+.drawer-divider {
+  height: 1px;
+  margin: 14px 7px;
+  background: #eee;
 }
   </style>
 </head>
