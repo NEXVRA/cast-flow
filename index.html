@@ -5071,286 +5071,219 @@ function closeBulkModalForce() {
   );
 }
 /* =====================================================
- * 15. 共通時間入力
+ * 26. 共通時間入力・LAST処理
  * ===================================================== */
 
-function initializeManualInputs(){
+/* ---------- 時間入力初期化 ---------- */
 
+function initializeManualInputs() {
   [
     "start",
     "end",
     "bulkStart",
     "bulkEnd"
-  ].forEach(prefix=>{
-
-    const hour=
+  ].forEach(prefix => {
+    const hour =
       document.getElementById(
-        prefix+"Hour"
+        prefix + "Hour"
       );
 
-    const minute=
+    const minute =
       document.getElementById(
-        prefix+"Minute"
+        prefix + "Minute"
       );
 
-
-    if(
-      !hour ||
-      !minute
-    ){
+    if (!hour || !minute) {
       return;
     }
 
 
-    /*
-     * 既存値をタップ
-     * ↓
-     * 数字を全選択
-     * ↓
-     * そのまま上書き可能
-     */
+    /* 既存値を選択して上書き可能にする */
 
     hour.addEventListener(
       "focus",
-      ()=>{
-
-        setTimeout(()=>{
-
-          try{
+      () => {
+        setTimeout(() => {
+          try {
             hour.select();
-          }catch(e){}
-
-        },0);
-
+          } catch (e) {}
+        }, 0);
       }
     );
-
 
     minute.addEventListener(
       "focus",
-      ()=>{
-
-        setTimeout(()=>{
-
-          try{
+      () => {
+        setTimeout(() => {
+          try {
             minute.select();
-          }catch(e){}
-
-        },0);
-
+          } catch (e) {}
+        }, 0);
       }
     );
 
 
-    /*
-     * HH入力
-     */
+    /* HH入力 */
 
     hour.addEventListener(
       "input",
-      ()=>{
-
+      () => {
         digits(hour);
 
-
-        /*
-         * 2桁入力
-         * ↓
-         * MMへ自動移動
-         */
-
-        if(
-          hour.value.length===2
-        ){
-
+        // 2桁入力したらMMへ自動移動
+        if (hour.value.length === 2) {
           minute.focus();
 
-          setTimeout(()=>{
-
-            try{
+          setTimeout(() => {
+            try {
               minute.select();
-            }catch(e){}
-
-          },0);
-
+            } catch (e) {}
+          }, 0);
         }
-
       }
     );
 
 
-    /*
-     * MM入力
-     */
+    /* MM入力 */
 
     minute.addEventListener(
       "input",
-      ()=>{
-
+      () => {
         digits(minute);
-
       }
     );
 
 
-    /*
-     * MMが空でBackspace
-     * ↓
-     * HHへ戻る
-     */
+    /* MMが空でBackspace → HHへ戻る */
 
     minute.addEventListener(
       "keydown",
-      event=>{
-
-        if(
-          event.key==="Backspace" &&
-          minute.value===""
-        ){
-
+      event => {
+        if (
+          event.key === "Backspace" &&
+          minute.value === ""
+        ) {
           event.preventDefault();
 
           hour.focus();
 
-          setTimeout(()=>{
-
-            try{
+          setTimeout(() => {
+            try {
               hour.select();
-            }catch(e){}
-
-          },0);
-
+            } catch (e) {}
+          }, 0);
         }
-
       }
     );
 
 
-    /*
-     * 入力確定時
-     */
+    /* 入力確定 */
 
     hour.addEventListener(
       "blur",
-      ()=>padPart(
+      () => padPart(
         hour,
         23
       )
     );
 
-
     minute.addEventListener(
       "blur",
-      ()=>padPart(
+      () => padPart(
         minute,
         59
       )
     );
-
   });
-
 }
 
 
-/* =====================================================
- * 数字入力補助
- * ===================================================== */
+/* ---------- 数字入力補助 ---------- */
 
-function digits(el){
-
-  el.value=
+function digits(el) {
+  el.value =
     el.value
-      .replace(/\D/g,"")
-      .slice(0,2);
-
+      .replace(/\D/g, "")
+      .slice(0, 2);
 }
 
 
 function padPart(
   el,
   max
-){
-
-  if(el.value==="")return;
-
-
-  let n=
-    Number(el.value);
-
-
-  if(n>max){
-    n=max;
+) {
+  if (el.value === "") {
+    return;
   }
 
+  let n =
+    Number(el.value);
 
-  el.value=
+  if (n > max) {
+    n = max;
+  }
+
+  el.value =
     String(n)
-      .padStart(2,"0");
-
+      .padStart(2, "0");
 }
 
 
-/* =====================================================
- * 時刻セット・取得
- * ===================================================== */
+/* ---------- 時刻セット ---------- */
 
 function setTime(
   prefix,
   time
-){
+) {
+  if (time === "LAST") {
+    return;
+  }
 
-  if(time==="LAST")return;
-
-
-  const fallback=
+  const fallback =
     prefix
       .toLowerCase()
       .includes("end")
-        ?"01:00"
-        :"20:00";
-
+        ? "01:00"
+        : "20:00";
 
   const [
     hour,
     minute
-  ]=
+  ] =
     normalizeTime(
       time,
       fallback
     )
-    .split(":");
-
+      .split(":");
 
   document
     .getElementById(
-      prefix+"Hour"
+      prefix + "Hour"
     )
-    .value=
+    .value =
       hour;
 
-
   document
     .getElementById(
-      prefix+"Minute"
+      prefix + "Minute"
     )
-    .value=
+    .value =
       minute;
-
 }
 
 
-function getTime(prefix){
+/* ---------- 時刻取得 ---------- */
 
-  const hour=
+function getTime(prefix) {
+  const hour =
     document.getElementById(
-      prefix+"Hour"
+      prefix + "Hour"
     );
 
-  const minute=
+  const minute =
     document.getElementById(
-      prefix+"Minute"
+      prefix + "Minute"
     );
-
 
   padPart(
     hour,
@@ -5362,157 +5295,215 @@ function getTime(prefix){
     59
   );
 
-
-  if(
+  if (
     !hour.value ||
     !minute.value
-  ){
+  ) {
     return "";
   }
 
-
   return (
-    hour.value+
-    ":"+
+    hour.value +
+    ":" +
     minute.value
   );
-
 }
 
 
-/* =====================================================
- * LAST切替
- * ===================================================== */
+/* ---------- 通常入力：LAST切替 ---------- */
 
-function toggleEndTimeLast(){
-
+function toggleEndTimeLast() {
   setEndTimeLastState(
     !isEndTimeLast
   );
-
 }
 
 
-function setEndTimeLastState(value){
-
-  isEndTimeLast=
+function setEndTimeLastState(value) {
+  isEndTimeLast =
     !!value;
 
-
-  const field=
+  const field =
     document.getElementById(
       "endTimeField"
     );
 
-  const button=
+  const button =
     document.getElementById(
       "endTimeLastButton"
     );
-
 
   document
     .getElementById(
       "endHour"
     )
-    .disabled=
+    .disabled =
       isEndTimeLast;
-
 
   document
     .getElementById(
       "endMinute"
     )
-    .disabled=
+    .disabled =
       isEndTimeLast;
-
 
   field.classList.toggle(
     "last-selected",
     isEndTimeLast
   );
 
-
   button.classList.toggle(
     "selected",
     isEndTimeLast
   );
 
-
-  button.textContent=
+  button.textContent =
     isEndTimeLast
-      ?"LASTを解除する"
-      :"退勤時間をLASTにする";
-
+      ? "LASTを解除する"
+      : "退勤時間をLASTにする";
 }
 
 
-function toggleBulkEndTimeLast(){
+/* ---------- 一括入力：LAST切替 ---------- */
 
+function toggleBulkEndTimeLast() {
   setBulkEndTimeLastState(
     !isBulkEndTimeLast
   );
-
 }
 
 
-function setBulkEndTimeLastState(value){
-
-  isBulkEndTimeLast=
+function setBulkEndTimeLastState(value) {
+  isBulkEndTimeLast =
     !!value;
 
-
-  const field=
+  const field =
     document.getElementById(
       "bulkEndTimeField"
     );
 
-  const button=
+  const button =
     document.getElementById(
       "bulkEndTimeLastButton"
     );
-
 
   document
     .getElementById(
       "bulkEndHour"
     )
-    .disabled=
+    .disabled =
       isBulkEndTimeLast;
-
 
   document
     .getElementById(
       "bulkEndMinute"
     )
-    .disabled=
+    .disabled =
       isBulkEndTimeLast;
-
 
   field.classList.toggle(
     "last-selected",
     isBulkEndTimeLast
   );
 
-
   button.classList.toggle(
     "selected",
     isBulkEndTimeLast
   );
 
-
-  button.textContent=
+  button.textContent =
     isBulkEndTimeLast
-      ?"LASTを解除する"
-      :"退勤時間をLASTにする";
-
+      ? "LASTを解除する"
+      : "退勤時間をLASTにする";
 }
-function normalizeTime(v,f){const s=String(v||"").trim();return /^\d{2}:\d{2}$/.test(s)?s:f}
-function parseLocalDate(s){const p=s.split("-").map(Number);return new Date(p[0],p[1]-1,p[2])}
-function formatDateObject(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
-function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
-function showNotice(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3000)}
-function setLoadingMessage(msg){const el=document.getElementById("loadingMessage");if(el)el.textContent=msg||"読み込んでいます…"}
-function hideLoading(){document.getElementById("loadingScreen").classList.add("hide")}
+
+
+/* ---------- 時刻補助 ---------- */
+
+function normalizeTime(v, f) {
+  const s =
+    String(v || "").trim();
+
+  return /^\d{2}:\d{2}$/.test(s)
+    ? s
+    : f;
+}
+
+
+/* ---------- 日付補助 ---------- */
+
+function parseLocalDate(s) {
+  const p =
+    s.split("-").map(Number);
+
+  return new Date(
+    p[0],
+    p[1] - 1,
+    p[2]
+  );
+}
+
+
+function formatDateObject(d) {
+  return (
+    `${d.getFullYear()}-` +
+    `${String(d.getMonth() + 1).padStart(2, "0")}-` +
+    `${String(d.getDate()).padStart(2, "0")}`
+  );
+}
+
+
+/* ---------- 文字列補助 ---------- */
+
+function cap(s) {
+  return (
+    s.charAt(0).toUpperCase() +
+    s.slice(1)
+  );
+}
+
+
+/* ---------- Toast通知 ---------- */
+
+function showNotice(msg) {
+  const t =
+    document.getElementById(
+      "toast"
+    );
+
+  t.textContent = msg;
+  t.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer =
+    setTimeout(
+      () => t.classList.remove("show"),
+      3000
+    );
+}
+
+
+/* ---------- ローディング表示 ---------- */
+
+function setLoadingMessage(msg) {
+  const el =
+    document.getElementById(
+      "loadingMessage"
+    );
+
+  if (el) {
+    el.textContent =
+      msg || "読み込んでいます…";
+  }
+}
+
+
+function hideLoading() {
+  document
+    .getElementById("loadingScreen")
+    .classList.add("hide");
+}
 /* =====================================================
  * 16. 共通表示
  * ===================================================== */
