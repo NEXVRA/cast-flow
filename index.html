@@ -4519,37 +4519,557 @@ async function submitMonth() {
     button.disabled = false;
   }
 }
-function openBulkModal(){resetBulkForm();updateBulkTargetMonthText();selectBulkMode("selectedDates");document.getElementById("bulkModal").classList.remove("hidden");document.body.classList.add("modal-open")}
-function closeBulkModal(){if(isBulkSaving)return;document.getElementById("bulkModal").classList.add("hidden");document.body.classList.remove("modal-open")}
-function resetBulkForm(){bulkMode="selectedDates";bulkStatus="working";bulkWeekdays=[];document.querySelectorAll(".weekday-button").forEach(b=>b.classList.remove("selected"));selectBulkStatus("working");setTime("bulkStart",currentCastDefaults.defaultStartTime);setTime("bulkEnd",currentCastDefaults.defaultEndTime);setBulkEndTimeLastState(false);document.getElementById("bulkNote").value="";document.getElementById("bulkOverwrite").checked=false;updateMultiSelectDisplay();updateBulkPreview()}
-function selectBulkMode(m){bulkMode=m;document.getElementById("bulkModeSelectedDates").classList.toggle("selected",m==="selectedDates");document.getElementById("bulkModeWeekdays").classList.toggle("selected",m==="weekdays");document.getElementById("selectedDatesModePanel").classList.toggle("hidden",m!=="selectedDates");document.getElementById("weekdaysModePanel").classList.toggle("hidden",m!=="weekdays");updateBulkPreview()}
-function selectBulkStatus(s){bulkStatus=s;["working","holiday","undecided"].forEach(x=>document.getElementById("bulkStatus"+cap(x)).classList.toggle("selected",x===s));document.getElementById("bulkWorkingFields").classList.toggle("hidden",s!=="working")}
-function startMultiSelect(){closeBulkModal();isMultiSelectMode=true;multiSelectedDates=[];document.body.classList.add("multi-select-mode");document.getElementById("multiSelectBar").classList.remove("hidden");updateMultiSelectDisplay();refreshMultiSelectedDays();showNotice("入力したい日を選択してください")}
-function cancelMultiSelect(){isMultiSelectMode=false;multiSelectedDates=[];document.getElementById("multiSelectBar").classList.add("hidden");refreshMultiSelectedDays();updateMultiSelectDisplay()}
-function toggleMultiSelectedDate(d){const i=multiSelectedDates.indexOf(d);if(i>=0)multiSelectedDates.splice(i,1);else multiSelectedDates.push(d);multiSelectedDates.sort();refreshMultiSelectedDays();updateMultiSelectDisplay()}
-function openSelectedDatesInput(){if(!multiSelectedDates.length)return;isMultiSelectMode=false;document.getElementById("multiSelectBar").classList.add("hidden");refreshMultiSelectedDays();resetBulkForm();bulkMode="selectedDates";selectBulkMode("selectedDates");updateBulkPreview();document.getElementById("bulkModal").classList.remove("hidden");document.body.classList.add("modal-open")}
-function refreshMultiSelectedDays(){document.querySelectorAll(".fc-daygrid-day").forEach(el=>applyMultiSelectClass(el,el.getAttribute("data-date")))}
-function applyMultiSelectClass(el,d){if(el&&d)el.classList.toggle("multi-selected-day",multiSelectedDates.includes(d))}
-function updateMultiSelectDisplay(){const n=multiSelectedDates.length;document.getElementById("multiSelectCount").textContent=n+"日選択";document.getElementById("selectedDatesSummaryCount").textContent=n+"日";document.getElementById("selectedDatesSummary").classList.toggle("hidden",n===0);document.getElementById("multiSelectNextButton").disabled=n===0}
-function toggleBulkWeekday(n){const i=bulkWeekdays.indexOf(n);if(i>=0)bulkWeekdays.splice(i,1);else bulkWeekdays.push(n);bulkWeekdays.sort();document.getElementById("bulkWeekday"+n).classList.toggle("selected",bulkWeekdays.includes(n));updateBulkPreview()}
-function getWeekdayTargetDates(){if(!calendar)return[];const c=calendar.getDate(),y=c.getFullYear(),m=c.getMonth(),last=new Date(y,m+1,0).getDate(),a=[];for(let d=1;d<=last;d++){const x=new Date(y,m,d);if(bulkWeekdays.includes(x.getDay()))a.push(formatDateObject(x))}return a}
-function updateBulkPreview(){const n=bulkMode==="selectedDates"?multiSelectedDates.length:getWeekdayTargetDates().length;document.getElementById("bulkPreviewCount").textContent=n+"日"}
-function updateBulkTargetMonthText(){if(!calendar)return;const c=calendar.getDate();document.getElementById("bulkTargetMonthText").textContent=`${c.getFullYear()}年${c.getMonth()+1}月へまとめて入力します`}
-async function saveBulkShifts(){
- if(isBulkSaving)return;const dates=bulkMode==="selectedDates"?multiSelectedDates:getWeekdayTargetDates();if(!dates.length){showNotice(bulkMode==="weekdays"?"曜日を選択してください":"日付を選択してください");return}
- let startTime="",endTime="";if(bulkStatus==="working"){startTime=getTime("bulkStart");endTime=isBulkEndTimeLast?"LAST":getTime("bulkEnd");if(!startTime||!endTime){showNotice("出勤時間と退勤時間を入力してください");return}}
- isBulkSaving=true;const b=document.getElementById("bulkSaveButton");b.disabled=true;b.textContent="保存中...";
- try{
-  let r;
-  if(bulkMode==="selectedDates"){
-   r=await callApi({action:"saveMultiShifts",idToken:currentIdToken,dates:JSON.stringify(multiSelectedDates),status:bulkStatus,startTime,endTime,note:document.getElementById("bulkNote").value,overwrite:document.getElementById("bulkOverwrite").checked});
-  }else{
-   const c=calendar.getDate();r=await callApi({action:"saveBulkShifts",idToken:currentIdToken,targetMonth:`${c.getFullYear()}-${String(c.getMonth()+1).padStart(2,"0")}`,weekdays:JSON.stringify(bulkWeekdays),status:bulkStatus,start:startTime,end:endTime,transport:false,note:document.getElementById("bulkNote").value,overwrite:document.getElementById("bulkOverwrite").checked});
-  }
-  if(!r.success)throw new Error(r.error||"一括保存に失敗しました");closeBulkModalForce();multiSelectedDates=[];showNotice(`${r.savedCount??dates.length}日保存しました`);await loadDisplayedMonth()
- }catch(e){showNotice(e.message||String(e))}finally{isBulkSaving=false;b.disabled=false;b.textContent="まとめて保存"}
+/* =====================================================
+ * 25. 一括入力・複数日選択
+ * ===================================================== */
+
+/* ---------- 一括入力モーダル ---------- */
+
+function openBulkModal() {
+  resetBulkForm();
+  updateBulkTargetMonthText();
+  selectBulkMode("selectedDates");
+
+  document
+    .getElementById("bulkModal")
+    .classList.remove("hidden");
+
+  document.body.classList.add("modal-open");
 }
-function closeBulkModalForce(){document.getElementById("bulkModal").classList.add("hidden");document.body.classList.remove("modal-open")}
+
+
+function closeBulkModal() {
+  if (isBulkSaving) {
+    return;
+  }
+
+  document
+    .getElementById("bulkModal")
+    .classList.add("hidden");
+
+  document.body.classList.remove("modal-open");
+}
+
+
+/* ---------- 一括入力フォーム初期化 ---------- */
+
+function resetBulkForm() {
+  bulkMode = "selectedDates";
+  bulkStatus = "working";
+  bulkWeekdays = [];
+
+  document
+    .querySelectorAll(".weekday-button")
+    .forEach(button => {
+      button.classList.remove("selected");
+    });
+
+  selectBulkStatus("working");
+
+  setTime(
+    "bulkStart",
+    currentCastDefaults.defaultStartTime
+  );
+
+  setTime(
+    "bulkEnd",
+    currentCastDefaults.defaultEndTime
+  );
+
+  setBulkEndTimeLastState(false);
+
+  document.getElementById("bulkNote").value = "";
+  document.getElementById("bulkOverwrite").checked = false;
+
+  updateMultiSelectDisplay();
+  updateBulkPreview();
+}
+
+
+/* ---------- 一括入力モード切替 ---------- */
+
+function selectBulkMode(mode) {
+  bulkMode = mode;
+
+  document
+    .getElementById("bulkModeSelectedDates")
+    .classList.toggle(
+      "selected",
+      mode === "selectedDates"
+    );
+
+  document
+    .getElementById("bulkModeWeekdays")
+    .classList.toggle(
+      "selected",
+      mode === "weekdays"
+    );
+
+  document
+    .getElementById("selectedDatesModePanel")
+    .classList.toggle(
+      "hidden",
+      mode !== "selectedDates"
+    );
+
+  document
+    .getElementById("weekdaysModePanel")
+    .classList.toggle(
+      "hidden",
+      mode !== "weekdays"
+    );
+
+  updateBulkPreview();
+}
+
+
+/* ---------- 一括勤務区分 ---------- */
+
+function selectBulkStatus(status) {
+  bulkStatus = status;
+
+  [
+    "working",
+    "holiday",
+    "undecided"
+  ].forEach(item => {
+    document
+      .getElementById(
+        "bulkStatus" + cap(item)
+      )
+      .classList.toggle(
+        "selected",
+        item === status
+      );
+  });
+
+  document
+    .getElementById("bulkWorkingFields")
+    .classList.toggle(
+      "hidden",
+      status !== "working"
+    );
+}
+
+
+/* ---------- 複数日選択開始 ---------- */
+
+function startMultiSelect() {
+  closeBulkModal();
+
+  isMultiSelectMode = true;
+  multiSelectedDates = [];
+
+  document.body.classList.add(
+    "multi-select-mode"
+  );
+
+  document
+    .getElementById("multiSelectBar")
+    .classList.remove("hidden");
+
+  updateMultiSelectDisplay();
+  refreshMultiSelectedDays();
+
+  showNotice(
+    "入力したい日を選択してください"
+  );
+}
+
+
+/* ---------- 複数日選択キャンセル ---------- */
+
+function cancelMultiSelect() {
+  isMultiSelectMode = false;
+  multiSelectedDates = [];
+
+  document
+    .getElementById("multiSelectBar")
+    .classList.add("hidden");
+
+  refreshMultiSelectedDays();
+  updateMultiSelectDisplay();
+}
+
+
+/* ---------- 日付選択切替 ---------- */
+
+function toggleMultiSelectedDate(date) {
+  const index =
+    multiSelectedDates.indexOf(date);
+
+  if (index >= 0) {
+    multiSelectedDates.splice(index, 1);
+
+  } else {
+    multiSelectedDates.push(date);
+  }
+
+  multiSelectedDates.sort();
+
+  refreshMultiSelectedDays();
+  updateMultiSelectDisplay();
+}
+
+
+/* ---------- 選択日をまとめて入力 ---------- */
+
+function openSelectedDatesInput() {
+  if (!multiSelectedDates.length) {
+    return;
+  }
+
+  isMultiSelectMode = false;
+
+  document
+    .getElementById("multiSelectBar")
+    .classList.add("hidden");
+
+  refreshMultiSelectedDays();
+
+  resetBulkForm();
+
+  bulkMode = "selectedDates";
+
+  selectBulkMode("selectedDates");
+  updateBulkPreview();
+
+  document
+    .getElementById("bulkModal")
+    .classList.remove("hidden");
+
+  document.body.classList.add("modal-open");
+}
+
+
+/* ---------- 選択日の表示更新 ---------- */
+
+function refreshMultiSelectedDays() {
+  document
+    .querySelectorAll(".fc-daygrid-day")
+    .forEach(element => {
+      applyMultiSelectClass(
+        element,
+        element.getAttribute("data-date")
+      );
+    });
+}
+
+
+function applyMultiSelectClass(element, date) {
+  if (element && date) {
+    element.classList.toggle(
+      "multi-selected-day",
+      multiSelectedDates.includes(date)
+    );
+  }
+}
+
+
+/* ---------- 複数日選択表示 ---------- */
+
+function updateMultiSelectDisplay() {
+  const count =
+    multiSelectedDates.length;
+
+  document
+    .getElementById("multiSelectCount")
+    .textContent =
+      count + "日選択";
+
+  document
+    .getElementById("selectedDatesSummaryCount")
+    .textContent =
+      count + "日";
+
+  document
+    .getElementById("selectedDatesSummary")
+    .classList.toggle(
+      "hidden",
+      count === 0
+    );
+
+  document
+    .getElementById("multiSelectNextButton")
+    .disabled =
+      count === 0;
+}
+
+
+/* ---------- 曜日選択 ---------- */
+
+function toggleBulkWeekday(weekday) {
+  const index =
+    bulkWeekdays.indexOf(weekday);
+
+  if (index >= 0) {
+    bulkWeekdays.splice(index, 1);
+
+  } else {
+    bulkWeekdays.push(weekday);
+  }
+
+  bulkWeekdays.sort();
+
+  document
+    .getElementById(
+      "bulkWeekday" + weekday
+    )
+    .classList.toggle(
+      "selected",
+      bulkWeekdays.includes(weekday)
+    );
+
+  updateBulkPreview();
+}
+
+
+/* ---------- 曜日指定の日付取得 ---------- */
+
+function getWeekdayTargetDates() {
+  if (!calendar) {
+    return [];
+  }
+
+  const current =
+    calendar.getDate();
+
+  const year =
+    current.getFullYear();
+
+  const month =
+    current.getMonth();
+
+  const lastDay =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+  const dates = [];
+
+  for (
+    let day = 1;
+    day <= lastDay;
+    day++
+  ) {
+    const date =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+    if (
+      bulkWeekdays.includes(
+        date.getDay()
+      )
+    ) {
+      dates.push(
+        formatDateObject(date)
+      );
+    }
+  }
+
+  return dates;
+}
+
+
+/* ---------- 一括入力件数プレビュー ---------- */
+
+function updateBulkPreview() {
+  const count =
+    bulkMode === "selectedDates"
+      ? multiSelectedDates.length
+      : getWeekdayTargetDates().length;
+
+  document
+    .getElementById("bulkPreviewCount")
+    .textContent =
+      count + "日";
+}
+
+
+/* ---------- 対象月表示 ---------- */
+
+function updateBulkTargetMonthText() {
+  if (!calendar) {
+    return;
+  }
+
+  const current =
+    calendar.getDate();
+
+  document
+    .getElementById("bulkTargetMonthText")
+    .textContent =
+      `${current.getFullYear()}年${current.getMonth() + 1}月へまとめて入力します`;
+}
+
+
+/* ---------- 一括保存 ---------- */
+
+async function saveBulkShifts() {
+  if (isBulkSaving) {
+    return;
+  }
+
+  const dates =
+    bulkMode === "selectedDates"
+      ? multiSelectedDates
+      : getWeekdayTargetDates();
+
+  if (!dates.length) {
+    showNotice(
+      bulkMode === "weekdays"
+        ? "曜日を選択してください"
+        : "日付を選択してください"
+    );
+
+    return;
+  }
+
+
+  /* 出退勤時間 */
+
+  let startTime = "";
+  let endTime = "";
+
+  if (bulkStatus === "working") {
+    startTime =
+      getTime("bulkStart");
+
+    endTime =
+      isBulkEndTimeLast
+        ? "LAST"
+        : getTime("bulkEnd");
+
+    if (!startTime || !endTime) {
+      showNotice(
+        "出勤時間と退勤時間を入力してください"
+      );
+
+      return;
+    }
+  }
+
+
+  /* 保存開始 */
+
+  isBulkSaving = true;
+
+  const button =
+    document.getElementById(
+      "bulkSaveButton"
+    );
+
+  button.disabled = true;
+  button.textContent = "保存中...";
+
+
+  try {
+    let result;
+
+
+    /* 選択した日 */
+
+    if (bulkMode === "selectedDates") {
+      result = await callApi({
+        action: "saveMultiShifts",
+        idToken: currentIdToken,
+        dates: JSON.stringify(
+          multiSelectedDates
+        ),
+        status: bulkStatus,
+        startTime,
+        endTime,
+        note:
+          document.getElementById(
+            "bulkNote"
+          ).value,
+        overwrite:
+          document.getElementById(
+            "bulkOverwrite"
+          ).checked
+      });
+
+
+    /* 曜日指定 */
+
+    } else {
+      const current =
+        calendar.getDate();
+
+      result = await callApi({
+        action: "saveBulkShifts",
+        idToken: currentIdToken,
+        targetMonth:
+          `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`,
+        weekdays:
+          JSON.stringify(
+            bulkWeekdays
+          ),
+        status: bulkStatus,
+        start: startTime,
+        end: endTime,
+        transport: false,
+        note:
+          document.getElementById(
+            "bulkNote"
+          ).value,
+        overwrite:
+          document.getElementById(
+            "bulkOverwrite"
+          ).checked
+      });
+    }
+
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "一括保存に失敗しました"
+      );
+    }
+
+
+    /* 保存完了 */
+
+    closeBulkModalForce();
+
+    multiSelectedDates = [];
+
+    showNotice(
+      `${result.savedCount ?? dates.length}日保存しました`
+    );
+
+    await loadDisplayedMonth();
+
+  } catch (e) {
+    showNotice(
+      e.message || String(e)
+    );
+
+  } finally {
+    isBulkSaving = false;
+    button.disabled = false;
+    button.textContent = "まとめて保存";
+  }
+}
+
+
+/* ---------- 一括入力モーダル強制終了 ---------- */
+
+function closeBulkModalForce() {
+  document
+    .getElementById("bulkModal")
+    .classList.add("hidden");
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+}
 /* =====================================================
  * 15. 共通時間入力
  * ===================================================== */
