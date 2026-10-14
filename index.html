@@ -3230,53 +3230,319 @@ async function openNormalShiftScreen() {
   setupCastFlowNavigation();
   showShiftView();
 }
-function initializeCalendar(){
- const next=new Date();next.setMonth(next.getMonth()+1);next.setDate(1);
- calendar=new FullCalendar.Calendar(document.getElementById("calendar"),{
-  initialView:"dayGridMonth",initialDate:next,locale:"ja",firstDay:0,fixedWeekCount:false,showNonCurrentDates:true,height:"auto",
-  headerToolbar:{left:"prev",center:"title",right:"next"},titleFormat:{year:"numeric",month:"long"},dayHeaderFormat:{weekday:"short"},
-  dateClick:i=>{if(!isCurrentMonth(i.date))return;if(isMultiSelectMode)toggleMultiSelectedDate(i.dateStr);else openShiftModal(i.dateStr)},
-  eventClick:i=>{i.jsEvent.preventDefault();i.jsEvent.stopPropagation();const d=i.event.startStr.slice(0,10);if(isMultiSelectMode)toggleMultiSelectedDate(d);else openShiftModal(d)},
-  datesSet:()=>{
-   if(isMultiSelectMode)cancelMultiSelect();
-   updateBulkTargetMonthText();
-   if(suppressNextMonthAutoLoad){
-    suppressNextMonthAutoLoad=false;
+/* =====================================================
+ * 21. カレンダー・月間シフト処理
+ * ===================================================== */
+
+/* ---------- カレンダー初期化 ---------- */
+
+function initializeCalendar() {
+  const next = new Date();
+
+  next.setMonth(next.getMonth() + 1);
+  next.setDate(1);
+
+  calendar = new FullCalendar.Calendar(
+    document.getElementById("calendar"),
+    {
+      initialView: "dayGridMonth",
+      initialDate: next,
+      locale: "ja",
+      firstDay: 0,
+      fixedWeekCount: false,
+      showNonCurrentDates: true,
+      height: "auto",
+
+      headerToolbar: {
+        left: "prev",
+        center: "title",
+        right: "next"
+      },
+
+      titleFormat: {
+        year: "numeric",
+        month: "long"
+      },
+
+      dayHeaderFormat: {
+        weekday: "short"
+      },
+
+
+      /* ---------- 日付クリック ---------- */
+
+      dateClick: info => {
+        if (!isCurrentMonth(info.date)) {
+          return;
+        }
+
+        if (isMultiSelectMode) {
+          toggleMultiSelectedDate(info.dateStr);
+
+        } else {
+          openShiftModal(info.dateStr);
+        }
+      },
+
+
+      /* ---------- シフトイベントクリック ---------- */
+
+      eventClick: info => {
+        info.jsEvent.preventDefault();
+        info.jsEvent.stopPropagation();
+
+        const date =
+          info.event.startStr.slice(0, 10);
+
+        if (isMultiSelectMode) {
+          toggleMultiSelectedDate(date);
+
+        } else {
+          openShiftModal(date);
+        }
+      },
+
+
+      /* ---------- 月移動 ---------- */
+
+      datesSet: () => {
+        if (isMultiSelectMode) {
+          cancelMultiSelect();
+        }
+
+        updateBulkTargetMonthText();
+
+        if (suppressNextMonthAutoLoad) {
+          suppressNextMonthAutoLoad = false;
+          return;
+        }
+
+        setTimeout(
+          loadDisplayedMonth,
+          0
+        );
+      },
+
+
+      /* ---------- 日付セル描画 ---------- */
+
+      dayCellDidMount: info => {
+        applyMultiSelectClass(
+          info.el,
+          formatDateObject(info.date)
+        );
+      },
+
+      eventDisplay: "block",
+      displayEventTime: false
+    }
+  );
+
+  calendar.render();
+}
+
+
+/* ---------- 表示中の月か判定 ---------- */
+
+function isCurrentMonth(date) {
+  const current = calendar.getDate();
+
+  return (
+    date.getFullYear() === current.getFullYear() &&
+    date.getMonth() === current.getMonth()
+  );
+}
+
+
+/* ---------- 表示月シフト読込 ---------- */
+
+async function loadDisplayedMonth() {
+  if (!calendar || isLoadingMonth) {
     return;
-   }
-   setTimeout(loadDisplayedMonth,0);
-  },
-  dayCellDidMount:i=>applyMultiSelectClass(i.el,formatDateObject(i.date)),eventDisplay:"block",displayEventTime:false
- });
- calendar.render();
+  }
+
+  isLoadingMonth = true;
+
+  const current = calendar.getDate();
+  const year = current.getFullYear();
+  const month = current.getMonth() + 1;
+
+  try {
+    const result = await callApi({
+      action: "getMonthlyShiftData",
+      idToken: currentIdToken,
+      year,
+      month
+    });
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "シフトの読み込みに失敗しました"
+      );
+    }
+
+
+    /* 表示月の旧データを削除 */
+
+    Object.keys(shiftEntries).forEach(key => {
+      const date = parseLocalDate(key);
+
+      if (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1
+      ) {
+        delete shiftEntries[key];
+      }
+    });
+
+
+    /* 取得データを反映 */
+
+    (result.entries || []).forEach(entry => {
+      shiftEntries[entry.date] = {
+        ...entry,
+        status: entry.status || "undecided",
+        startTime: entry.startTime || "",
+        endTime: entry.endTime || "",
+        note: entry.note || ""
+      };
+    });
+
+    currentMonthSubmitted =
+      !!result.submitted;
+
+    refreshCalendarEvents();
+    updateProgress();
+    updateBulkPreview();
+
+  } catch (error) {
+    showNotice(
+      error.message || String(error)
+    );
+
+  } finally {
+    isLoadingMonth = false;
+  }
 }
-function isCurrentMonth(d){const c=calendar.getDate();return d.getFullYear()===c.getFullYear()&&d.getMonth()===c.getMonth()}
-async function loadDisplayedMonth(){
- if(!calendar||isLoadingMonth)return;isLoadingMonth=true;
- const c=calendar.getDate(),year=c.getFullYear(),month=c.getMonth()+1;
- try{
-  const r=await callApi({action:"getMonthlyShiftData",idToken:currentIdToken,year,month});
-  if(!r.success)throw new Error(r.error||"シフトの読み込みに失敗しました");
-  Object.keys(shiftEntries).forEach(k=>{const d=parseLocalDate(k);if(d.getFullYear()===year&&d.getMonth()===month-1)delete shiftEntries[k]});
-  (r.entries||[]).forEach(e=>shiftEntries[e.date]={...e,status:e.status||"undecided",startTime:e.startTime||"",endTime:e.endTime||"",note:e.note||""});
-  currentMonthSubmitted=!!r.submitted;refreshCalendarEvents();updateProgress();updateBulkPreview();
- }catch(e){showNotice(e.message||String(e))}finally{isLoadingMonth=false}
+
+
+/* ---------- カレンダー表示更新 ---------- */
+
+function refreshCalendarEvents() {
+  if (!calendar) {
+    return;
+  }
+
+  calendar.removeAllEvents();
+
+  Object.values(shiftEntries).forEach(entry => {
+    let title =
+      entry.status === "working"
+        ? "出勤"
+        : entry.status === "holiday"
+          ? "休み"
+          : "未定";
+
+    if (
+      entry.status === "working" &&
+      entry.startTime
+    ) {
+      title +=
+        " " +
+        entry.startTime +
+        (
+          entry.endTime
+            ? "〜" + entry.endTime
+            : ""
+        );
+    }
+
+    calendar.addEvent({
+      id: entry.shiftId || entry.date,
+      start: entry.date,
+      allDay: true,
+      title,
+      classNames: [
+        "shift-" + entry.status
+      ],
+      backgroundColor:
+        entry.status === "holiday"
+          ? "#a95b5b"
+          : entry.status === "undecided"
+            ? "#999"
+            : "#333"
+    });
+  });
 }
-function refreshCalendarEvents(){
- if(!calendar)return;calendar.removeAllEvents();
- Object.values(shiftEntries).forEach(e=>{
-  let title=e.status==="working"?"出勤":e.status==="holiday"?"休み":"未定";
-  if(e.status==="working"&&e.startTime)title+=" "+e.startTime+(e.endTime?"〜"+e.endTime:"");
-  calendar.addEvent({id:e.shiftId||e.date,start:e.date,allDay:true,title,classNames:["shift-"+e.status],backgroundColor:e.status==="holiday"?"#a95b5b":e.status==="undecided"?"#999":"#333"});
- });
-}
-function updateProgress(){
- const c=calendar.getDate(),days=new Date(c.getFullYear(),c.getMonth()+1,0).getDate();
- let n=0;Object.keys(shiftEntries).forEach(k=>{const d=parseLocalDate(k);if(d.getFullYear()===c.getFullYear()&&d.getMonth()===c.getMonth())n++});
- const p=Math.round(n/days*100);document.getElementById("progressPercent").textContent=p+"%";document.getElementById("progressBar").style.width=p+"%";
- document.getElementById("progressMessage").textContent=n+" / "+days+"日 入力済み";
- const ms=document.getElementById("monthStatus");ms.textContent=currentMonthSubmitted?"提出済み":"未提出";ms.classList.toggle("submitted",currentMonthSubmitted);
- document.getElementById("submitMonthButton").textContent=currentMonthSubmitted?"提出済み":"この内容で提出する";
+
+
+/* ---------- 入力進捗更新 ---------- */
+
+function updateProgress() {
+  const current = calendar.getDate();
+
+  const days =
+    new Date(
+      current.getFullYear(),
+      current.getMonth() + 1,
+      0
+    ).getDate();
+
+  let count = 0;
+
+  Object.keys(shiftEntries).forEach(key => {
+    const date = parseLocalDate(key);
+
+    if (
+      date.getFullYear() === current.getFullYear() &&
+      date.getMonth() === current.getMonth()
+    ) {
+      count++;
+    }
+  });
+
+  const percent =
+    Math.round(
+      count / days * 100
+    );
+
+  document
+    .getElementById("progressPercent")
+    .textContent =
+      percent + "%";
+
+  document
+    .getElementById("progressBar")
+    .style.width =
+      percent + "%";
+
+  document
+    .getElementById("progressMessage")
+    .textContent =
+      count + " / " + days + "日 入力済み";
+
+
+  const monthStatus =
+    document.getElementById("monthStatus");
+
+  monthStatus.textContent =
+    currentMonthSubmitted
+      ? "提出済み"
+      : "未提出";
+
+  monthStatus.classList.toggle(
+    "submitted",
+    currentMonthSubmitted
+  );
+
+
+  document
+    .getElementById("submitMonthButton")
+    .textContent =
+      currentMonthSubmitted
+        ? "提出済み"
+        : "この内容で提出する";
 }
 async function openShiftModal(date){
  selectedDate=date;
