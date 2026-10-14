@@ -2928,141 +2928,87 @@ async function checkAuthStatus() {
   hideLoading();
 }
 /* =====================================================
- * 11-A. 登録済みアプリ起動
+ * 19. 登録済みアプリ起動
  * ===================================================== */
 
-async function startRegisteredApp(){
+async function startRegisteredApp() {
 
-  /*
-   * LINE通知などから渡された
-   * 起動アクションを取得
-   */
-  const params=
-    new URLSearchParams(
-      window.location.search
-    );
+  /* ---------- 起動アクション取得 ---------- */
+
+  const params = new URLSearchParams(window.location.search);
+  const launchAction = String(params.get("action") || "").trim();
 
 
-  const launchAction=
-    String(
-      params.get("action") || ""
-    ).trim();
+  /* ---------- 出勤確認URLアクション ---------- */
 
+  const attendanceHandled = await handleAttendanceAction();
 
-  /*
-   * 出勤確認系のURLアクションを先に処理
-   */
-  const attendanceHandled=
-    await handleAttendanceAction();
-
-
-  if(
-    attendanceHandled
-  ){
-
+  if (attendanceHandled) {
     return;
-
   }
 
 
-  setLoadingMessage(
-    "CAST FLOWを準備しています…"
-  );
+  /* ---------- CAST FLOW起動準備 ---------- */
 
+  setLoadingMessage("CAST FLOWを準備しています…");
 
   document
     .getElementById("authView")
     .classList.add("hidden");
 
-
   document
     .getElementById("shiftView")
     .classList.remove("hidden");
 
-
   initializeManualInputs();
 
 
-  /*
-   * 初回カレンダー描画による
-   * 二重読込を防止
-   */
-  suppressNextMonthAutoLoad=
-    true;
+  /* ---------- カレンダー初期化 ---------- */
 
+  // 初回カレンダー描画による二重読込を防止
+  suppressNextMonthAutoLoad = true;
 
   initializeCalendar();
 
 
-  if(
-    attendanceChangeDate
-  ){
+  /* ---------- 出勤変更日の表示 ---------- */
 
-    suppressNextMonthAutoLoad=
-      true;
-
+  if (attendanceChangeDate) {
+    suppressNextMonthAutoLoad = true;
 
     calendar.gotoDate(
-      parseLocalDate(
-        attendanceChangeDate
-      )
+      parseLocalDate(attendanceChangeDate)
     );
-
   }
 
 
-  /*
-   * デフォルト時間と
-   * 月間シフトを同時取得
-   */
-  const defaultsPromise=
-    callApi({
+  /* ---------- 初期データ取得 ---------- */
 
-      action:
-        "getCurrentCastDefaultTimes",
+  // デフォルト時間と月間シフトを同時取得
+  const defaultsPromise = callApi({
+    action: "getCurrentCastDefaultTimes",
+    idToken: currentIdToken
+  })
+    .then(data => {
+      if (data && data.success !== false) {
+        currentCastDefaults.defaultStartTime =
+          normalizeTime(
+            data.defaultStartTime,
+            "20:00"
+          );
 
-      idToken:
-        currentIdToken
-
+        currentCastDefaults.defaultEndTime =
+          normalizeTime(
+            data.defaultEndTime,
+            "01:00"
+          );
+      }
     })
-      .then(
-        data=>{
+    .catch(error => {
+      console.warn(error);
+    });
 
-          if(
-            data &&
-            data.success!==false
-          ){
-
-            currentCastDefaults
-              .defaultStartTime=
-                normalizeTime(
-                  data.defaultStartTime,
-                  "20:00"
-                );
-
-
-            currentCastDefaults
-              .defaultEndTime=
-                normalizeTime(
-                  data.defaultEndTime,
-                  "01:00"
-                );
-
-          }
-
-        }
-      )
-      .catch(
-        error=>
-          console.warn(
-            error
-          )
-      );
-
-
-  const monthPromise=
-    loadDisplayedMonth();
-
+  const monthPromise = loadDisplayedMonth();
 
   await Promise.all([
     defaultsPromise,
@@ -3070,106 +3016,58 @@ async function startRegisteredApp(){
   ]);
 
 
-  /*
-   * CAST FLOWナビゲーション初期化
-   *
-   * ここで管理者権限・通知バッジも反映
-   */
+  /* ---------- ナビゲーション初期化 ---------- */
+
+  // 管理者権限・通知バッジもここで反映
   setupCastFlowNavigation();
 
 
-  /*
-   * ==========================================
-   * 管理者LINE
-   * 「登録申請を確認」から起動
-   * ==========================================
-   */
-  if(
-    launchAction===
-    "admin-registration"
-  ){
+  /* ---------- 管理者：登録申請へ直接移動 ---------- */
 
-    /*
-     * URLを先に綺麗にする。
-     * 再読み込みしても
-     * 同じ直行処理を繰り返さない。
-     */
+  if (launchAction === "admin-registration") {
+
+    // 再読み込み時に同じ直行処理を繰り返さないようURLを整理
     window.history.replaceState(
       {},
       document.title,
       window.location.pathname
     );
 
-
-    const isAdmin=
-      !!(
-        currentCast &&
-        (
-          currentCast.isAdmin===true ||
-          currentCast.admin===true
-        )
-      );
-
-
-    if(
-      !isAdmin
-    ){
-
-      showHomeView();
-
-
-      showNotice(
-        "管理者権限がありません"
-      );
-
-
-      hideLoading();
-
-      return;
-
-    }
-
-
-    /*
-     * 管理者なら
-     * 登録申請一覧へ直接移動
-     */
-    await openAdminRegistrationRequests();
-
-
-    hideLoading();
-
-    return;
-
-  }
-
-
-  /*
-   * 出勤変更通知から起動
-   */
-  if(
-    attendanceChangeDate
-  ){
-
-    openShiftModal(
-      attendanceChangeDate
+    const isAdmin = !!(
+      currentCast &&
+      (
+        currentCast.isAdmin === true ||
+        currentCast.admin === true
+      )
     );
 
+    if (!isAdmin) {
+      showHomeView();
+      showNotice("管理者権限がありません");
+      hideLoading();
+      return;
+    }
+
+    await openAdminRegistrationRequests();
+
+    hideLoading();
+    return;
   }
 
 
-  /*
-   * 通常起動
-   */
-  else{
+  /* ---------- 出勤変更通知から起動 ---------- */
+
+  if (attendanceChangeDate) {
+    openShiftModal(attendanceChangeDate);
+
+  } else {
+    /* ---------- 通常起動 ---------- */
 
     showHomeView();
-
   }
 
 
   hideLoading();
-
 }
 /* =====================================================
  * 当日出勤確認：URLアクション
