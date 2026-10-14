@@ -5875,210 +5875,138 @@ function showPending(request) {
   `;
 }
 /* =====================================================
- * 20. 管理者・登録申請
+ * 30. 管理者・登録申請一覧
  * ===================================================== */
 
+/* ---------- 管理者判定 ---------- */
 
-/**
- * 現在のユーザーが管理者か
- */
-function isCurrentCastAdmin(){
-
+function isCurrentCastAdmin() {
   return !!(
     currentCast &&
     (
-      currentCast.isAdmin===true ||
-      currentCast.admin===true
+      currentCast.isAdmin === true ||
+      currentCast.admin === true
     )
   );
-
 }
 
 
-/**
- * 登録申請通知バッジ更新
- */
-function updateRegistrationBadge(
-  count
-){
+/* ---------- 登録申請通知バッジ ---------- */
 
-  let number=
-    Number(
-      count || 0
-    );
+function updateRegistrationBadge(count) {
+  let number =
+    Number(count || 0);
 
-
-  if(
+  if (
     !Number.isFinite(number) ||
     number < 0
-  ){
-
-    number=0;
-
+  ) {
+    number = 0;
   }
 
+  number =
+    Math.floor(number);
 
-  number=
-    Math.floor(
-      number
-    );
+  const label =
+    number > 9
+      ? "9+"
+      : String(number);
 
 
-  const label=
-    number>9
-      ?"9+"
-      :String(number);
-
+  /* ホーム・サイドメニュー件数 */
 
   [
     "homeRegistrationBadge",
     "drawerRegistrationBadge"
-  ].forEach(
-    id=>{
+  ].forEach(id => {
+    const element =
+      document.getElementById(id);
 
-      const element=
-        document.getElementById(
-          id
-        );
-
-
-      if(!element){
-        return;
-      }
-
-
-      element.textContent=
-        label;
-
-
-      element.classList.toggle(
-        "hidden",
-        number===0
-      );
-
+    if (!element) {
+      return;
     }
-  );
 
+    element.textContent = label;
 
-  /*
-   * ハンバーガーは
-   * 件数ではなく赤丸のみ
-   */
-  document
-    .querySelectorAll(
-      ".menu-button"
-    )
-    .forEach(
-      button=>{
-
-        button.classList.toggle(
-          "has-notification",
-          number>0
-        );
-
-      }
+    element.classList.toggle(
+      "hidden",
+      number === 0
     );
+  });
 
+
+  /* ハンバーガーは件数ではなく赤丸のみ */
+
+  document
+    .querySelectorAll(".menu-button")
+    .forEach(button => {
+      button.classList.toggle(
+        "has-notification",
+        number > 0
+      );
+    });
 }
 
 
-/**
- * 承認待ち件数更新
- */
-async function refreshRegistrationBadge(){
+/* ---------- 承認待ち件数更新 ---------- */
 
-  if(
-    !isCurrentCastAdmin()
-  ){
-
-    updateRegistrationBadge(
-      0
-    );
-
+async function refreshRegistrationBadge() {
+  if (!isCurrentCastAdmin()) {
+    updateRegistrationBadge(0);
     return;
-
   }
 
-
-  try{
-
-    const result=
+  try {
+    const result =
       await callApi({
-
-        action:
-          "getRegistrationRequests",
-
-        idToken:
-          currentIdToken
-
+        action: "getRegistrationRequests",
+        idToken: currentIdToken
       });
 
-
-    if(
+    if (
       !result ||
-      result.success!==true
-    ){
-
+      result.success !== true
+    ) {
       return;
-
     }
 
-
-    const requests=
-      Array.isArray(
-        result.requests
-      )
-        ?result.requests
-        :[];
-
+    const requests =
+      Array.isArray(result.requests)
+        ? result.requests
+        : [];
 
     updateRegistrationBadge(
       requests.length
     );
 
-
-  }catch(error){
-
+  } catch (error) {
     console.warn(
       "登録申請件数を取得できませんでした",
       error
     );
-
   }
-
 }
 
 
-/**
- * 登録申請管理画面
- */
-async function openAdminRegistrationRequests(){
+/* ---------- 登録申請管理画面 ---------- */
 
+async function openAdminRegistrationRequests() {
   closeDrawer();
 
-
-  if(
-    !isCurrentCastAdmin()
-  ){
-
+  if (!isCurrentCastAdmin()) {
     showNotice(
       "管理者権限がありません"
     );
-
     return;
-
   }
-
 
   document
     .getElementById("homeView")
     .classList.add("hidden");
 
-
   document
     .getElementById("shiftView")
     .classList.add("hidden");
-
 
   document
     .getElementById("authView")
@@ -6087,12 +6015,11 @@ async function openAdminRegistrationRequests(){
 
   document
     .getElementById("authApp")
-    .innerHTML=`
+    .innerHTML = `
 
       <div class="admin-header">
 
         <div>
-
           <div
             style="
               font-size:10px;
@@ -6112,7 +6039,6 @@ async function openAdminRegistrationRequests(){
           >
             登録申請
           </h1>
-
         </div>
 
 
@@ -6160,133 +6086,91 @@ async function openAdminRegistrationRequests(){
         id="registrationRequestsList"
         style="margin-top:14px;"
       >
-
         <div class="loading">
-
           <div class="spinner"></div>
-
           登録申請を読み込んでいます...
-
         </div>
-
       </div>
 
     `;
 
-
   await loadAdminRequests();
-
 }
 
 
-/**
- * 承認待ち一覧取得
- */
-async function loadAdminRequests(){
+/* ---------- 承認待ち一覧取得 ---------- */
 
-  const container=
+async function loadAdminRequests() {
+  const container =
     document.getElementById(
       "registrationRequestsList"
     );
 
-
-  const countElement=
+  const countElement =
     document.getElementById(
       "registrationRequestCount"
     );
 
-
-  if(!container){
+  if (!container) {
     return;
   }
 
 
-  container.innerHTML=`
-
+  container.innerHTML = `
     <div class="loading">
-
       <div class="spinner"></div>
-
       登録申請を読み込んでいます...
-
     </div>
-
   `;
 
 
-  try{
-
-    const result=
+  try {
+    const result =
       await callApi({
-
-        action:
-          "getRegistrationRequests",
-
-        idToken:
-          currentIdToken
-
+        action: "getRegistrationRequests",
+        idToken: currentIdToken
       });
 
-
-    if(
+    if (
       !result ||
-      result.success!==true
-    ){
-
+      result.success !== true
+    ) {
       throw new Error(
         result?.error ||
         "登録申請を取得できませんでした"
       );
-
     }
 
-
-    const requests=
-      Array.isArray(
-        result.requests
-      )
-        ?result.requests
-        :[];
-
+    const requests =
+      Array.isArray(result.requests)
+        ? result.requests
+        : [];
 
     updateRegistrationBadge(
       requests.length
     );
 
-
-    if(countElement){
-
-      countElement.textContent=
+    if (countElement) {
+      countElement.textContent =
         requests.length;
-
     }
-
 
     renderAdminRegistrationRequests(
       requests
     );
 
+  } catch (error) {
+    console.error(error);
 
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-
-    container.innerHTML=`
-
+    container.innerHTML = `
       <div class="error-message">
-
         ${
           escapeHtml(
             error?.message ||
             String(error)
           )
         }
-
       </div>
-
 
       <button
         type="button"
@@ -6295,39 +6179,28 @@ async function loadAdminRequests(){
       >
         再読み込み
       </button>
-
     `;
-
   }
-
 }
 
 
-/**
- * 一覧描画
- */
-function renderAdminRegistrationRequests(
-  requests
-){
+/* ---------- 登録申請一覧描画 ---------- */
 
-  const container=
+function renderAdminRegistrationRequests(requests) {
+  const container =
     document.getElementById(
       "registrationRequestsList"
     );
 
-
-  if(!container){
+  if (!container) {
     return;
   }
 
-
-  if(
+  if (
     !Array.isArray(requests) ||
-    requests.length===0
-  ){
-
-    container.innerHTML=`
-
+    requests.length === 0
+  ) {
+    container.innerHTML = `
       <div
         style="
           margin-top:18px;
@@ -6342,88 +6215,71 @@ function renderAdminRegistrationRequests(
       >
         現在、承認待ちの登録申請はありません。
       </div>
-
     `;
 
     return;
-
   }
 
-
-  container.innerHTML=
+  container.innerHTML =
     requests
       .map(
-        request=>
+        request =>
           buildAdminRegistrationRequestHtml(
             request
           )
       )
       .join("");
-
 }
 
 
-/**
- * 登録申請カード
- */
-function buildAdminRegistrationRequestHtml(
-  request
-){
+/* ---------- 登録申請カード ---------- */
 
-  const requestId=
+function buildAdminRegistrationRequestHtml(request) {
+  const requestId =
     escapeHtml(
       request?.requestId || ""
     );
 
-
-  const castId=
+  const castId =
     escapeHtml(
       request?.castId || ""
     );
 
-
-  const castName=
+  const castName =
     escapeHtml(
       request?.castName || ""
     );
 
-
-  const lineDisplayName=
+  const lineDisplayName =
     escapeHtml(
       request?.lineDisplayName || ""
     );
 
-
-  const requestedAt=
+  const requestedAt =
     escapeHtml(
       request?.requestedAt || ""
     );
 
-
-  const isExisting=
-    request?.registrationType===
+  const isExisting =
+    request?.registrationType ===
     "existing";
 
-
-  const typeLabel=
+  const typeLabel =
     isExisting
-      ?"既存CAST"
-      :"新規CAST";
+      ? "既存CAST"
+      : "新規CAST";
 
-
-  const existingCastName=
+  const existingCastName =
     escapeHtml(
       request?.existingCastName || ""
     );
 
-
-  const nameMatches=
+  const nameMatches =
     request?.nameMatches;
 
-
-  const hasNameMismatch=
+  const hasNameMismatch =
     isExisting &&
-    nameMatches===false;
+    nameMatches === false;
 
 
   return `
@@ -6443,7 +6299,6 @@ function buildAdminRegistrationRequestHtml(
       >
 
         <div>
-
           <div
             style="
               font-size:11px;
@@ -6454,11 +6309,9 @@ function buildAdminRegistrationRequestHtml(
             ${requestedAt}
           </div>
 
-
           <div class="request-name">
             ${castName || "名称未設定"}
           </div>
-
         </div>
 
 
@@ -6466,8 +6319,8 @@ function buildAdminRegistrationRequestHtml(
           style="
             padding:5px 9px;
             border-radius:999px;
-            background:${isExisting?"#ececec":"#202020"};
-            color:${isExisting?"#333":"#fff"};
+            background:${isExisting ? "#ececec" : "#202020"};
+            color:${isExisting ? "#333" : "#fff"};
             font-size:10px;
             font-weight:800;
             white-space:nowrap;
@@ -6497,28 +6350,24 @@ function buildAdminRegistrationRequestHtml(
 
       ${
         isExisting
-          ?`
-
+          ? `
             <div class="request-info">
               登録済みCAST名：${existingCastName || "-"}
             </div>
-
           `
-          :""
+          : ""
       }
 
 
       ${
         hasNameMismatch
-          ?`
-
+          ? `
             <div class="error-message">
               キャスト番号と登録済みキャスト名が一致していません。
               承認できません。
             </div>
-
           `
-          :""
+          : ""
       }
 
 
@@ -6529,8 +6378,8 @@ function buildAdminRegistrationRequestHtml(
           class="approve-button"
           data-request-id="${requestId}"
           onclick="handleApproveRegistrationRequest(this.dataset.requestId)"
-          ${hasNameMismatch?"disabled":""}
-          style="${hasNameMismatch?"opacity:.4;":""}"
+          ${hasNameMismatch ? "disabled" : ""}
+          style="${hasNameMismatch ? "opacity:.4;" : ""}"
         >
           承認
         </button>
@@ -6550,65 +6399,44 @@ function buildAdminRegistrationRequestHtml(
     </div>
 
   `;
-
 }
 
 
-/**
- * 承認
- */
-async function handleApproveRegistrationRequest(
-  requestId
-){
+/* ---------- 登録申請承認 ---------- */
 
-  if(
+async function handleApproveRegistrationRequest(requestId) {
+  if (
     !confirm(
       "この登録申請を承認しますか？"
     )
-  ){
-
+  ) {
     return;
-
   }
 
-
-  try{
-
+  try {
     showNotice(
       "承認処理中..."
     );
-
 
     await approveRequest(
       requestId
     );
 
-
     showNotice(
       "登録申請を承認しました"
     );
 
-
     await loadAdminRequests();
 
-
-  }catch(error){
-
-    console.error(
-      error
-    );
-
+  } catch (error) {
+    console.error(error);
 
     showNotice(
       error?.message ||
       "登録申請を承認できませんでした"
     );
-
   }
-
 }
-
-
 /* =====================================================
  * 却下理由
  * ===================================================== */
