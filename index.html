@@ -3070,97 +3070,166 @@ async function startRegisteredApp() {
   hideLoading();
 }
 /* =====================================================
- * 当日出勤確認：URLアクション
+ * 20. 当日出勤確認・URLアクション
  * ===================================================== */
-async function handleAttendanceAction(){
- const params=new URLSearchParams(window.location.search);
- const action=params.get("action");
- const date=params.get("date");
 
- // 通常起動
- if(action!=="attendance-ok"&&action!=="attendance-change")return false;
+/* ---------- URLアクション判定 ---------- */
 
- if(!date){
-  hideLoading();
-  showError("確認日を取得できませんでした");
-  return true;
- }
+async function handleAttendanceAction() {
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get("action");
+  const date = params.get("date");
 
- // 「変更あり」は通常シフト画面へ進み、対象日の編集画面を直接開く
- if(action==="attendance-change"){
-  attendanceChangeDate=date;
-
-  // 再読込で同じアクションが走らないようURLからクエリを消す
-  window.history.replaceState({},document.title,window.location.pathname);
-
-  return false;
- }
-
- // 「出勤OK」はその場で確認を完了する
- document.getElementById("authView").classList.remove("hidden");
- document.getElementById("shiftView").classList.add("hidden");
- showAuthLoading("出勤確認中...");
-
- try{
-  const r=await callApi({
-   action:"confirmAttendanceOk",
-   idToken:currentIdToken,
-   date:date
-  });
-
-  if(!r||r.success!==true){
-   throw new Error(r&&r.error?r.error:"出勤確認に失敗しました");
+  // 通常起動
+  if (
+    action !== "attendance-ok" &&
+    action !== "attendance-change"
+  ) {
+    return false;
   }
 
-  // 再読込で同じ処理が走らないようクエリを消す
-  window.history.replaceState({},document.title,window.location.pathname);
-
-  const name=escapeHtml(r.castName||(currentCast&&currentCast.castName)||"");
-  const displayDate=escapeHtml(formatAttendanceDate(date));
-
-  document.getElementById("authApp").innerHTML=`
-   <div class="status-icon">✓</div>
-   <h1>出勤確認完了</h1>
-   <div class="description">${displayDate}の出勤を確認しました。</div>
-   ${name?`<div class="user-name">${name}</div>`:""}
-   <div class="badge">出勤OK</div>
-   <button class="primary-button" onclick="openNormalShiftScreen()">シフト画面を開く</button>
-  `;
-
-  hideLoading();
-  return true;
-
- }catch(e){
-  hideLoading();
-  showError(e.message||String(e));
-  return true;
- }
-}
-
-function formatAttendanceDate(dateString){
- const d=parseLocalDate(dateString);
- if(isNaN(d.getTime()))return dateString;
- return `${d.getMonth()+1}月${d.getDate()}日（${["日","月","火","水","木","金","土"][d.getDay()]}）`;
-}
-
-async function openNormalShiftScreen(){
- document.getElementById("authView").classList.add("hidden");
- document.getElementById("shiftView").classList.remove("hidden");
-
- try{
-  const d=await callApi({action:"getCurrentCastDefaultTimes",idToken:currentIdToken});
-  if(d&&d.success!==false){
-   currentCastDefaults.defaultStartTime=normalizeTime(d.defaultStartTime,"20:00");
-   currentCastDefaults.defaultEndTime=normalizeTime(d.defaultEndTime,"01:00");
+  if (!date) {
+    hideLoading();
+    showError("確認日を取得できませんでした");
+    return true;
   }
- }catch(e){console.warn(e)}
 
- initializeManualInputs();
- initializeCalendar();
- setupCastFlowNavigation();
- showShiftView();
+
+  /* ---------- 変更あり ---------- */
+
+  // 通常シフト画面へ進み、対象日の編集画面を直接開く
+  if (action === "attendance-change") {
+    attendanceChangeDate = date;
+
+    // 再読込で同じアクションが走らないようURLからクエリを消す
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+    return false;
+  }
+
+
+  /* ---------- 出勤OK ---------- */
+
+  // その場で出勤確認を完了する
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+  showAuthLoading("出勤確認中...");
+
+  try {
+    const r = await callApi({
+      action: "confirmAttendanceOk",
+      idToken: currentIdToken,
+      date: date
+    });
+
+    if (!r || r.success !== true) {
+      throw new Error(
+        r && r.error
+          ? r.error
+          : "出勤確認に失敗しました"
+      );
+    }
+
+    // 再読込で同じ処理が走らないようURLからクエリを消す
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+    const name = escapeHtml(
+      r.castName ||
+      (currentCast && currentCast.castName) ||
+      ""
+    );
+
+    const displayDate = escapeHtml(
+      formatAttendanceDate(date)
+    );
+
+    document.getElementById("authApp").innerHTML = `
+      <div class="status-icon">✓</div>
+      <h1>出勤確認完了</h1>
+      <div class="description">${displayDate}の出勤を確認しました。</div>
+      ${name ? `<div class="user-name">${name}</div>` : ""}
+      <div class="badge">出勤OK</div>
+      <button class="primary-button" onclick="openNormalShiftScreen()">シフト画面を開く</button>
+    `;
+
+    hideLoading();
+    return true;
+
+  } catch (e) {
+    hideLoading();
+    showError(e.message || String(e));
+    return true;
+  }
 }
 
+
+/* ---------- 出勤確認日表示 ---------- */
+
+function formatAttendanceDate(dateString) {
+  const d = parseLocalDate(dateString);
+
+  if (isNaN(d.getTime())) {
+    return dateString;
+  }
+
+  return `${d.getMonth() + 1}月${d.getDate()}日（${["日", "月", "火", "水", "木", "金", "土"][d.getDay()]}）`;
+}
+
+
+/* ---------- 通常シフト画面を開く ---------- */
+
+async function openNormalShiftScreen() {
+  document
+    .getElementById("authView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.remove("hidden");
+
+  try {
+    const d = await callApi({
+      action: "getCurrentCastDefaultTimes",
+      idToken: currentIdToken
+    });
+
+    if (d && d.success !== false) {
+      currentCastDefaults.defaultStartTime =
+        normalizeTime(
+          d.defaultStartTime,
+          "20:00"
+        );
+
+      currentCastDefaults.defaultEndTime =
+        normalizeTime(
+          d.defaultEndTime,
+          "01:00"
+        );
+    }
+
+  } catch (e) {
+    console.warn(e);
+  }
+
+  initializeManualInputs();
+  initializeCalendar();
+  setupCastFlowNavigation();
+  showShiftView();
+}
 function initializeCalendar(){
  const next=new Date();next.setMonth(next.getMonth()+1);next.setDate(1);
  calendar=new FullCalendar.Calendar(document.getElementById("calendar"),{
