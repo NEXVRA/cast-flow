@@ -1638,7 +1638,7 @@ body.modal-open {
         <button
           class="home-menu-card"
           data-module="attendance"
-          onclick="openModulePlaceholder('attendance')"
+          onclick="navigateToModule('attendance')"
         >
           <div class="home-menu-icon">✓</div>
           <strong>出勤確認</strong>
@@ -1688,7 +1688,7 @@ body.modal-open {
         <button
           class="home-menu-card"
           data-module="settings"
-          onclick="openModulePlaceholder('settings')"
+          onclick="navigateToModule('settings')"
         >
           <div class="home-menu-icon">⚙</div>
           <strong>設定</strong>
@@ -1986,7 +1986,7 @@ body.modal-open {
     <button
       class="drawer-item"
       data-module="settings"
-      onclick="openModulePlaceholder('settings')"
+      onclick="navigateToModule('settings')"
     >
       <span class="drawer-item-icon">⚙</span>
       設定
@@ -7192,7 +7192,7 @@ function openAdminPlaceholder(title) {
 }
 
 function openSettingsPlaceholder() {
-  openModulePlaceholder("settings");
+  navigateToModule("settings");
 }
 /* =====================================================
  * 35. HTMLエスケープ処理
