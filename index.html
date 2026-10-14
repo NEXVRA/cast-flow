@@ -7,49 +7,172 @@
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js"></script>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
-/* =====================================================
- * CAST FLOW SVG ICONS
+  /* =====================================================
+ * 01. 基本スタイル・共通UI
  * ===================================================== */
 
-.cf-icon{
-  width:20px;
-  height:20px;
-  display:block;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.9;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+/* ---------- SVG ICONS ---------- */
+
+.cf-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.home-menu-icon .cf-icon{
-  width:21px;
-  height:21px;
+.home-menu-icon .cf-icon {
+  width: 21px;
+  height: 21px;
 }
 
-.drawer-item-icon{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:26px;
-  min-width:26px;
+.drawer-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  min-width: 26px;
 }
 
-.drawer-item-icon .cf-icon{
-  width:19px;
-  height:19px;
+.drawer-item-icon .cf-icon {
+  width: 19px;
+  height: 19px;
 }
-    :root{--black:#202020;--bg:#f4f5f7;--card:#fff;--text:#222;--soft:#777;--line:#e5e5e5;--work:#333;--holiday:#a95b5b;--undecided:#8a8a8a;--safe-bottom:env(safe-area-inset-bottom,0px)}
-    *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text)}
-    button,input,textarea{font:inherit}.hidden{display:none!important}.loading-screen{position:fixed;inset:0;z-index:9999;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.25s;padding:24px}.loading-screen.hide{opacity:0;pointer-events:none}
-    .loading-spinner{width:38px;height:38px;border:3px solid #ffffff25;border-top-color:#fff;border-radius:50%;animation:cfSpin .8s linear infinite;margin-bottom:22px}
-.loading-logo{font-size:26px;font-weight:900;letter-spacing:3px}
-.loading-text{font-size:12px;letter-spacing:1px;margin-top:10px;color:#cfcfcf;min-height:18px;text-align:center}
-.loading-dots{display:flex;gap:6px;margin-top:14px}
-.loading-dots i{display:block;width:6px;height:6px;border-radius:50%;background:#fff;animation:cfDot 1s ease-in-out infinite}
-.loading-dots i:nth-child(2){animation-delay:.15s}.loading-dots i:nth-child(3){animation-delay:.3s}
-@keyframes cfSpin{to{transform:rotate(360deg)}}
-@keyframes cfDot{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+
+
+/* ---------- 共通変数 ---------- */
+
+:root {
+  --black: #202020;
+  --bg: #f4f5f7;
+  --card: #fff;
+  --text: #222;
+  --soft: #777;
+  --line: #e5e5e5;
+  --work: #333;
+  --holiday: #a95b5b;
+  --undecided: #8a8a8a;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+
+/* ---------- 基本 ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* ---------- 起動ローディング ---------- */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #111;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: .25s;
+  padding: 24px;
+}
+
+.loading-screen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 22px;
+  border: 3px solid #ffffff25;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: cfSpin .8s linear infinite;
+}
+
+.loading-logo {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.loading-text {
+  min-height: 18px;
+  margin-top: 10px;
+  color: #cfcfcf;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.loading-dots i {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: cfDot 1s ease-in-out infinite;
+}
+
+.loading-dots i:nth-child(2) {
+  animation-delay: .15s;
+}
+
+.loading-dots i:nth-child(3) {
+  animation-delay: .3s;
+}
+
+
+/* ---------- アニメーション ---------- */
+
+@keyframes cfSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cfDot {
+  0%,
+  100% {
+    opacity: .25;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
     .auth-wrap{max-width:480px;margin:auto;padding:24px 16px 60px}.auth-logo{text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;margin:12px 0 6px}.auth-sub{text-align:center;color:#777;font-size:13px;margin-bottom:28px}.auth-card,.admin-card{background:#fff;border-radius:18px;padding:24px 20px;box-shadow:0 4px 18px #0000000f;margin-bottom:16px}.spinner{width:38px;height:38px;margin:0 auto 18px;border:4px solid #ddd;border-top-color:#222;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.loading{text-align:center;padding:40px 10px;color:#666}.status-icon{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;background:#e9f8ee}.status-icon.pending{background:#fff4d8}.status-icon.error{background:#ffe8e8}.auth-card h1{text-align:center;font-size:22px}.description{text-align:center;font-size:14px;line-height:1.7;color:#666}.user-name{text-align:center;font-size:26px;font-weight:800}.cast-id{text-align:center;color:#777;font-size:14px;margin:8px 0 16px}.badge{display:table;margin:auto;padding:6px 14px;border-radius:999px;background:#222;color:#fff;font-size:13px;font-weight:700}.form-group{margin-top:20px}.form-group label,.form-label{display:block;margin-bottom:8px;font-size:12px;font-weight:800}.form-group input,.form-control{width:100%;min-height:50px;border:1px solid #ddd;border-radius:12px;padding:0 14px;background:#fff}.primary-button{width:100%;min-height:50px;margin-top:18px;border:0;border-radius:12px;background:#222;color:#fff;font-weight:800}.error-message,.admin-error{margin-top:14px;padding:12px;border-radius:10px;background:#fff0f0;color:#c62828;font-size:13px}.admin-header{display:flex;justify-content:space-between;align-items:center}.request-count{background:#222;color:#fff;border-radius:99px;padding:6px 10px}.request-item{border:1px solid #e5e5e5;border-radius:14px;padding:16px;margin-top:12px}.request-name{font-size:20px;font-weight:800}.request-info,.request-cast-id{font-size:12px;color:#777;line-height:1.8}.request-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.request-buttons button{min-height:44px;border:0;border-radius:10px;font-weight:800}.approve-button{background:#222;color:#fff}.reject-button{background:#eee}
     .app-header{position:sticky;top:0;z-index:100;background:#171717;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}.header-logo{font-size:19px;font-weight:900;letter-spacing:2px}.header-subtitle{font-size:8px;letter-spacing:1.8px;opacity:.55}.header-diamond-button{width:38px;height:38px;border:0;border-radius:10px;background:#2a2a2a}.header-diamond{display:block;width:9px;height:9px;background:#fff;transform:rotate(45deg);margin:auto}.main-content{max-width:720px;margin:auto;padding:22px 14px 90px}.shift-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}.page-label,.modal-label{font-size:8px;letter-spacing:1.8px;color:#999}.shift-top h1{margin:3px 0 0;font-size:28px}.month-status{font-size:11px;font-weight:800;padding:7px 11px;background:#e8e8e8;border-radius:99px}.month-status.submitted{background:#222;color:#fff}.progress-card,.calendar-card{background:#fff;border-radius:17px;box-shadow:0 4px 18px #0000000b}.progress-card{padding:16px;margin-bottom:14px}.progress-header>div{display:flex;justify-content:space-between}.progress-header p{font-size:10px;color:#888}.progress-track{height:6px;background:#eee;border-radius:99px;overflow:hidden}.progress-bar{height:100%;width:0;background:#222;transition:.25s}.calendar-card{padding:12px 9px}.legend{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin:13px 0 17px;font-size:9px;color:#777}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.working{background:#333}.holiday{background:#a95b5b}.undecided{background:#999}.empty{background:#ddd}.bulk-button,.submit-button{width:100%;min-height:50px;border-radius:13px;font-weight:800}.bulk-button{background:#fff;border:1px solid #ddd;margin-bottom:10px}.submit-button{background:#202020;color:#fff;border:0}.submit-button:disabled{opacity:.45}
     .fc{--fc-border-color:#ededed;--fc-today-bg-color:#f3f3f3}.fc .fc-toolbar-title{font-size:17px;font-weight:800}.fc .fc-button{background:#202020;border:0;border-radius:9px}.fc .fc-daygrid-day-frame{min-height:70px;padding:3px}.fc .fc-daygrid-day-number{font-size:11px;color:#333;text-decoration:none}.fc .fc-daygrid-event{font-size:8px;font-weight:800;text-align:center;border:0;border-radius:6px;padding:3px}.fc .fc-day-other{opacity:.35}.fc .multi-selected-day .fc-daygrid-day-frame{box-shadow:inset 0 0 0 2px #222;background:#efefef}
