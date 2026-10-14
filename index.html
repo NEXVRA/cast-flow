@@ -6991,34 +6991,36 @@ async function rejectRequest(
   return result;
 }
 /* =====================================================
- * 13. CAST FLOW ナビゲーション
+ * 33. CAST FLOW ナビゲーション
  * ===================================================== */
 
-function setupCastFlowNavigation(){
+function setupCastFlowNavigation() {
 
-  const castName=
+  /* ---------- CAST情報 ---------- */
+
+  const castName =
     currentCast &&
     currentCast.castName
-      ?currentCast.castName
-      :"";
+      ? currentCast.castName
+      : "";
 
-
-  const castId=
+  const castId =
     currentCast &&
     currentCast.castId
-      ?currentCast.castId
-      :"";
+      ? currentCast.castId
+      : "";
 
-
-  const isAdmin=
+  const isAdmin =
     !!(
       currentCast &&
       (
-        currentCast.isAdmin===true ||
-        currentCast.admin===true
+        currentCast.isAdmin === true ||
+        currentCast.admin === true
       )
     );
 
+
+  /* ---------- 名前・CAST ID反映 ---------- */
 
   [
     [
@@ -7032,61 +7034,46 @@ function setupCastFlowNavigation(){
     [
       "homeCastId",
       castId
-        ?"CAST ID : "+castId
-        :""
+        ? "CAST ID : " + castId
+        : ""
     ],
     [
       "drawerCastId",
       castId
-        ?"CAST ID : "+castId
-        :""
+        ? "CAST ID : " + castId
+        : ""
     ]
-  ].forEach(
-    ([id,value])=>{
+  ].forEach(([id, value]) => {
+    const element =
+      document.getElementById(id);
 
-      const element=
-        document.getElementById(
-          id
-        );
-
-
-      if(element){
-
-        element.textContent=
-          value;
-
-      }
-
+    if (element) {
+      element.textContent = value;
     }
-  );
+  });
 
+
+  /* ---------- 利用可能機能反映 ---------- */
 
   applyModuleVisibility(
     isAdmin
   );
 
 
+  /* ---------- アイコン反映 ---------- */
+
   applyCastFlowIcons();
 
 
-  /*
-   * 管理者だけ
-   * 承認待ち登録申請件数を取得
-   */
-  if(isAdmin){
+  /* ---------- 登録申請通知 ---------- */
 
+  if (isAdmin) {
     refreshRegistrationBadge();
 
-  }else{
-
-    updateRegistrationBadge(
-      0
-    );
-
+  } else {
+    updateRegistrationBadge(0);
   }
-
 }
-
 /* =====================================================
  * 14. ホーム画面
  * ===================================================== */
