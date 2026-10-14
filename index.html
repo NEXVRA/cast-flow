@@ -5609,155 +5609,110 @@ function showRegistrationForm() {
   `;
 }
 /* =====================================================
- * 18. 初回登録申請
+ * 28. 初回登録申請処理
  * ===================================================== */
 
-async function submitRegistration(){
+async function submitRegistration() {
 
-  const castIdInput=
-    document.getElementById(
-      "castId"
-    );
+  /* ---------- 入力要素取得 ---------- */
 
-  const castNameInput=
-    document.getElementById(
-      "castName"
-    );
+  const castIdInput =
+    document.getElementById("castId");
 
-  const button=
-    document.getElementById(
-      "submitButton"
-    );
+  const castNameInput =
+    document.getElementById("castName");
 
-  const errorBox=
-    document.getElementById(
-      "formError"
-    );
+  const button =
+    document.getElementById("submitButton");
+
+  const errorBox =
+    document.getElementById("formError");
 
 
-  const castId=
+  /* ---------- 入力値取得 ---------- */
+
+  const castId =
     String(
       castIdInput?.value || ""
     ).trim();
 
-
-  const castName=
+  const castName =
     String(
       castNameInput?.value || ""
     ).trim();
 
 
-  /*
-   * 前回のエラー表示を消す
-   */
-  errorBox.classList.add(
-    "hidden"
-  );
+  /* ---------- 前回エラーをクリア ---------- */
 
-  errorBox.textContent=
-    "";
+  errorBox.classList.add("hidden");
+  errorBox.textContent = "";
 
 
-  /*
-   * キャスト番号チェック
-   */
-  if(!castId){
+  /* ---------- キャスト番号チェック ---------- */
 
-    errorBox.textContent=
+  if (!castId) {
+    errorBox.textContent =
       "キャスト番号を入力してください";
 
-    errorBox.classList.remove(
-      "hidden"
-    );
+    errorBox.classList.remove("hidden");
 
     castIdInput.focus();
-
     return;
-
   }
 
 
-  /*
-   * キャスト名チェック
-   */
-  if(!castName){
+  /* ---------- キャスト名チェック ---------- */
 
-    errorBox.textContent=
+  if (!castName) {
+    errorBox.textContent =
       "キャスト名を入力してください";
 
-    errorBox.classList.remove(
-      "hidden"
-    );
+    errorBox.classList.remove("hidden");
 
     castNameInput.focus();
-
     return;
-
   }
 
 
-  /*
-   * 二重送信防止
-   */
-  button.disabled=
-    true;
+  /* ---------- 二重送信防止 ---------- */
 
-  button.textContent=
-    "申請中...";
+  button.disabled = true;
+  button.textContent = "申請中...";
 
 
-  try{
+  try {
 
-    const result=
-      await callApi({
+    /* ---------- 登録申請 ---------- */
 
-        action:
-          "submitRegistrationRequest",
+    const result = await callApi({
+      action: "submitRegistrationRequest",
+      idToken: currentIdToken,
+      castId: castId,
+      castName: castName
+    });
 
-        idToken:
-          currentIdToken,
-
-        castId:
-          castId,
-
-        castName:
-          castName
-
-      });
-
-
-    if(
+    if (
       !result ||
       result.success !== true
-    ){
-
+    ) {
       throw new Error(
         result?.error ||
         "登録申請に失敗しました"
       );
-
     }
 
 
-    /*
-     * すでに登録済みだった場合
-     */
-    if(
-      result.alreadyRegistered
-    ){
+    /* ---------- すでに登録済み ---------- */
 
+    if (result.alreadyRegistered) {
       await checkAuthStatus();
-
       return;
-
     }
 
 
-    /*
-     * 承認待ち画面へ
-     */
-    showPending({
+    /* ---------- 承認待ち画面へ ---------- */
 
+    showPending({
       castId:
         result.castId ||
         castId,
@@ -5769,38 +5724,21 @@ async function submitRegistration(){
       lineDisplayName:
         result.lineDisplayName ||
         currentLineDisplayName
-
     });
 
+  } catch (error) {
+    console.error(error);
 
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-
-    errorBox.textContent=
+    errorBox.textContent =
       error?.message ||
       String(error);
 
+    errorBox.classList.remove("hidden");
 
-    errorBox.classList.remove(
-      "hidden"
-    );
-
-
-    button.disabled=
-      false;
-
-    button.textContent=
-      "登録申請する";
-
+    button.disabled = false;
+    button.textContent = "登録申請する";
   }
-
 }
-
-
 /* =====================================================
  * 19. 登録承認待ち画面
  * ===================================================== */
