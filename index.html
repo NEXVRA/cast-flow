@@ -654,8 +654,6 @@ textarea {
   background: #efefef;
   box-shadow: inset 0 0 0 2px #222;
 }
-    .modal-overlay{position:fixed;inset:0;z-index:500;background:#0007;display:flex;align-items:flex-end;justify-content:center}.modal-card{width:100%;max-width:620px;max-height:92vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:12px 18px calc(22px + var(--safe-bottom))}.modal-handle{width:42px;height:5px;border-radius:99px;background:#ddd;margin:0 auto 15px}.modal-header{display:flex;justify-content:space-between}.modal-header h2{margin:4px 0;font-size:22px}.modal-header p{margin:0;color:#888;font-size:11px}.modal-close{width:38px;height:38px;border:0;border-radius:50%;background:#eee;font-size:24px}.form-section{margin-top:18px}.status-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.status-button,.bulk-status-button,.weekday-button{min-height:44px;border:1px solid #ddd;border-radius:11px;background:#f4f4f4;color:#666;font-weight:800}.status-button.selected,.bulk-status-button.selected,.weekday-button.selected{background:#222;color:#fff;border-color:#222}.time-grid{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end;gap:4px}.time-separator{text-align:center;padding-bottom:15px}.manual-time-field{display:flex;align-items:center;background:#f5f5f5;border:1px solid #ddd;border-radius:12px;overflow:hidden}.manual-time-part{width:100%;min-width:0;height:48px;border:0;background:transparent;text-align:center;font-size:18px;font-weight:800}.manual-time-colon{font-weight:800}.manual-time-field.last-selected{position:relative;background:#242424}
-.manual-time-field.last-selected input,.manual-time-field.last-selected span{visibility:hidden}
 /* =====================================================
  * 06. モーダル・一括入力UI
  * ===================================================== */
@@ -6899,44 +6897,6 @@ async function submitRejectReason() {
       button.style.opacity = "1";
     }
   }
-}
-/**
- * 承認API
- */
-async function approveRequest(
-  requestId
-){
-
-  const result=
-    await callApi({
-
-      action:
-        "approveRegistrationRequest",
-
-      idToken:
-        currentIdToken,
-
-      requestId:
-        requestId
-
-    });
-
-
-  if(
-    !result ||
-    result.success!==true
-  ){
-
-    throw new Error(
-      result?.error ||
-      "登録申請を承認できませんでした"
-    );
-
-  }
-
-
-  return result;
-
 }
 /* =====================================================
  * 32. 承認・却下API処理
