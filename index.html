@@ -7075,77 +7075,165 @@ function setupCastFlowNavigation() {
   }
 }
 /* =====================================================
- * 14. ホーム画面
+ * 34. ホーム画面・モジュール遷移
  * ===================================================== */
-function getModuleConfig(moduleId){
- return CAST_FLOW_CONFIG.modules[moduleId]||null;
-}
-function isModuleAvailable(moduleId,isAdmin){
- const module=getModuleConfig(moduleId);
- if(!module||module.enabled!==true)return false;
- return module.adminOnly!==true||isAdmin===true;
-}
-function applyModuleVisibility(isAdmin){
- document.querySelectorAll("[data-module]").forEach(el=>{
-  const moduleId=el.getAttribute("data-module");
-  el.classList.toggle("hidden",!isModuleAvailable(moduleId,isAdmin));
- });
-}
-function navigateToModule(moduleId){
- const isAdmin=!!(currentCast&&(currentCast.isAdmin===true||currentCast.admin===true));
- if(!isModuleAvailable(moduleId,isAdmin)){
-  showNotice("この機能は現在利用できません");
-  return;
- }
- if(moduleId==="home")return showHomeView();
- if(moduleId==="shift")return showShiftView();
- openModulePlaceholder(moduleId);
-}
-function showHomeView(){
- closeDrawer();
- document.getElementById("authView").classList.add("hidden");
- document.getElementById("shiftView").classList.add("hidden");
- document.getElementById("homeView").classList.remove("hidden");
- setDrawerActive("home");
-}
-function showShiftView(){
- closeDrawer();
- document.getElementById("authView").classList.add("hidden");
- document.getElementById("homeView").classList.add("hidden");
- document.getElementById("shiftView").classList.remove("hidden");
- setDrawerActive("shift");
- if(calendar)setTimeout(()=>calendar.updateSize(),50);
-}
-function openDrawer(){
- const overlay=document.getElementById("drawerOverlay");
- if(!overlay)return;
- overlay.classList.add("open");
- document.body.classList.add("modal-open");
-}
-function closeDrawer(){
- const overlay=document.getElementById("drawerOverlay");
- if(!overlay)return;
- overlay.classList.remove("open");
- document.body.classList.remove("modal-open");
-}
-function handleDrawerOverlayClick(event){
- if(event.target.id==="drawerOverlay")closeDrawer();
-}
-function setDrawerActive(page){
- const home=document.getElementById("drawerHomeButton");
- const shift=document.getElementById("drawerShiftButton");
- if(home)home.classList.toggle("active",page==="home");
- if(shift)shift.classList.toggle("active",page==="shift");
-}
-function openModulePlaceholder(moduleId){
- closeDrawer();
- const module=getModuleConfig(moduleId);
- showNotice((module&&module.label?module.label:"この機能")+"は準備中です");
-}
-// 既存の呼び出しとの互換性を残す。
-function openAdminPlaceholder(title){closeDrawer();showNotice(title+"は準備中です")}
-function openSettingsPlaceholder(){openModulePlaceholder("settings")}
 
+/* ---------- モジュール設定 ---------- */
+
+function getModuleConfig(moduleId) {
+  return CAST_FLOW_CONFIG.modules[moduleId] || null;
+}
+
+function isModuleAvailable(moduleId, isAdmin) {
+  const module = getModuleConfig(moduleId);
+
+  if (!module || module.enabled !== true) {
+    return false;
+  }
+
+  return module.adminOnly !== true || isAdmin === true;
+}
+
+function applyModuleVisibility(isAdmin) {
+  document.querySelectorAll("[data-module]").forEach(el => {
+    const moduleId = el.getAttribute("data-module");
+
+    el.classList.toggle(
+      "hidden",
+      !isModuleAvailable(moduleId, isAdmin)
+    );
+  });
+}
+
+
+/* ---------- モジュール遷移 ---------- */
+
+function navigateToModule(moduleId) {
+  const isAdmin = !!(
+    currentCast &&
+    (
+      currentCast.isAdmin === true ||
+      currentCast.admin === true
+    )
+  );
+
+  if (!isModuleAvailable(moduleId, isAdmin)) {
+    showNotice("この機能は現在利用できません");
+    return;
+  }
+
+  if (moduleId === "home") {
+    return showHomeView();
+  }
+
+  if (moduleId === "shift") {
+    return showShiftView();
+  }
+
+  openModulePlaceholder(moduleId);
+}
+
+
+/* ---------- ホーム画面 ---------- */
+
+function showHomeView() {
+  closeDrawer();
+
+  document.getElementById("authView").classList.add("hidden");
+  document.getElementById("shiftView").classList.add("hidden");
+  document.getElementById("homeView").classList.remove("hidden");
+
+  setDrawerActive("home");
+}
+
+
+/* ---------- シフト画面 ---------- */
+
+function showShiftView() {
+  closeDrawer();
+
+  document.getElementById("authView").classList.add("hidden");
+  document.getElementById("homeView").classList.add("hidden");
+  document.getElementById("shiftView").classList.remove("hidden");
+
+  setDrawerActive("shift");
+
+  if (calendar) {
+    setTimeout(() => calendar.updateSize(), 50);
+  }
+}
+
+
+/* ---------- サイドメニュー ---------- */
+
+function openDrawer() {
+  const overlay = document.getElementById("drawerOverlay");
+
+  if (!overlay) {
+    return;
+  }
+
+  overlay.classList.add("open");
+  document.body.classList.add("modal-open");
+}
+
+function closeDrawer() {
+  const overlay = document.getElementById("drawerOverlay");
+
+  if (!overlay) {
+    return;
+  }
+
+  overlay.classList.remove("open");
+  document.body.classList.remove("modal-open");
+}
+
+function handleDrawerOverlayClick(event) {
+  if (event.target.id === "drawerOverlay") {
+    closeDrawer();
+  }
+}
+
+
+/* ---------- サイドメニュー選択状態 ---------- */
+
+function setDrawerActive(page) {
+  const home = document.getElementById("drawerHomeButton");
+  const shift = document.getElementById("drawerShiftButton");
+
+  if (home) {
+    home.classList.toggle("active", page === "home");
+  }
+
+  if (shift) {
+    shift.classList.toggle("active", page === "shift");
+  }
+}
+
+
+/* ---------- 未実装機能 ---------- */
+
+function openModulePlaceholder(moduleId) {
+  closeDrawer();
+
+  const module = getModuleConfig(moduleId);
+
+  showNotice(
+    (module && module.label ? module.label : "この機能") +
+    "は準備中です"
+  );
+}
+
+
+// 既存の呼び出しとの互換性を残す。
+function openAdminPlaceholder(title) {
+  closeDrawer();
+  showNotice(title + "は準備中です");
+}
+
+function openSettingsPlaceholder() {
+  openModulePlaceholder("settings");
+}
 function escapeHtml(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
 </script>
 </body>
