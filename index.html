@@ -4186,153 +4186,338 @@ function buildCustomerVisitListHtml(
 
   `).join("");
 }
+/* =====================================================
+ * 24. シフト保存・削除・月間提出
+ * ===================================================== */
 
-async function saveSelectedDate(){
- if(isSaving)return;
+/* ---------- 選択日のシフト保存 ---------- */
 
- let startTime="",endTime="";
- if(selectedStatus==="working"){
-  startTime=getTime("start");
-  endTime=isEndTimeLast?"LAST":getTime("end");
-  if(!startTime||!endTime){
-   showNotice("出勤時間と退勤時間を入力してください");
-   return;
-  }
- }
-
- const visitsToSave=selectedStatus==="working"
-  ?customerVisits.map(item=>({
-    type:item.type,
-    customerName:String(item.customerName||"").trim(),
-    time:item.time||"",
-    note:item.note||""
-   }))
-  :[];
-
- for(const item of visitsToSave){
-  if(!item.customerName){
-   showNotice(item.type+"の顧客名を入力してください");
-   return;
-  }
-
-  if(item.time){
-   const m=String(item.time).match(/^(\d{1,2}):(\d{1,2})$/);
-
-   if(!m){
-    showNotice(item.type+"の予定時間を正しく入力してください");
+async function saveSelectedDate() {
+  if (isSaving) {
     return;
-   }
-
-   const h=Number(m[1]);
-   const min=Number(m[2]);
-
-   if(h<0||h>29||min<0||min>59){
-    showNotice(item.type+"の予定時間を正しく入力してください");
-    return;
-   }
-
-   item.time=
-    String(h).padStart(2,"0")+
-    ":"+
-    String(min).padStart(2,"0");
-  }
- }
-
- const isAttendanceChange=attendanceChangeDate===selectedDate;
-
- isSaving=true;
- const b=document.getElementById("saveSelectedDateButton");
- b.disabled=true;
- b.textContent="保存中...";
-
- try{
-  const r=await callApi({
-   action:"saveShiftEntry",
-   idToken:currentIdToken,
-   date:selectedDate,
-   status:selectedStatus,
-   startTime,
-   endTime,
-   transport:false,
-   note:document.getElementById("shiftNote").value
-  });
-  if(!r.success)throw new Error(r.error||"シフトの保存に失敗しました");
-
-  const visitResult=await callApi({
-   action:"saveMyCustomerVisits",
-   idToken:currentIdToken,
-   date:selectedDate,
-   visits:JSON.stringify(visitsToSave)
-  });
-  if(!visitResult||visitResult.success!==true){
-   throw new Error(visitResult&&visitResult.error?visitResult.error:"同伴・来店予定の保存に失敗しました");
   }
 
-  if(isAttendanceChange){
-   try{
-    const confirmation=await callApi({
-     action:"confirmAttendanceChange",
-     idToken:currentIdToken,
-     date:selectedDate
-    });
+  let startTime = "";
+  let endTime = "";
 
-    if(!confirmation||confirmation.success!==true){
-     throw new Error(confirmation&&confirmation.error?confirmation.error:"出勤確認の更新に失敗しました");
+  if (selectedStatus === "working") {
+    startTime = getTime("start");
+    endTime = isEndTimeLast ? "LAST" : getTime("end");
+
+    if (!startTime || !endTime) {
+      showNotice("出勤時間と退勤時間を入力してください");
+      return;
+    }
+  }
+
+
+  /* ---------- 同伴・来店予定 ---------- */
+
+  const visitsToSave =
+    selectedStatus === "working"
+      ? customerVisits.map(item => ({
+          type: item.type,
+          customerName: String(item.customerName || "").trim(),
+          time: item.time || "",
+          note: item.note || ""
+        }))
+      : [];
+
+
+  /* ---------- 同伴・来店予定入力チェック ---------- */
+
+  for (const item of visitsToSave) {
+    if (!item.customerName) {
+      showNotice(
+        item.type + "の顧客名を入力してください"
+      );
+      return;
     }
 
-    attendanceChangeDate="";
-   }catch(confirmError){
-    console.error(confirmError);
+    if (item.time) {
+      const m =
+        String(item.time)
+          .match(/^(\d{1,2}):(\d{1,2})$/);
+
+      if (!m) {
+        showNotice(
+          item.type + "の予定時間を正しく入力してください"
+        );
+        return;
+      }
+
+      const h = Number(m[1]);
+      const min = Number(m[2]);
+
+      if (
+        h < 0 ||
+        h > 29 ||
+        min < 0 ||
+        min > 59
+      ) {
+        showNotice(
+          item.type + "の予定時間を正しく入力してください"
+        );
+        return;
+      }
+
+      item.time =
+        String(h).padStart(2, "0") +
+        ":" +
+        String(min).padStart(2, "0");
+    }
+  }
+
+
+  /* ---------- 出勤変更確認か判定 ---------- */
+
+  const isAttendanceChange =
+    attendanceChangeDate === selectedDate;
+
+
+  /* ---------- 保存開始 ---------- */
+
+  isSaving = true;
+
+  const button =
+    document.getElementById(
+      "saveSelectedDateButton"
+    );
+
+  button.disabled = true;
+  button.textContent = "保存中...";
+
+
+  try {
+
+    /* シフト保存 */
+
+    const result = await callApi({
+      action: "saveShiftEntry",
+      idToken: currentIdToken,
+      date: selectedDate,
+      status: selectedStatus,
+      startTime,
+      endTime,
+      transport: false,
+      note: document.getElementById("shiftNote").value
+    });
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "シフトの保存に失敗しました"
+      );
+    }
+
+
+    /* 同伴・来店予定保存 */
+
+    const visitResult = await callApi({
+      action: "saveMyCustomerVisits",
+      idToken: currentIdToken,
+      date: selectedDate,
+      visits: JSON.stringify(visitsToSave)
+    });
+
+    if (
+      !visitResult ||
+      visitResult.success !== true
+    ) {
+      throw new Error(
+        visitResult && visitResult.error
+          ? visitResult.error
+          : "同伴・来店予定の保存に失敗しました"
+      );
+    }
+
+
+    /* 出勤変更確認を更新 */
+
+    if (isAttendanceChange) {
+      try {
+        const confirmation = await callApi({
+          action: "confirmAttendanceChange",
+          idToken: currentIdToken,
+          date: selectedDate
+        });
+
+        if (
+          !confirmation ||
+          confirmation.success !== true
+        ) {
+          throw new Error(
+            confirmation && confirmation.error
+              ? confirmation.error
+              : "出勤確認の更新に失敗しました"
+          );
+        }
+
+        attendanceChangeDate = "";
+
+      } catch (confirmError) {
+        console.error(confirmError);
+
+        closeShiftModalForce();
+        await loadDisplayedMonth();
+
+        showNotice(
+          "内容は保存済みですが、出勤確認の更新に失敗しました"
+        );
+
+        return;
+      }
+    }
+
+
+    /* ---------- 保存完了 ---------- */
+
     closeShiftModalForce();
+
+    showNotice(
+      isAttendanceChange
+        ? "変更内容を保存・確認しました"
+        : "保存しました"
+    );
+
     await loadDisplayedMonth();
-    showNotice("内容は保存済みですが、出勤確認の更新に失敗しました");
+
+  } catch (e) {
+    showNotice(
+      e.message || String(e)
+    );
+
+  } finally {
+    isSaving = false;
+    button.disabled = false;
+
+    button.textContent =
+      attendanceChangeDate === selectedDate
+        ? "変更内容を保存"
+        : "この日の内容を保存";
+  }
+}
+
+
+/* ---------- 選択日の入力削除 ---------- */
+
+async function clearSelectedDate() {
+  if (!confirm("この日の入力を削除しますか？")) {
     return;
-   }
   }
 
-  closeShiftModalForce();
-  showNotice(isAttendanceChange?"変更内容を保存・確認しました":"保存しました");
-  await loadDisplayedMonth();
+  try {
 
- }catch(e){
-  showNotice(e.message||String(e));
- }finally{
-  isSaving=false;
-  b.disabled=false;
-  b.textContent=attendanceChangeDate===selectedDate?"変更内容を保存":"この日の内容を保存";
- }
+    /* シフト削除 */
+
+    const result = await callApi({
+      action: "deleteShiftEntry",
+      idToken: currentIdToken,
+      date: selectedDate
+    });
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "削除に失敗しました"
+      );
+    }
+
+
+    /* 同伴・来店予定削除 */
+
+    const visitResult = await callApi({
+      action: "saveMyCustomerVisits",
+      idToken: currentIdToken,
+      date: selectedDate,
+      visits: "[]"
+    });
+
+    if (
+      !visitResult ||
+      visitResult.success !== true
+    ) {
+      throw new Error(
+        visitResult && visitResult.error
+          ? visitResult.error
+          : "同伴・来店予定の削除に失敗しました"
+      );
+    }
+
+    customerVisits = [];
+
+    closeShiftModalForce();
+
+    showNotice("削除しました");
+
+    await loadDisplayedMonth();
+
+  } catch (e) {
+    showNotice(
+      e.message || String(e)
+    );
+  }
 }
-async function clearSelectedDate(){
- if(!confirm("この日の入力を削除しますか？"))return;
 
- try{
-  const r=await callApi({action:"deleteShiftEntry",idToken:currentIdToken,date:selectedDate});
-  if(!r.success)throw new Error(r.error||"削除に失敗しました");
 
-  const vr=await callApi({
-   action:"saveMyCustomerVisits",
-   idToken:currentIdToken,
-   date:selectedDate,
-   visits:"[]"
-  });
-  if(!vr||vr.success!==true){
-   throw new Error(vr&&vr.error?vr.error:"同伴・来店予定の削除に失敗しました");
+/* ---------- 強制的にモーダルを閉じる ---------- */
+
+function closeShiftModalForce() {
+  document
+    .getElementById("shiftModal")
+    .classList.add("hidden");
+
+  document.body.classList.remove("modal-open");
+}
+
+
+/* ---------- 月間シフト提出 ---------- */
+
+async function submitMonth() {
+  const current = calendar.getDate();
+
+  if (
+    !confirm(
+      `${current.getFullYear()}年${current.getMonth() + 1}月のシフトを提出しますか？`
+    )
+  ) {
+    return;
   }
 
-  customerVisits=[];
-  closeShiftModalForce();
-  showNotice("削除しました");
-  await loadDisplayedMonth();
+  const button =
+    document.getElementById(
+      "submitMonthButton"
+    );
 
- }catch(e){
-  showNotice(e.message||String(e));
- }
-}
-function closeShiftModalForce(){document.getElementById("shiftModal").classList.add("hidden");document.body.classList.remove("modal-open")}
-async function submitMonth(){
- const c=calendar.getDate();if(!confirm(`${c.getFullYear()}年${c.getMonth()+1}月のシフトを提出しますか？`))return;
- const b=document.getElementById("submitMonthButton");b.disabled=true;
- try{const r=await callApi({action:"submitMonthlyShift",idToken:currentIdToken,year:c.getFullYear(),month:c.getMonth()+1});if(!r.success)throw new Error(r.error||"提出に失敗しました");showNotice("シフトを提出しました");await loadDisplayedMonth()}catch(e){showNotice(e.message||String(e))}finally{b.disabled=false}
+  button.disabled = true;
+
+  try {
+    const result = await callApi({
+      action: "submitMonthlyShift",
+      idToken: currentIdToken,
+      year: current.getFullYear(),
+      month: current.getMonth() + 1
+    });
+
+    if (!result.success) {
+      throw new Error(
+        result.error ||
+        "提出に失敗しました"
+      );
+    }
+
+    showNotice("シフトを提出しました");
+
+    await loadDisplayedMonth();
+
+  } catch (e) {
+    showNotice(
+      e.message || String(e)
+    );
+
+  } finally {
+    button.disabled = false;
+  }
 }
 function openBulkModal(){resetBulkForm();updateBulkTargetMonthText();selectBulkMode("selectedDates");document.getElementById("bulkModal").classList.remove("hidden");document.body.classList.add("modal-open")}
 function closeBulkModal(){if(isBulkSaving)return;document.getElementById("bulkModal").classList.add("hidden");document.body.classList.remove("modal-open")}
