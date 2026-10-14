@@ -1839,7 +1839,7 @@ body.modal-open {
 
 </div>
 <!-- =====================================================
-     05. ヘッダー・サイドメニュー
+     14. サイドメニュー
 ===================================================== -->
 
 <div
@@ -1853,21 +1853,17 @@ body.modal-open {
     class="side-drawer"
   >
 
+    <!-- ---------- ブランド ---------- -->
+
     <div class="drawer-brand">
-
-      <div class="drawer-logo">
-        CAST FLOW
-      </div>
-
-      <div class="drawer-system">
-        CAST MANAGEMENT SYSTEM
-      </div>
-
+      <div class="drawer-logo">CAST FLOW</div>
+      <div class="drawer-system">CAST MANAGEMENT SYSTEM</div>
     </div>
 
 
-    <div class="drawer-user">
+    <!-- ---------- ログイン中CAST ---------- -->
 
+    <div class="drawer-user">
       <div
         id="drawerCastName"
         class="drawer-user-name"
@@ -1881,14 +1877,12 @@ body.modal-open {
       >
         -
       </div>
-
     </div>
 
 
-    <div class="drawer-section-title">
-      MENU
-    </div>
+    <!-- ---------- メニュー ---------- -->
 
+    <div class="drawer-section-title">MENU</div>
 
     <button
       id="drawerHomeButton"
@@ -1896,13 +1890,8 @@ body.modal-open {
       data-module="home"
       onclick="navigateToModule('home')"
     >
-
-      <span class="drawer-item-icon">
-        ⌂
-      </span>
-
+      <span class="drawer-item-icon">⌂</span>
       ホーム
-
     </button>
 
 
@@ -1912,15 +1901,12 @@ body.modal-open {
       data-module="shift"
       onclick="navigateToModule('shift')"
     >
-
-      <span class="drawer-item-icon">
-        ▣
-      </span>
-
+      <span class="drawer-item-icon">▣</span>
       シフト提出
-
     </button>
 
+
+    <!-- ---------- 管理者メニュー ---------- -->
 
     <div
       id="drawerAdminArea"
@@ -1930,23 +1916,14 @@ body.modal-open {
     >
 
       <div class="drawer-divider"></div>
-
-      <div class="drawer-section-title">
-        ADMIN
-      </div>
-
+      <div class="drawer-section-title">ADMIN</div>
 
       <button
         class="drawer-item"
         onclick="openAdminPlaceholder('本日の出勤確認')"
       >
-
-        <span class="drawer-item-icon">
-          ✓
-        </span>
-
+        <span class="drawer-item-icon">✓</span>
         本日の出勤確認
-
       </button>
 
 
@@ -1954,13 +1931,8 @@ body.modal-open {
         class="drawer-item"
         onclick="openAdminPlaceholder('月間提出状況')"
       >
-
-        <span class="drawer-item-icon">
-          ▤
-        </span>
-
+        <span class="drawer-item-icon">▤</span>
         月間提出状況
-
       </button>
 
 
@@ -1970,13 +1942,9 @@ body.modal-open {
         onclick="openAdminRegistrationRequests()"
         style="position:relative;"
       >
-
-        <span class="drawer-item-icon">
-          ♙
-        </span>
+        <span class="drawer-item-icon">♙</span>
 
         登録申請
-
 
         <span
           id="drawerRegistrationBadge"
@@ -1999,7 +1967,6 @@ body.modal-open {
         >
           0
         </span>
-
       </button>
 
 
@@ -2007,39 +1974,29 @@ body.modal-open {
         class="drawer-item"
         onclick="openAdminPlaceholder('キャスト管理')"
       >
-
-        <span class="drawer-item-icon">
-          ♟
-        </span>
-
+        <span class="drawer-item-icon">♟</span>
         キャスト管理
-
       </button>
 
     </div>
 
 
-    <div class="drawer-divider"></div>
+    <!-- ---------- 設定 ---------- -->
 
+    <div class="drawer-divider"></div>
 
     <button
       class="drawer-item"
       data-module="settings"
       onclick="openModulePlaceholder('settings')"
     >
-
-      <span class="drawer-item-icon">
-        ⚙
-      </span>
-
+      <span class="drawer-item-icon">⚙</span>
       設定
-
     </button>
 
   </aside>
 
 </div>
-
 <!-- =====================================================
      10. 共通UI
 ===================================================== -->
