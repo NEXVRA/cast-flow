@@ -6438,55 +6438,44 @@ async function handleApproveRegistrationRequest(requestId) {
   }
 }
 /* =====================================================
- * 却下理由
+ * 31. 却下理由ダイアログ
  * ===================================================== */
 
-/**
- * 却下理由ダイアログを開く
- */
-function openRejectReasonDialog(
-  requestId
-){
+/* ---------- 却下理由ダイアログを開く ---------- */
 
+function openRejectReasonDialog(requestId) {
   closeRejectReasonDialog();
 
+  const overlay =
+    document.createElement("div");
 
-  const overlay=
-    document.createElement(
-      "div"
-    );
-
-
-  overlay.id=
+  overlay.id =
     "rejectReasonOverlay";
 
-
-  overlay.dataset.requestId=
-    String(
-      requestId || ""
-    );
+  overlay.dataset.requestId =
+    String(requestId || "");
 
 
-  overlay.style.cssText=`
+  /* ---------- オーバーレイ ---------- */
 
+  overlay.style.cssText = `
     position:fixed;
     inset:0;
     z-index:9999;
     background:rgba(0,0,0,.48);
-
     display:flex;
     align-items:flex-end;
     justify-content:center;
-
     padding:
       20px
       14px
       calc(20px + env(safe-area-inset-bottom,0px));
-
   `;
 
 
-  overlay.innerHTML=`
+  /* ---------- ダイアログUI ---------- */
+
+  overlay.innerHTML = `
 
     <div
       style="
@@ -6543,18 +6532,15 @@ function openRejectReasonDialog(
         "キャスト番号が違います"
       )}
 
-
       ${buildRejectReasonOption(
         "cast-name",
         "キャスト名が違います"
       )}
 
-
       ${buildRejectReasonOption(
         "duplicate",
         "重複申請"
       )}
-
 
       ${buildRejectReasonOption(
         "other",
@@ -6569,7 +6555,6 @@ function openRejectReasonDialog(
           margin-top:10px;
         "
       >
-
         <textarea
           id="rejectOtherText"
           maxlength="200"
@@ -6587,7 +6572,6 @@ function openRejectReasonDialog(
             outline:none;
           "
         ></textarea>
-
       </div>
 
 
@@ -6600,8 +6584,7 @@ function openRejectReasonDialog(
           font-size:12px;
           font-weight:700;
         "
-      >
-      </div>
+      ></div>
 
 
       <div
@@ -6654,19 +6637,14 @@ function openRejectReasonDialog(
   `;
 
 
+  /* ---------- 背景タップで閉じる ---------- */
+
   overlay.addEventListener(
     "click",
-    event=>{
-
-      if(
-        event.target===
-        overlay
-      ){
-
+    event => {
+      if (event.target === overlay) {
         closeRejectReasonDialog();
-
       }
-
     }
   );
 
@@ -6674,18 +6652,15 @@ function openRejectReasonDialog(
   document.body.appendChild(
     overlay
   );
-
 }
 
 
-/**
- * 却下理由選択肢
- */
+/* ---------- 却下理由選択肢 ---------- */
+
 function buildRejectReasonOption(
   value,
   label
-){
-
+) {
   return `
 
     <label
@@ -6725,47 +6700,36 @@ function buildRejectReasonOption(
     </label>
 
   `;
-
 }
 
 
-/**
- * 却下理由変更
- */
-function handleRejectReasonChange(
-  radio
-){
+/* ---------- 却下理由変更 ---------- */
 
-  const otherArea=
+function handleRejectReasonChange(radio) {
+  const otherArea =
     document.getElementById(
       "rejectOtherArea"
     );
 
-
-  const error=
+  const error =
     document.getElementById(
       "rejectReasonError"
     );
 
 
-  if(error){
-
-    error.classList.add(
-      "hidden"
-    );
-
+  if (error) {
+    error.classList.add("hidden");
   }
 
 
-  if(!otherArea){
+  if (!otherArea) {
     return;
   }
 
 
-  const isOther=
+  const isOther =
     radio &&
-    radio.value==="other";
-
+    radio.value === "other";
 
   otherArea.classList.toggle(
     "hidden",
@@ -6773,118 +6737,93 @@ function handleRejectReasonChange(
   );
 
 
-  if(isOther){
-
-    const textArea=
+  if (isOther) {
+    const textArea =
       document.getElementById(
         "rejectOtherText"
       );
 
-
-    if(textArea){
-
+    if (textArea) {
       setTimeout(
-        ()=>{
+        () => {
           textArea.focus();
         },
         50
       );
-
     }
-
   }
-
 }
 
 
-/**
- * 却下理由ダイアログを閉じる
- */
-function closeRejectReasonDialog(){
+/* ---------- 却下理由ダイアログを閉じる ---------- */
 
-  const overlay=
+function closeRejectReasonDialog() {
+  const overlay =
     document.getElementById(
       "rejectReasonOverlay"
     );
 
-
-  if(overlay){
-
+  if (overlay) {
     overlay.remove();
-
   }
-
 }
 
 
-/**
- * 却下確定
- */
-async function submitRejectReason(){
+/* ---------- 却下確定 ---------- */
 
-  const overlay=
+async function submitRejectReason() {
+  const overlay =
     document.getElementById(
       "rejectReasonOverlay"
     );
 
-
-  if(!overlay){
+  if (!overlay) {
     return;
   }
 
 
-  const requestId=
+  const requestId =
     String(
       overlay.dataset.requestId || ""
     ).trim();
 
-
-  const selected=
+  const selected =
     document.querySelector(
       'input[name="rejectReason"]:checked'
     );
 
-
-  const errorElement=
+  const errorElement =
     document.getElementById(
       "rejectReasonError"
     );
 
 
-  if(!selected){
+  /* ---------- 理由未選択 ---------- */
 
-    if(errorElement){
-
-      errorElement.textContent=
+  if (!selected) {
+    if (errorElement) {
+      errorElement.textContent =
         "却下理由を選択してください";
-
 
       errorElement.classList.remove(
         "hidden"
       );
-
     }
 
-
     return;
-
   }
 
 
-  let note=
+  let note =
     String(
       selected.dataset.label || ""
     ).trim();
 
 
-  /*
-   * その他のみ自由入力
-   */
-  if(
-    selected.value==="other"
-  ){
+  /* ---------- その他：自由入力 ---------- */
 
-    const otherText=
+  if (selected.value === "other") {
+    const otherText =
       String(
         document
           .getElementById(
@@ -6893,115 +6832,74 @@ async function submitRejectReason(){
           ?.value || ""
       ).trim();
 
-
-    if(!otherText){
-
-      if(errorElement){
-
-        errorElement.textContent=
+    if (!otherText) {
+      if (errorElement) {
+        errorElement.textContent =
           "却下理由を入力してください";
-
 
         errorElement.classList.remove(
           "hidden"
         );
-
       }
 
-
       return;
-
     }
 
-
-    note=
-      otherText;
-
+    note = otherText;
   }
 
 
-  const button=
+  /* ---------- 二重送信防止 ---------- */
+
+  const button =
     document.getElementById(
       "rejectReasonSubmitButton"
     );
 
-
-  if(button){
-
-    button.disabled=
-      true;
-
-
-    button.textContent=
-      "却下処理中...";
-
-
-    button.style.opacity=
-      ".6";
-
+  if (button) {
+    button.disabled = true;
+    button.textContent = "却下処理中...";
+    button.style.opacity = ".6";
   }
 
 
-  try{
+  /* ---------- 却下処理 ---------- */
 
+  try {
     await rejectRequest(
       requestId,
       note
     );
 
-
     closeRejectReasonDialog();
-
 
     showNotice(
       "登録申請を却下しました"
     );
 
-
     await loadAdminRequests();
 
+  } catch (error) {
+    console.error(error);
 
-  }catch(error){
-
-    console.error(
-      error
-    );
-
-
-    if(errorElement){
-
-      errorElement.textContent=
+    if (errorElement) {
+      errorElement.textContent =
         error?.message ||
         "登録申請を却下できませんでした";
-
 
       errorElement.classList.remove(
         "hidden"
       );
-
     }
 
-
-    if(button){
-
-      button.disabled=
-        false;
-
-
-      button.textContent=
+    if (button) {
+      button.disabled = false;
+      button.textContent =
         "この理由で却下";
-
-
-      button.style.opacity=
-        "1";
-
+      button.style.opacity = "1";
     }
-
   }
-
 }
-
-
 /**
  * 承認API
  */
