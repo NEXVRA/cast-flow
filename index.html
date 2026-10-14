@@ -5740,24 +5740,27 @@ async function submitRegistration() {
   }
 }
 /* =====================================================
- * 19. 登録承認待ち画面
+ * 29. 登録承認待ち画面
  * ===================================================== */
 
-function showPending(request){
+function showPending(request) {
 
-  const castId=
+  /* ---------- 表示データ ---------- */
+
+  const castId =
     request?.castId
-      ?escapeHtml(request.castId)
-      :"";
+      ? escapeHtml(request.castId)
+      : "";
 
-
-  const castName=
+  const castName =
     request?.castName
-      ?escapeHtml(request.castName)
-      :"";
+      ? escapeHtml(request.castName)
+      : "";
 
 
-  document.getElementById("authApp").innerHTML=`
+  /* ---------- 承認待ち画面 ---------- */
+
+  document.getElementById("authApp").innerHTML = `
 
     <div
       class="status-icon pending"
@@ -5766,14 +5769,12 @@ function showPending(request){
         border:none;
       "
     >
-
       <svg
         viewBox="0 0 24 24"
         width="34"
         height="34"
         aria-hidden="true"
       >
-
         <path
           fill="#202020"
           d="
@@ -5811,6 +5812,7 @@ function showPending(request){
             C8.5 7.7
             9.8 9
             12 10.6
+
             C14.2 9
             15.5 7.7
             15.7 6
@@ -5820,16 +5822,16 @@ function showPending(request){
             C9.8 15
             8.5 16.3
             8.3 18
+
             H15.7
+
             C15.5 16.3
             14.2 15
             12 13.4
             Z
           "
         />
-
       </svg>
-
     </div>
 
 
@@ -5846,23 +5848,23 @@ function showPending(request){
 
     ${
       castName
-        ?`
+        ? `
           <div class="user-name">
             ${castName}
           </div>
         `
-        :""
+        : ""
     }
 
 
     ${
       castId
-        ?`
+        ? `
           <div class="cast-id">
             CAST ID : ${castId}
           </div>
         `
-        :""
+        : ""
     }
 
 
@@ -5871,9 +5873,7 @@ function showPending(request){
     </div>
 
   `;
-
 }
-
 /* =====================================================
  * 20. 管理者・登録申請
  * ===================================================== */
