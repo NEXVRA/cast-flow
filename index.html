@@ -1177,7 +1177,31 @@ body.modal-open {
   line-height: 28px;
 }
 
-    @media(max-width:420px){.main-content{padding-left:12px;padding-right:12px}.fc .fc-daygrid-day-frame{min-height:65px}.modal-card{padding-left:16px;padding-right:16px}.visit-item-grid{grid-template-columns:minmax(0,1fr) 96px}}
+/* =====================================================
+ * 08. レスポンシブ
+ * ===================================================== */
+
+@media (max-width: 420px) {
+
+  .main-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .fc .fc-daygrid-day-frame {
+    min-height: 65px;
+  }
+
+  .modal-card {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .visit-item-grid {
+    grid-template-columns: minmax(0, 1fr) 96px;
+  }
+
+}
 
 /* =====================================================
  * 04-05. CAST FLOW ホーム・サイドメニュー
