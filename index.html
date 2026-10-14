@@ -3544,61 +3544,210 @@ function updateProgress() {
         ? "提出済み"
         : "この内容で提出する";
 }
-async function openShiftModal(date){
- selectedDate=date;
- const d=parseLocalDate(date);
- document.getElementById("modalDateTitle").textContent=(d.getMonth()+1)+"月"+d.getDate()+"日";
- document.getElementById("modalWeekday").textContent=["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"][d.getDay()];
+/* =====================================================
+ * 22. シフト入力モーダル処理
+ * ===================================================== */
 
- const e=shiftEntries[date];
- selectedStatus=e?e.status:"working";
- selectStatus(selectedStatus);
+/* ---------- シフト入力モーダルを開く ---------- */
 
- setTime("start",e&&e.startTime?e.startTime:currentCastDefaults.defaultStartTime);
- const last=!!(e&&e.endTime==="LAST");
- setTime("end",last?currentCastDefaults.defaultEndTime:(e&&e.endTime?e.endTime:currentCastDefaults.defaultEndTime));
- setEndTimeLastState(last);
+async function openShiftModal(date) {
+  selectedDate = date;
 
- document.getElementById("shiftNote").value=e?e.note||"":"";
- document.getElementById("clearDateButton").classList.toggle("hidden",!e);
- document.getElementById("saveSelectedDateButton").textContent=attendanceChangeDate===date?"変更内容を保存":"この日の内容を保存";
+  const d = parseLocalDate(date);
 
- customerVisits=[];
- customerVisitsLoading=true;
- renderCustomerVisits();
+  document.getElementById("modalDateTitle").textContent =
+    (d.getMonth() + 1) + "月" + d.getDate() + "日";
 
- document.getElementById("shiftModal").classList.remove("hidden");
- document.body.classList.add("modal-open");
+  document.getElementById("modalWeekday").textContent =
+    [
+      "日曜日",
+      "月曜日",
+      "火曜日",
+      "水曜日",
+      "木曜日",
+      "金曜日",
+      "土曜日"
+    ][d.getDay()];
 
- try{
-  const r=await callApi({action:"getMyCustomerVisits",idToken:currentIdToken,date});
 
-  if(selectedDate!==date)return;
-  if(!r||r.success!==true){
-   throw new Error(r&&r.error?r.error:"同伴・来店予定を取得できませんでした");
+  /* ---------- 保存済みシフト反映 ---------- */
+
+  const e = shiftEntries[date];
+
+  selectedStatus =
+    e
+      ? e.status
+      : "working";
+
+  selectStatus(selectedStatus);
+
+
+  /* ---------- 出退勤時間 ---------- */
+
+  setTime(
+    "start",
+    e && e.startTime
+      ? e.startTime
+      : currentCastDefaults.defaultStartTime
+  );
+
+  const last =
+    !!(
+      e &&
+      e.endTime === "LAST"
+    );
+
+  setTime(
+    "end",
+    last
+      ? currentCastDefaults.defaultEndTime
+      : (
+          e && e.endTime
+            ? e.endTime
+            : currentCastDefaults.defaultEndTime
+        )
+  );
+
+  setEndTimeLastState(last);
+
+
+  /* ---------- 備考・削除ボタン ---------- */
+
+  document.getElementById("shiftNote").value =
+    e
+      ? e.note || ""
+      : "";
+
+  document
+    .getElementById("clearDateButton")
+    .classList.toggle(
+      "hidden",
+      !e
+    );
+
+  document
+    .getElementById("saveSelectedDateButton")
+    .textContent =
+      attendanceChangeDate === date
+        ? "変更内容を保存"
+        : "この日の内容を保存";
+
+
+  /* ---------- 同伴・来店予定初期化 ---------- */
+
+  customerVisits = [];
+  customerVisitsLoading = true;
+
+  renderCustomerVisits();
+
+
+  /* ---------- モーダル表示 ---------- */
+
+  document
+    .getElementById("shiftModal")
+    .classList.remove("hidden");
+
+  document.body.classList.add("modal-open");
+
+
+  /* ---------- 同伴・来店予定取得 ---------- */
+
+  try {
+    const r = await callApi({
+      action: "getMyCustomerVisits",
+      idToken: currentIdToken,
+      date
+    });
+
+    if (selectedDate !== date) {
+      return;
+    }
+
+    if (!r || r.success !== true) {
+      throw new Error(
+        r && r.error
+          ? r.error
+          : "同伴・来店予定を取得できませんでした"
+      );
+    }
+
+    customerVisits =
+      Array.isArray(r.visits)
+        ? r.visits.map(item => ({
+            type: item.type,
+            customerName: item.customerName || "",
+            time: item.time || "",
+            note: item.note || ""
+          }))
+        : [];
+
+  } catch (e) {
+    console.error(e);
+
+    if (selectedDate === date) {
+      showNotice(
+        e.message ||
+        "同伴・来店予定を取得できませんでした"
+      );
+    }
+
+  } finally {
+    customerVisitsLoading = false;
+
+    if (selectedDate === date) {
+      renderCustomerVisits();
+    }
+  }
+}
+
+
+/* ---------- シフト入力モーダルを閉じる ---------- */
+
+function closeShiftModal() {
+  if (isSaving) {
+    return;
   }
 
-  customerVisits=Array.isArray(r.visits)
-   ?r.visits.map(item=>({
-      type:item.type,
-      customerName:item.customerName||"",
-      time:item.time||"",
-      note:item.note||""
-    }))
-   :[];
+  document
+    .getElementById("shiftModal")
+    .classList.add("hidden");
 
- }catch(e){
-  console.error(e);
-  if(selectedDate===date)showNotice(e.message||"同伴・来店予定を取得できませんでした");
- }finally{
-  customerVisitsLoading=false;
-  if(selectedDate===date)renderCustomerVisits();
- }
+  document.body.classList.remove("modal-open");
 }
-function closeShiftModal(){if(isSaving)return;document.getElementById("shiftModal").classList.add("hidden");document.body.classList.remove("modal-open")}
-function selectStatus(s){selectedStatus=s;["working","holiday","undecided"].forEach(x=>document.getElementById("status"+cap(x)).classList.toggle("selected",x===s));document.getElementById("workingFields").classList.toggle("hidden",s!=="working");document.getElementById("customerVisitFields").classList.toggle("hidden",s!=="working")}
 
 
+/* ---------- 勤務区分切替 ---------- */
+
+function selectStatus(s) {
+  selectedStatus = s;
+
+  [
+    "working",
+    "holiday",
+    "undecided"
+  ].forEach(x => {
+    document
+      .getElementById("status" + cap(x))
+      .classList.toggle(
+        "selected",
+        x === s
+      );
+  });
+
+  document
+    .getElementById("workingFields")
+    .classList.toggle(
+      "hidden",
+      s !== "working"
+    );
+
+  document
+    .getElementById("customerVisitFields")
+    .classList.toggle(
+      "hidden",
+      s !== "working"
+    );
+}
 /* =====================================================
  * 12. 同伴・来店予定・時間入力
  * ===================================================== */
