@@ -1474,6 +1474,198 @@ body.modal-open {
   background: #ededed;
 }
 
+
+/* =====================================================
+ * 09. 管理者・月間提出状況
+ * ===================================================== */
+
+.admin-page-label {
+  color: #999;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.admin-page-title {
+  margin: 4px 0 0;
+  font-size: 24px;
+  text-align: left;
+}
+
+.admin-page-description {
+  margin: 10px 0 0;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.admin-back-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 18px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-weight: 800;
+}
+
+.monthly-admin-toolbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.monthly-admin-nav-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.monthly-admin-month {
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.monthly-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.monthly-summary-card {
+  padding: 13px 8px;
+  border-radius: 12px;
+  background: #f2f2f2;
+  text-align: center;
+}
+
+.monthly-summary-card strong {
+  display: block;
+  font-size: 20px;
+}
+
+.monthly-summary-card span {
+  display: block;
+  margin-top: 3px;
+  color: #888;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.monthly-submission-list {
+  margin-top: 14px;
+}
+
+.monthly-submission-card {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.monthly-submission-card:first-child {
+  margin-top: 0;
+}
+
+.monthly-submission-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.monthly-submission-name {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.monthly-submission-id {
+  margin-top: 3px;
+  color: #999;
+  font-size: 10px;
+}
+
+.monthly-submission-state {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eee;
+  color: #777;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.monthly-submission-state.submitted {
+  background: #202020;
+  color: #fff;
+}
+
+.monthly-submission-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.monthly-submission-count {
+  padding: 9px 6px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.monthly-submission-count strong {
+  display: block;
+  font-size: 14px;
+}
+
+.monthly-submission-count span {
+  display: block;
+  margin-top: 2px;
+  color: #888;
+  font-size: 9px;
+}
+
+.monthly-submission-meta {
+  margin-top: 10px;
+  color: #999;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.monthly-submission-empty {
+  margin-top: 14px;
+  padding: 28px 16px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .monthly-summary-grid {
+    gap: 6px;
+  }
+
+  .monthly-summary-card {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
 /* ---------- 登録申請通知バッジ ---------- */
 
 #homeAdminCard {
@@ -1936,7 +2128,7 @@ body.modal-open {
 
       <button
         class="drawer-item"
-        onclick="openAdminPlaceholder('月間提出状況')"
+        onclick="openAdminMonthlySubmissions()"
       >
         <span class="drawer-item-icon">▤</span>
         月間提出状況
@@ -2801,6 +2993,19 @@ let suppressNextMonthAutoLoad = false;
 
 let customerVisits = [];
 let customerVisitsLoading = false;
+
+
+/* ---------- 管理者・月間提出状況 ---------- */
+
+const adminSubmissionNow = new Date();
+
+let adminSubmissionYear =
+  adminSubmissionNow.getFullYear();
+
+let adminSubmissionMonth =
+  adminSubmissionNow.getMonth() + 1;
+
+let adminSubmissionLoading = false;
 
 /* =====================================================
  * 18. アプリ起動・API通信・認証確認
@@ -5970,6 +6175,489 @@ async function refreshRegistrationBadge() {
       error
     );
   }
+}
+
+
+
+/* =====================================================
+ * 管理者・月間提出状況
+ * ===================================================== */
+
+/* ---------- 月間提出状況を開く ---------- */
+
+async function openAdminMonthlySubmissions() {
+  closeDrawer();
+
+  if (!isCurrentCastAdmin()) {
+    showNotice("管理者権限がありません");
+    return;
+  }
+
+  document
+    .getElementById("homeView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  renderAdminMonthlySubmissionShell();
+
+  await loadAdminMonthlySubmissionStatus();
+}
+
+
+/* ---------- 画面枠 ---------- */
+
+function renderAdminMonthlySubmissionShell() {
+  const app =
+    document.getElementById("authApp");
+
+  if (!app) {
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="admin-header">
+      <div>
+        <div class="admin-page-label">ADMIN</div>
+        <h1 class="admin-page-title">月間提出状況</h1>
+      </div>
+    </div>
+
+    <p class="admin-page-description">
+      CASTごとの提出状況と、出勤・△・休みの日数を確認できます。
+    </p>
+
+    <div class="monthly-admin-toolbar">
+      <button
+        type="button"
+        class="monthly-admin-nav-button"
+        onclick="changeAdminSubmissionMonth(-1)"
+        aria-label="前の月"
+      >
+        ‹
+      </button>
+
+      <div
+        id="adminSubmissionMonthLabel"
+        class="monthly-admin-month"
+      ></div>
+
+      <button
+        type="button"
+        class="monthly-admin-nav-button"
+        onclick="changeAdminSubmissionMonth(1)"
+        aria-label="次の月"
+      >
+        ›
+      </button>
+    </div>
+
+    <div class="monthly-summary-grid">
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionTotal">-</strong>
+        <span>対象CAST</span>
+      </div>
+
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionSubmitted">-</strong>
+        <span>提出済み</span>
+      </div>
+
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionPending">-</strong>
+        <span>未提出</span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="admin-back-button"
+      onclick="showHomeView()"
+    >
+      ← ホームへ戻る
+    </button>
+
+    <div
+      id="adminMonthlySubmissionList"
+      class="monthly-submission-list"
+    >
+      <div class="loading">
+        <div class="spinner"></div>
+        月間提出状況を読み込んでいます...
+      </div>
+    </div>
+  `;
+
+  updateAdminSubmissionMonthLabel();
+}
+
+
+/* ---------- 表示月変更 ---------- */
+
+async function changeAdminSubmissionMonth(delta) {
+  if (adminSubmissionLoading) {
+    return;
+  }
+
+  const date =
+    new Date(
+      adminSubmissionYear,
+      adminSubmissionMonth - 1 + Number(delta || 0),
+      1
+    );
+
+  adminSubmissionYear =
+    date.getFullYear();
+
+  adminSubmissionMonth =
+    date.getMonth() + 1;
+
+  updateAdminSubmissionMonthLabel();
+
+  await loadAdminMonthlySubmissionStatus();
+}
+
+
+function updateAdminSubmissionMonthLabel() {
+  const label =
+    document.getElementById(
+      "adminSubmissionMonthLabel"
+    );
+
+  if (!label) {
+    return;
+  }
+
+  label.textContent =
+    `${adminSubmissionYear}年${adminSubmissionMonth}月`;
+}
+
+
+/* ---------- 月間提出状況取得 ---------- */
+
+async function loadAdminMonthlySubmissionStatus() {
+  const container =
+    document.getElementById(
+      "adminMonthlySubmissionList"
+    );
+
+  if (!container || adminSubmissionLoading) {
+    return;
+  }
+
+  adminSubmissionLoading = true;
+
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      月間提出状況を読み込んでいます...
+    </div>
+  `;
+
+  try {
+    const result =
+      await callApi({
+        action: "getMonthlySubmissionStatus",
+        idToken: currentIdToken,
+        year: adminSubmissionYear,
+        month: adminSubmissionMonth
+      });
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
+      throw new Error(
+        result?.error ||
+        "月間提出状況を取得できませんでした"
+      );
+    }
+
+    const items =
+      Array.isArray(result.items)
+        ? result.items
+        : (
+            Array.isArray(result.casts)
+              ? result.casts
+              : []
+          );
+
+    renderAdminMonthlySubmissionStatus(items);
+
+  } catch (error) {
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="error-message">
+        ${escapeHtml(
+          error?.message ||
+          String(error)
+        )}
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="loadAdminMonthlySubmissionStatus()"
+      >
+        再読み込み
+      </button>
+    `;
+
+    updateAdminMonthlySubmissionSummary([]);
+
+  } finally {
+    adminSubmissionLoading = false;
+  }
+}
+
+
+/* ---------- 集計表示 ---------- */
+
+function updateAdminMonthlySubmissionSummary(items) {
+  const list =
+    Array.isArray(items)
+      ? items
+      : [];
+
+  const submitted =
+    list.filter(
+      item => item?.submitted === true
+    ).length;
+
+  const values = {
+    adminSubmissionTotal:
+      list.length,
+
+    adminSubmissionSubmitted:
+      submitted,
+
+    adminSubmissionPending:
+      Math.max(
+        0,
+        list.length - submitted
+      )
+  };
+
+  Object.entries(values)
+    .forEach(([id, value]) => {
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent =
+          String(value);
+      }
+    });
+}
+
+
+/* ---------- 一覧描画 ---------- */
+
+function renderAdminMonthlySubmissionStatus(items) {
+  const container =
+    document.getElementById(
+      "adminMonthlySubmissionList"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(items)
+      ? items
+      : [];
+
+  updateAdminMonthlySubmissionSummary(list);
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="monthly-submission-empty">
+        対象CASTがいません。
+      </div>
+    `;
+    return;
+  }
+
+  const sorted =
+    [...list].sort((a, b) => {
+      if (
+        a?.submitted === true &&
+        b?.submitted !== true
+      ) {
+        return 1;
+      }
+
+      if (
+        a?.submitted !== true &&
+        b?.submitted === true
+      ) {
+        return -1;
+      }
+
+      return String(
+        a?.castName || ""
+      ).localeCompare(
+        String(
+          b?.castName || ""
+        ),
+        "ja"
+      );
+    });
+
+  container.innerHTML =
+    sorted
+      .map(
+        item =>
+          buildAdminMonthlySubmissionCard(
+            item
+          )
+      )
+      .join("");
+}
+
+
+/* ---------- CASTカード ---------- */
+
+function buildAdminMonthlySubmissionCard(item) {
+  const castName =
+    escapeHtml(
+      item?.castName || "名称未設定"
+    );
+
+  const castId =
+    escapeHtml(
+      item?.castId || ""
+    );
+
+  const submitted =
+    item?.submitted === true;
+
+  const workingDays =
+    normalizeAdminSubmissionCount(
+      item?.workingDays ??
+      item?.working ??
+      0
+    );
+
+  const undecidedDays =
+    normalizeAdminSubmissionCount(
+      item?.undecidedDays ??
+      item?.undecided ??
+      0
+    );
+
+  const holidayDays =
+    normalizeAdminSubmissionCount(
+      item?.holidayDays ??
+      item?.holiday ??
+      0
+    );
+
+  const submittedAt =
+    escapeHtml(
+      item?.submittedAt || ""
+    );
+
+  const updatedAt =
+    escapeHtml(
+      item?.updatedAt ||
+      item?.lastUpdatedAt ||
+      ""
+    );
+
+  const meta = [];
+
+  if (submittedAt) {
+    meta.push(
+      `提出：${submittedAt}`
+    );
+  }
+
+  if (updatedAt) {
+    meta.push(
+      `最終更新：${updatedAt}`
+    );
+  }
+
+  return `
+    <div class="monthly-submission-card">
+      <div class="monthly-submission-head">
+        <div>
+          <div class="monthly-submission-name">
+            ${castName}
+          </div>
+
+          <div class="monthly-submission-id">
+            CAST ID : ${castId || "-"}
+          </div>
+        </div>
+
+        <div
+          class="monthly-submission-state ${
+            submitted
+              ? "submitted"
+              : ""
+          }"
+        >
+          ${
+            submitted
+              ? "提出済み"
+              : "未提出"
+          }
+        </div>
+      </div>
+
+      <div class="monthly-submission-counts">
+        <div class="monthly-submission-count">
+          <strong>${workingDays}</strong>
+          <span>出勤</span>
+        </div>
+
+        <div class="monthly-submission-count">
+          <strong>${undecidedDays}</strong>
+          <span>△</span>
+        </div>
+
+        <div class="monthly-submission-count">
+          <strong>${holidayDays}</strong>
+          <span>休み</span>
+        </div>
+      </div>
+
+      ${
+        meta.length > 0
+          ? `
+            <div class="monthly-submission-meta">
+              ${meta.join("<br>")}
+            </div>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+
+function normalizeAdminSubmissionCount(value) {
+  const number =
+    Number(value || 0);
+
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+    return 0;
+  }
+
+  return Math.floor(number);
 }
 
 
