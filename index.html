@@ -85,6 +85,26 @@ textarea {
 }
 
 
+
+/* ---------- 開発環境表示 ---------- */
+
+.environment-badge {
+  position: fixed;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  right: 8px;
+  z-index: 10001;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 10px #00000018;
+  pointer-events: none;
+}
+
 /* ---------- 起動ローディング ---------- */
 
 .loading-screen {
@@ -3182,10 +3202,87 @@ function applyCastFlowIcons() {
 
 /* ---------- 接続設定 ---------- */
 
-const LIFF_ID = "2011488723-CUmNFMxv";
+/* ---------- 環境設定 ---------- */
+
+const CAST_FLOW_ENVIRONMENTS =
+  Object.freeze({
+
+    production: {
+      key: "production",
+      label: "PROD",
+      liffId:
+        "2011488723-gI54Hlt3",
+      gasApiUrl:
+        "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec"
+    },
+
+    development: {
+      key: "development",
+      label: "DEV",
+      liffId:
+        "2011488723-CUmNFMxv",
+
+      /*
+       * DEV GASを作成するまでは
+       * 現在のGAS URLを一時利用する。
+       *
+       * DEV GAS発行後、
+       * この1か所だけDEV URLへ設定すれば
+       * 以後のリリース時にURL変更は不要。
+       */
+      gasApiUrl:
+        "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec"
+    }
+
+  });
+
+
+function detectCastFlowEnvironment() {
+
+  const hostname =
+    String(
+      window.location.hostname || ""
+    )
+    .trim()
+    .toLowerCase();
+
+
+  /*
+   * 本番ドメインだけを明示的に本番扱い。
+   *
+   * Cloudflare Pages本体・Preview URL・localhost等は
+   * 誤って本番APIへ向かないようDEV扱いにする。
+   */
+  if (
+    hostname === "nexvra.github.io"
+  ) {
+
+    return (
+      CAST_FLOW_ENVIRONMENTS
+        .production
+    );
+
+  }
+
+
+  return (
+    CAST_FLOW_ENVIRONMENTS
+      .development
+  );
+
+}
+
+
+const CAST_FLOW_ENV =
+  detectCastFlowEnvironment();
+
+
+const LIFF_ID =
+  CAST_FLOW_ENV.liffId;
+
 
 const GAS_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec";
+  CAST_FLOW_ENV.gasApiUrl;
 
 
 /* ---------- CAST FLOW Core設定 ---------- */
@@ -3324,13 +3421,75 @@ let adminSubmissionLoading = false;
 let adminTodayAttendanceLoading = false;
 let adminTodayAttendanceData = null;
 
+
+/* =====================================================
+ * 環境表示
+ * ===================================================== */
+
+function applyEnvironmentIndicator() {
+
+  if (
+    CAST_FLOW_ENV.key !==
+    "development"
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    document.getElementById(
+      "environmentBadge"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const badge =
+    document.createElement(
+      "div"
+    );
+
+
+  badge.id =
+    "environmentBadge";
+
+
+  badge.className =
+    "environment-badge";
+
+
+  badge.textContent =
+    "DEV";
+
+
+  document.body.appendChild(
+    badge
+  );
+
+}
+
+
 /* =====================================================
  * 18. アプリ起動・API通信・認証確認
  * ===================================================== */
 
 /* ---------- 初期起動 ---------- */
 
-window.addEventListener("load", initializeApp);
+window.addEventListener(
+  "load",
+  () => {
+
+    applyEnvironmentIndicator();
+
+    initializeApp();
+
+  }
+);
 
 
 /* ---------- 読み込み長時間時の案内 ---------- */
@@ -3379,6 +3538,11 @@ async function initializeApp() {
 
 async function callApi(data) {
   const params = new URLSearchParams();
+
+  params.append(
+    "clientEnvironment",
+    CAST_FLOW_ENV.key
+  );
 
   Object.keys(data).forEach(key => {
     params.append(
