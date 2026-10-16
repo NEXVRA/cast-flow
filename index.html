@@ -1475,6 +1475,317 @@ body.modal-open {
 }
 
 
+
+/* =====================================================
+ * 09. 管理者・本日の出勤確認
+ * ===================================================== */
+
+.today-admin-date {
+  margin-top: 14px;
+  color: #444;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.today-admin-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.today-admin-summary-card {
+  padding: 12px 5px;
+  border-radius: 12px;
+  background: #f2f2f2;
+  text-align: center;
+}
+
+.today-admin-summary-card strong {
+  display: block;
+  font-size: 19px;
+}
+
+.today-admin-summary-card span {
+  display: block;
+  margin-top: 3px;
+  color: #888;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.today-admin-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.today-admin-action {
+  min-height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-weight: 800;
+}
+
+.today-attendance-list {
+  margin-top: 14px;
+}
+
+.today-attendance-card {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.today-attendance-card:first-child {
+  margin-top: 0;
+}
+
+.today-attendance-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.today-attendance-name {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.today-attendance-id {
+  margin-top: 3px;
+  color: #999;
+  font-size: 10px;
+}
+
+.today-attendance-state {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ececec;
+  color: #666;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.today-attendance-state.ok {
+  background: #202020;
+  color: #fff;
+}
+
+.today-attendance-state.changed {
+  background: #fff0f0;
+  color: #a33;
+}
+
+.today-attendance-shift {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.today-attendance-value {
+  padding: 10px 6px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.today-attendance-value strong {
+  display: block;
+  font-size: 13px;
+}
+
+.today-attendance-value span {
+  display: block;
+  margin-top: 2px;
+  color: #888;
+  font-size: 8px;
+}
+
+.today-attendance-note {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.today-visit-summary {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.today-visit-count {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.today-visit-list {
+  margin-top: 10px;
+}
+
+.today-visit-item {
+  width: 100%;
+  margin-top: 7px;
+  padding: 11px 12px;
+  border: 1px solid #e7e7e7;
+  border-radius: 11px;
+  background: #fff;
+  color: #222;
+  text-align: left;
+}
+
+.today-visit-item:first-child {
+  margin-top: 0;
+}
+
+.today-visit-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.today-visit-customer {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.today-visit-time {
+  color: #555;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.today-visit-type {
+  margin-top: 4px;
+  color: #888;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.today-attendance-empty {
+  padding: 28px 16px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.today-customer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding:
+    20px
+    14px
+    calc(20px + env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, .48);
+}
+
+.today-customer-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 22px 18px 18px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .22);
+}
+
+.today-customer-label {
+  color: #999;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.today-customer-name {
+  margin-top: 5px;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.today-customer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.today-customer-info {
+  padding: 11px;
+  border-radius: 11px;
+  background: #f5f5f5;
+}
+
+.today-customer-info span {
+  display: block;
+  color: #888;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.today-customer-info strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.today-customer-note {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 11px;
+  background: #f7f7f7;
+  color: #555;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.today-customer-help {
+  margin-top: 12px;
+  color: #999;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.today-customer-close {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #222;
+  color: #fff;
+  font-weight: 900;
+}
+
+@media (max-width: 420px) {
+  .today-admin-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* =====================================================
  * 09. 管理者・月間提出状況
  * ===================================================== */
@@ -2119,7 +2430,7 @@ body.modal-open {
 
       <button
         class="drawer-item"
-        onclick="openAdminPlaceholder('本日の出勤確認')"
+        onclick="openAdminTodayAttendance()"
       >
         <span class="drawer-item-icon">✓</span>
         本日の出勤確認
@@ -3006,6 +3317,12 @@ let adminSubmissionMonth =
   adminSubmissionNow.getMonth() + 1;
 
 let adminSubmissionLoading = false;
+
+
+/* ---------- 管理者・本日の出勤確認 ---------- */
+
+let adminTodayAttendanceLoading = false;
+let adminTodayAttendanceData = null;
 
 /* =====================================================
  * 18. アプリ起動・API通信・認証確認
@@ -6177,6 +6494,620 @@ async function refreshRegistrationBadge() {
   }
 }
 
+
+
+
+/* =====================================================
+ * 管理者・本日の出勤確認
+ * ===================================================== */
+
+async function openAdminTodayAttendance() {
+  closeDrawer();
+
+  if (!isCurrentCastAdmin()) {
+    showNotice("管理者権限がありません");
+    return;
+  }
+
+  document
+    .getElementById("homeView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  renderAdminTodayAttendanceShell();
+
+  await loadAdminTodayAttendance();
+}
+
+
+function renderAdminTodayAttendanceShell() {
+  const app =
+    document.getElementById("authApp");
+
+  if (!app) {
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="admin-header">
+      <div>
+        <div class="admin-page-label">ADMIN</div>
+        <h1 class="admin-page-title">本日の出勤確認</h1>
+      </div>
+    </div>
+
+    <p class="admin-page-description">
+      本日の出勤予定・確認状態・同伴・来店予定をまとめて確認できます。
+    </p>
+
+    <div
+      id="adminTodayDate"
+      class="today-admin-date"
+    >
+      -
+    </div>
+
+    <div class="today-admin-summary">
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayTotal">-</strong>
+        <span>出勤予定</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayOk">-</strong>
+        <span>出勤OK</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayCompanion">-</strong>
+        <span>同伴</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayVisit">-</strong>
+        <span>来店</span>
+      </div>
+    </div>
+
+    <div class="today-admin-actions">
+      <button
+        type="button"
+        class="today-admin-action"
+        onclick="showHomeView()"
+      >
+        ← ホームへ戻る
+      </button>
+
+      <button
+        type="button"
+        class="today-admin-action"
+        onclick="loadAdminTodayAttendance()"
+      >
+        ↻ 再読み込み
+      </button>
+    </div>
+
+    <div
+      id="adminTodayAttendanceList"
+      class="today-attendance-list"
+    >
+      <div class="loading">
+        <div class="spinner"></div>
+        本日の出勤情報を読み込んでいます...
+      </div>
+    </div>
+  `;
+}
+
+
+async function loadAdminTodayAttendance() {
+  const container =
+    document.getElementById(
+      "adminTodayAttendanceList"
+    );
+
+  if (
+    !container ||
+    adminTodayAttendanceLoading
+  ) {
+    return;
+  }
+
+  adminTodayAttendanceLoading = true;
+
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      本日の出勤情報を読み込んでいます...
+    </div>
+  `;
+
+  try {
+    const result =
+      await callApi({
+        action: "getAdminTodayAttendance",
+        idToken: currentIdToken
+      });
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
+      throw new Error(
+        result?.error ||
+        "本日の出勤情報を取得できませんでした"
+      );
+    }
+
+    adminTodayAttendanceData =
+      result;
+
+    renderAdminTodayAttendance(
+      result
+    );
+
+  } catch (error) {
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="error-message">
+        ${escapeHtml(
+          error?.message ||
+          String(error)
+        )}
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="loadAdminTodayAttendance()"
+      >
+        再読み込み
+      </button>
+    `;
+
+  } finally {
+    adminTodayAttendanceLoading = false;
+  }
+}
+
+
+function renderAdminTodayAttendance(result) {
+  const container =
+    document.getElementById(
+      "adminTodayAttendanceList"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const items =
+    Array.isArray(result?.items)
+      ? result.items
+      : [];
+
+  const dateElement =
+    document.getElementById(
+      "adminTodayDate"
+    );
+
+  if (dateElement) {
+    dateElement.textContent =
+      result?.displayDate ||
+      result?.date ||
+      "-";
+  }
+
+  let okCount = 0;
+  let companionCount = 0;
+  let visitCount = 0;
+
+  items.forEach(
+    item => {
+      if (
+        String(
+          item?.attendanceStatus || ""
+        ) === "出勤OK"
+      ) {
+        okCount++;
+      }
+
+      const visits =
+        Array.isArray(item?.visits)
+          ? item.visits
+          : [];
+
+      visits.forEach(
+        visit => {
+          if (visit?.type === "同伴") {
+            companionCount++;
+          }
+
+          if (visit?.type === "来店") {
+            visitCount++;
+          }
+        }
+      );
+    }
+  );
+
+  const summary = {
+    adminTodayTotal:
+      items.length,
+    adminTodayOk:
+      okCount,
+    adminTodayCompanion:
+      companionCount,
+    adminTodayVisit:
+      visitCount
+  };
+
+  Object.entries(summary)
+    .forEach(
+      ([id, value]) => {
+        const element =
+          document.getElementById(id);
+
+        if (element) {
+          element.textContent =
+            String(value);
+        }
+      }
+    );
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="today-attendance-empty">
+        本日の出勤予定はありません。
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML =
+    items
+      .map(
+        item =>
+          buildAdminTodayAttendanceCard(
+            item
+          )
+      )
+      .join("");
+}
+
+
+function buildAdminTodayAttendanceCard(item) {
+  const castName =
+    escapeHtml(
+      item?.castName || "名称未設定"
+    );
+
+  const castId =
+    escapeHtml(
+      item?.castId || ""
+    );
+
+  const attendanceStatus =
+    String(
+      item?.attendanceStatus ||
+      "未送信"
+    );
+
+  const stateClass =
+    attendanceStatus === "出勤OK"
+      ? "ok"
+      : (
+          attendanceStatus === "変更あり"
+            ? "changed"
+            : ""
+        );
+
+  const visits =
+    Array.isArray(item?.visits)
+      ? item.visits
+      : [];
+
+  const companionCount =
+    visits.filter(
+      visit =>
+        visit?.type === "同伴"
+    ).length;
+
+  const visitCount =
+    visits.filter(
+      visit =>
+        visit?.type === "来店"
+    ).length;
+
+  const visitHtml =
+    visits.length > 0
+      ? visits
+          .map(
+            visit =>
+              buildAdminTodayVisitItem(
+                item,
+                visit
+              )
+          )
+          .join("")
+      : `
+          <div class="visit-empty">
+            同伴・来店予定なし
+          </div>
+        `;
+
+  const note =
+    String(
+      item?.note || ""
+    ).trim();
+
+  return `
+    <div class="today-attendance-card">
+
+      <div class="today-attendance-head">
+        <div>
+          <div class="today-attendance-name">
+            ${castName}
+          </div>
+
+          <div class="today-attendance-id">
+            CAST ID : ${castId || "-"}
+          </div>
+        </div>
+
+        <div class="today-attendance-state ${stateClass}">
+          ${escapeHtml(attendanceStatus)}
+        </div>
+      </div>
+
+      <div class="today-attendance-shift">
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.startTime || "-")}
+          </strong>
+          <span>出勤</span>
+        </div>
+
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.endTime || "-")}
+          </strong>
+          <span>退勤</span>
+        </div>
+
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.transport || "-")}
+          </strong>
+          <span>送り</span>
+        </div>
+      </div>
+
+      ${
+        note
+          ? `
+            <div class="today-attendance-note">
+              ${escapeHtml(note)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="today-visit-summary">
+        <div class="today-visit-count">
+          同伴 ${companionCount}
+        </div>
+
+        <div class="today-visit-count">
+          来店 ${visitCount}
+        </div>
+      </div>
+
+      <div class="today-visit-list">
+        ${visitHtml}
+      </div>
+
+    </div>
+  `;
+}
+
+
+function buildAdminTodayVisitItem(
+  cast,
+  visit
+) {
+  const payload =
+    encodeURIComponent(
+      JSON.stringify({
+        castId:
+          cast?.castId || "",
+        castName:
+          cast?.castName || "",
+        customerName:
+          visit?.customerName || "",
+        type:
+          visit?.type || "",
+        time:
+          visit?.time || "",
+        note:
+          visit?.note || ""
+      })
+    );
+
+  return `
+    <button
+      type="button"
+      class="today-visit-item"
+      data-customer="${payload}"
+      onclick="openTodayCustomerPreview(this.dataset.customer)"
+    >
+      <div class="today-visit-main">
+        <span class="today-visit-customer">
+          ${escapeHtml(
+            visit?.customerName || "名称未設定"
+          )}
+        </span>
+
+        <span class="today-visit-time">
+          ${escapeHtml(
+            visit?.time || "-"
+          )}
+        </span>
+      </div>
+
+      <div class="today-visit-type">
+        ${escapeHtml(
+          visit?.type || ""
+        )}
+      </div>
+    </button>
+  `;
+}
+
+
+function openTodayCustomerPreview(
+  encodedPayload
+) {
+  closeTodayCustomerPreview();
+
+  let data = {};
+
+  try {
+    data =
+      JSON.parse(
+        decodeURIComponent(
+          String(
+            encodedPayload || ""
+          )
+        )
+      );
+  } catch (error) {
+    console.error(error);
+  }
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "todayCustomerOverlay";
+
+  overlay.className =
+    "today-customer-overlay";
+
+  overlay.innerHTML = `
+    <div
+      class="today-customer-card"
+      onclick="event.stopPropagation()"
+    >
+      <div class="today-customer-label">
+        CUSTOMER
+      </div>
+
+      <div class="today-customer-name">
+        ${escapeHtml(
+          data.customerName || "名称未設定"
+        )}
+      </div>
+
+      <div class="today-customer-grid">
+        <div class="today-customer-info">
+          <span>担当CAST</span>
+          <strong>
+            ${escapeHtml(
+              data.castName || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>本日の予定</span>
+          <strong>
+            ${escapeHtml(
+              data.type || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>予定時間</span>
+          <strong>
+            ${escapeHtml(
+              data.time || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>CAST ID</span>
+          <strong>
+            ${escapeHtml(
+              data.castId || "-"
+            )}
+          </strong>
+        </div>
+      </div>
+
+      ${
+        String(
+          data.note || ""
+        ).trim()
+          ? `
+            <div class="today-customer-note">
+              ${escapeHtml(data.note)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="today-customer-help">
+        顧客マスター追加後、この画面に来店履歴・担当・メモなどを拡張します。
+      </div>
+
+      <button
+        type="button"
+        class="today-customer-close"
+        onclick="closeTodayCustomerPreview()"
+      >
+        閉じる
+      </button>
+    </div>
+  `;
+
+  overlay.addEventListener(
+    "click",
+    event => {
+      if (
+        event.target === overlay
+      ) {
+        closeTodayCustomerPreview();
+      }
+    }
+  );
+
+  document.body.appendChild(
+    overlay
+  );
+}
+
+
+function closeTodayCustomerPreview() {
+  const overlay =
+    document.getElementById(
+      "todayCustomerOverlay"
+    );
+
+  if (overlay) {
+    overlay.remove();
+  }
+}
 
 
 /* =====================================================
