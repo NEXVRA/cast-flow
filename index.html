@@ -1478,6 +1478,39 @@ body.modal-open {
   text-align: center;
 }
 
+
+/* ---------- 登録申請通知バッジ ---------- */
+
+#homeAdminCard {
+  position: relative;
+}
+
+.registration-badge {
+  position: absolute;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e53935;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.home-registration-badge {
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  box-shadow: 0 2px 6px #0003;
+}
+
+.drawer-registration-badge {
+  right: 12px;
+}
+
 .drawer-divider {
   height: 1px;
   margin: 14px 7px;
@@ -1652,29 +1685,10 @@ body.modal-open {
           data-module="admin"
           data-admin-only="true"
           onclick="openAdminRegistrationRequests()"
-          style="position:relative;"
         >
           <span
             id="homeRegistrationBadge"
-            class="hidden"
-            style="
-              position:absolute;
-              top:10px;
-              right:10px;
-              min-width:20px;
-              height:20px;
-              padding:0 6px;
-              border-radius:999px;
-              background:#e53935;
-              color:#fff;
-              font-size:10px;
-              font-weight:900;
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              box-shadow:0 2px 6px #0003;
-              z-index:2;
-            "
+            class="registration-badge home-registration-badge hidden"
           >
             0
           </span>
@@ -1938,7 +1952,6 @@ body.modal-open {
         id="drawerRegistrationButton"
         class="drawer-item"
         onclick="openAdminRegistrationRequests()"
-        style="position:relative;"
       >
         <span class="drawer-item-icon">♙</span>
 
@@ -1946,22 +1959,7 @@ body.modal-open {
 
         <span
           id="drawerRegistrationBadge"
-          class="hidden"
-          style="
-            position:absolute;
-            right:12px;
-            min-width:20px;
-            height:20px;
-            padding:0 6px;
-            border-radius:999px;
-            background:#e53935;
-            color:#fff;
-            font-size:10px;
-            font-weight:900;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          "
+          class="registration-badge drawer-registration-badge hidden"
         >
           0
         </span>
