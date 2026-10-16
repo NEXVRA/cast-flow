@@ -3024,13 +3024,7 @@ async function startRegisteredApp() {
       window.location.pathname
     );
 
-    const isAdmin = !!(
-      currentCast &&
-      (
-        currentCast.isAdmin === true ||
-        currentCast.admin === true
-      )
-    );
+    const isAdmin = isCurrentCastAdmin();
 
     if (!isAdmin) {
       showHomeView();
@@ -6963,14 +6957,7 @@ function setupCastFlowNavigation() {
       ? currentCast.castId
       : "";
 
-  const isAdmin =
-    !!(
-      currentCast &&
-      (
-        currentCast.isAdmin === true ||
-        currentCast.admin === true
-      )
-    );
+  const isAdmin = isCurrentCastAdmin();
 
 
   /* ---------- 名前・CAST ID反映 ---------- */
@@ -7062,13 +7049,7 @@ function applyModuleVisibility(isAdmin) {
 /* ---------- モジュール遷移 ---------- */
 
 function navigateToModule(moduleId) {
-  const isAdmin = !!(
-    currentCast &&
-    (
-      currentCast.isAdmin === true ||
-      currentCast.admin === true
-    )
-  );
+  const isAdmin = isCurrentCastAdmin();
 
   if (!isModuleAvailable(moduleId, isAdmin)) {
     showNotice("この機能は現在利用できません");
