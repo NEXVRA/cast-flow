@@ -5632,6 +5632,10 @@ function cancelMultiSelect() {
   isMultiSelectMode = false;
   multiSelectedDates = [];
 
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
+
   document
     .getElementById("multiSelectBar")
     .classList.add("hidden");
@@ -5669,6 +5673,10 @@ function openSelectedDatesInput() {
   }
 
   isMultiSelectMode = false;
+
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
 
   document
     .getElementById("multiSelectBar")
@@ -6001,6 +6009,13 @@ async function saveBulkShifts() {
     }
 
     multiSelectedDates = [];
+
+    document.body.classList.remove(
+      "multi-select-mode"
+    );
+
+    refreshMultiSelectedDays();
+    updateMultiSelectDisplay();
 
     showNotice(
       `${result.savedCount ?? dates.length}日保存しました`
