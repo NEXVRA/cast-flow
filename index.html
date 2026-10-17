@@ -783,27 +783,40 @@ textarea {
 }
 
 .manual-time-field {
+  position: relative;
   display: flex;
   align-items: center;
   overflow: hidden;
+  min-height: 52px;
   border: 1px solid #ddd;
   border-radius: 12px;
   background: #f5f5f5;
 }
 
-.manual-time-part {
+.manual-time-input {
   width: 100%;
   min-width: 0;
-  height: 48px;
+  height: 52px;
+  padding: 0 12px;
   border: 0;
+  outline: 0;
   background: transparent;
+  color: #222;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 900;
   text-align: center;
 }
 
-.manual-time-colon {
-  font-weight: 800;
+.manual-time-input:focus {
+  background: #fff;
+}
+
+.time-input-help {
+  margin-top: 6px;
+  color: #999;
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 
@@ -2619,25 +2632,16 @@ body.modal-open {
 
           <div class="manual-time-field">
             <input
-              id="startHour"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
+              id="startTimeInput"
+              class="manual-time-input"
+              type="time"
+              step="60"
+              aria-label="出勤時間"
             >
+          </div>
 
-            <span class="manual-time-colon">:</span>
-
-            <input
-              id="startMinute"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              id="startTime"
-              type="hidden"
-            >
+          <div class="time-input-help">
+            タップして時間を選択
           </div>
         </div>
 
@@ -2653,25 +2657,16 @@ body.modal-open {
             class="manual-time-field"
           >
             <input
-              id="endHour"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
+              id="endTimeInput"
+              class="manual-time-input"
+              type="time"
+              step="60"
+              aria-label="退勤時間"
             >
+          </div>
 
-            <span class="manual-time-colon">:</span>
-
-            <input
-              id="endMinute"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              id="endTime"
-              type="hidden"
-            >
+          <div class="time-input-help">
+            タップして時間を選択
           </div>
         </div>
 
@@ -2926,25 +2921,16 @@ body.modal-open {
 
             <div class="manual-time-field">
               <input
-                id="bulkStartHour"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
+                id="bulkStartTimeInput"
+                class="manual-time-input"
+                type="time"
+                step="60"
+                aria-label="一括出勤時間"
               >
+            </div>
 
-              <span class="manual-time-colon">:</span>
-
-              <input
-                id="bulkStartMinute"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
-              >
-
-              <input
-                id="bulkStartTime"
-                type="hidden"
-              >
+            <div class="time-input-help">
+              タップして時間を選択
             </div>
           </div>
 
@@ -2960,25 +2946,16 @@ body.modal-open {
               class="manual-time-field"
             >
               <input
-                id="bulkEndHour"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
+                id="bulkEndTimeInput"
+                class="manual-time-input"
+                type="time"
+                step="60"
+                aria-label="一括退勤時間"
               >
+            </div>
 
-              <span class="manual-time-colon">:</span>
-
-              <input
-                id="bulkEndMinute"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
-              >
-
-              <input
-                id="bulkEndTime"
-                type="hidden"
-              >
+            <div class="time-input-help">
+              タップして時間を選択
             </div>
           </div>
 
@@ -6052,168 +6029,20 @@ function closeBulkModalForce() {
 /* ---------- 時間入力初期化 ---------- */
 
 function initializeManualInputs() {
-  [
-    "start",
-    "end",
-    "bulkStart",
-    "bulkEnd"
-  ].forEach(prefix => {
-    const hour =
-      document.getElementById(
-        prefix + "Hour"
-      );
-
-    const minute =
-      document.getElementById(
-        prefix + "Minute"
-      );
-
-    if (!hour || !minute) {
-      return;
-    }
-
-
-    /* イベントの二重登録を防止 */
-
-    if (
-      hour.dataset.castFlowInputReady === "1" &&
-      minute.dataset.castFlowInputReady === "1"
-    ) {
-      return;
-    }
-
-    hour.dataset.castFlowInputReady = "1";
-    minute.dataset.castFlowInputReady = "1";
-
-
-    /* 既存値を選択して上書き可能にする */
-
-    hour.addEventListener(
-      "focus",
-      () => {
-        setTimeout(() => {
-          try {
-            hour.select();
-          } catch (e) {}
-        }, 0);
-      }
-    );
-
-    minute.addEventListener(
-      "focus",
-      () => {
-        setTimeout(() => {
-          try {
-            minute.select();
-          } catch (e) {}
-        }, 0);
-      }
-    );
-
-
-    /* HH入力 */
-
-    hour.addEventListener(
-      "input",
-      () => {
-        digits(hour);
-
-        // 2桁入力したらMMへ自動移動
-        if (hour.value.length === 2) {
-          minute.focus();
-
-          setTimeout(() => {
-            try {
-              minute.select();
-            } catch (e) {}
-          }, 0);
-        }
-      }
-    );
-
-
-    /* MM入力 */
-
-    minute.addEventListener(
-      "input",
-      () => {
-        digits(minute);
-      }
-    );
-
-
-    /* MMが空でBackspace → HHへ戻る */
-
-    minute.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Backspace" &&
-          minute.value === ""
-        ) {
-          event.preventDefault();
-
-          hour.focus();
-
-          setTimeout(() => {
-            try {
-              hour.select();
-            } catch (e) {}
-          }, 0);
-        }
-      }
-    );
-
-
-    /* 入力確定 */
-
-    hour.addEventListener(
-      "blur",
-      () => padPart(
-        hour,
-        23
-      )
-    );
-
-    minute.addEventListener(
-      "blur",
-      () => padPart(
-        minute,
-        59
-      )
-    );
-  });
+  /*
+   * type="time" のネイティブピッカーを使用するため
+   * 個別のキー入力イベント登録は不要。
+   * 既存呼び出しとの互換性のため関数だけ残す。
+   */
 }
 
 
-/* ---------- 数字入力補助 ---------- */
+/* ---------- 時刻入力取得 ---------- */
 
-function digits(el) {
-  el.value =
-    el.value
-      .replace(/\D/g, "")
-      .slice(0, 2);
-}
-
-
-function padPart(
-  el,
-  max
-) {
-  if (el.value === "") {
-    return;
-  }
-
-  let n =
-    Number(el.value);
-
-  if (n > max) {
-    n = max;
-  }
-
-  el.value =
-    String(n)
-      .padStart(2, "0");
+function getTimeInput(prefix) {
+  return document.getElementById(
+    prefix + "TimeInput"
+  );
 }
 
 
@@ -6227,6 +6056,13 @@ function setTime(
     return;
   }
 
+  const input =
+    getTimeInput(prefix);
+
+  if (!input) {
+    return;
+  }
+
   const fallback =
     prefix
       .toLowerCase()
@@ -6234,67 +6070,32 @@ function setTime(
         ? "01:00"
         : "20:00";
 
-  const [
-    hour,
-    minute
-  ] =
+  input.value =
     normalizeTime(
       time,
       fallback
-    )
-      .split(":");
-
-  document
-    .getElementById(
-      prefix + "Hour"
-    )
-    .value =
-      hour;
-
-  document
-    .getElementById(
-      prefix + "Minute"
-    )
-    .value =
-      minute;
+    );
 }
 
 
 /* ---------- 時刻取得 ---------- */
 
 function getTime(prefix) {
-  const hour =
-    document.getElementById(
-      prefix + "Hour"
-    );
+  const input =
+    getTimeInput(prefix);
 
-  const minute =
-    document.getElementById(
-      prefix + "Minute"
-    );
-
-  padPart(
-    hour,
-    23
-  );
-
-  padPart(
-    minute,
-    59
-  );
-
-  if (
-    !hour.value ||
-    !minute.value
-  ) {
+  if (!input) {
     return "";
   }
 
-  return (
-    hour.value +
-    ":" +
-    minute.value
-  );
+  const value =
+    String(
+      input.value || ""
+    ).trim();
+
+  return /^\d{2}:\d{2}$/.test(value)
+    ? value
+    : "";
 }
 
 
@@ -6321,19 +6122,15 @@ function setEndTimeLastState(value) {
       "endTimeLastButton"
     );
 
-  document
-    .getElementById(
-      "endHour"
-    )
-    .disabled =
-      isEndTimeLast;
+  const input =
+    getTimeInput(
+      "end"
+    );
 
-  document
-    .getElementById(
-      "endMinute"
-    )
-    .disabled =
+  if (input) {
+    input.disabled =
       isEndTimeLast;
+  }
 
   field.classList.toggle(
     "last-selected",
@@ -6375,19 +6172,15 @@ function setBulkEndTimeLastState(value) {
       "bulkEndTimeLastButton"
     );
 
-  document
-    .getElementById(
-      "bulkEndHour"
-    )
-    .disabled =
-      isBulkEndTimeLast;
+  const input =
+    getTimeInput(
+      "bulkEnd"
+    );
 
-  document
-    .getElementById(
-      "bulkEndMinute"
-    )
-    .disabled =
+  if (input) {
+    input.disabled =
       isBulkEndTimeLast;
+  }
 
   field.classList.toggle(
     "last-selected",
