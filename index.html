@@ -35,6 +35,8 @@
   justify-content: center;
   width: 26px;
   min-width: 26px;
+  font-size: 17px;
+  text-align: center;
 }
 
 .drawer-item-icon .cf-icon {
@@ -82,6 +84,26 @@ textarea {
   display: none !important;
 }
 
+
+
+/* ---------- 開発環境表示 ---------- */
+
+.environment-badge {
+  position: fixed;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  right: 8px;
+  z-index: 10001;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 10px #00000018;
+  pointer-events: none;
+}
 
 /* ---------- 起動ローディング ---------- */
 
@@ -761,27 +783,40 @@ textarea {
 }
 
 .manual-time-field {
+  position: relative;
   display: flex;
   align-items: center;
   overflow: hidden;
+  min-height: 52px;
   border: 1px solid #ddd;
   border-radius: 12px;
   background: #f5f5f5;
 }
 
-.manual-time-part {
+.manual-time-input {
   width: 100%;
   min-width: 0;
-  height: 48px;
+  height: 52px;
+  padding: 0 12px;
   border: 0;
+  outline: 0;
   background: transparent;
+  color: #222;
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 900;
   text-align: center;
 }
 
-.manual-time-colon {
-  font-weight: 800;
+.manual-time-input:focus {
+  background: #fff;
+}
+
+.time-input-help {
+  margin-top: 6px;
+  color: #999;
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
 }
 
 
@@ -1472,10 +1507,539 @@ body.modal-open {
   background: #ededed;
 }
 
-.drawer-item-icon {
-  width: 26px;
-  font-size: 17px;
+
+
+/* =====================================================
+ * 09. 管理者・本日の出勤確認
+ * ===================================================== */
+
+.today-admin-date {
+  margin-top: 14px;
+  color: #444;
+  font-size: 16px;
+  font-weight: 900;
   text-align: center;
+}
+
+.today-admin-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.today-admin-summary-card {
+  padding: 12px 5px;
+  border-radius: 12px;
+  background: #f2f2f2;
+  text-align: center;
+}
+
+.today-admin-summary-card strong {
+  display: block;
+  font-size: 19px;
+}
+
+.today-admin-summary-card span {
+  display: block;
+  margin-top: 3px;
+  color: #888;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.today-admin-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.today-admin-action {
+  min-height: 42px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-weight: 800;
+}
+
+.today-attendance-list {
+  margin-top: 14px;
+}
+
+.today-attendance-card {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.today-attendance-card:first-child {
+  margin-top: 0;
+}
+
+.today-attendance-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.today-attendance-name {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.today-attendance-id {
+  margin-top: 3px;
+  color: #999;
+  font-size: 10px;
+}
+
+.today-attendance-state {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ececec;
+  color: #666;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.today-attendance-state.ok {
+  background: #202020;
+  color: #fff;
+}
+
+.today-attendance-state.changed {
+  background: #fff0f0;
+  color: #a33;
+}
+
+.today-attendance-shift {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.today-attendance-value {
+  padding: 10px 6px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.today-attendance-value strong {
+  display: block;
+  font-size: 13px;
+}
+
+.today-attendance-value span {
+  display: block;
+  margin-top: 2px;
+  color: #888;
+  font-size: 8px;
+}
+
+.today-attendance-note {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8f8f8;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.today-visit-summary {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.today-visit-count {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.today-visit-list {
+  margin-top: 10px;
+}
+
+.today-visit-item {
+  width: 100%;
+  margin-top: 7px;
+  padding: 11px 12px;
+  border: 1px solid #e7e7e7;
+  border-radius: 11px;
+  background: #fff;
+  color: #222;
+  text-align: left;
+}
+
+.today-visit-item:first-child {
+  margin-top: 0;
+}
+
+.today-visit-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.today-visit-customer {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.today-visit-time {
+  color: #555;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.today-visit-type {
+  margin-top: 4px;
+  color: #888;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.today-attendance-empty {
+  padding: 28px 16px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.today-customer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding:
+    20px
+    14px
+    calc(20px + env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, .48);
+}
+
+.today-customer-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 22px 18px 18px;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .22);
+}
+
+.today-customer-label {
+  color: #999;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.today-customer-name {
+  margin-top: 5px;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.today-customer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.today-customer-info {
+  padding: 11px;
+  border-radius: 11px;
+  background: #f5f5f5;
+}
+
+.today-customer-info span {
+  display: block;
+  color: #888;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.today-customer-info strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.today-customer-note {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 11px;
+  background: #f7f7f7;
+  color: #555;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.today-customer-help {
+  margin-top: 12px;
+  color: #999;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.today-customer-close {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #222;
+  color: #fff;
+  font-weight: 900;
+}
+
+@media (max-width: 420px) {
+  .today-admin-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =====================================================
+ * 09. 管理者・月間提出状況
+ * ===================================================== */
+
+.admin-page-label {
+  color: #999;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.admin-page-title {
+  margin: 4px 0 0;
+  font-size: 24px;
+  text-align: left;
+}
+
+.admin-page-description {
+  margin: 10px 0 0;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.admin-back-button {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 18px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-weight: 800;
+}
+
+.monthly-admin-toolbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.monthly-admin-nav-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ddd;
+  border-radius: 11px;
+  background: #fff;
+  color: #333;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.monthly-admin-month {
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.monthly-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.monthly-summary-card {
+  padding: 13px 8px;
+  border-radius: 12px;
+  background: #f2f2f2;
+  text-align: center;
+}
+
+.monthly-summary-card strong {
+  display: block;
+  font-size: 20px;
+}
+
+.monthly-summary-card span {
+  display: block;
+  margin-top: 3px;
+  color: #888;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.monthly-submission-list {
+  margin-top: 14px;
+}
+
+.monthly-submission-card {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.monthly-submission-card:first-child {
+  margin-top: 0;
+}
+
+.monthly-submission-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.monthly-submission-name {
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.monthly-submission-id {
+  margin-top: 3px;
+  color: #999;
+  font-size: 10px;
+}
+
+.monthly-submission-state {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eee;
+  color: #777;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.monthly-submission-state.submitted {
+  background: #202020;
+  color: #fff;
+}
+
+.monthly-submission-counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.monthly-submission-count {
+  padding: 9px 6px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.monthly-submission-count strong {
+  display: block;
+  font-size: 14px;
+}
+
+.monthly-submission-count span {
+  display: block;
+  margin-top: 2px;
+  color: #888;
+  font-size: 9px;
+}
+
+.monthly-submission-meta {
+  margin-top: 10px;
+  color: #999;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.monthly-submission-empty {
+  margin-top: 14px;
+  padding: 28px 16px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .monthly-summary-grid {
+    gap: 6px;
+  }
+
+  .monthly-summary-card {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
+/* ---------- 登録申請通知バッジ ---------- */
+
+#homeAdminCard {
+  position: relative;
+}
+
+.registration-badge {
+  position: absolute;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e53935;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.home-registration-badge {
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  box-shadow: 0 2px 6px #0003;
+}
+
+.drawer-registration-badge {
+  right: 12px;
 }
 
 .drawer-divider {
@@ -1652,29 +2216,10 @@ body.modal-open {
           data-module="admin"
           data-admin-only="true"
           onclick="openAdminRegistrationRequests()"
-          style="position:relative;"
         >
           <span
             id="homeRegistrationBadge"
-            class="hidden"
-            style="
-              position:absolute;
-              top:10px;
-              right:10px;
-              min-width:20px;
-              height:20px;
-              padding:0 6px;
-              border-radius:999px;
-              background:#e53935;
-              color:#fff;
-              font-size:10px;
-              font-weight:900;
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              box-shadow:0 2px 6px #0003;
-              z-index:2;
-            "
+            class="registration-badge home-registration-badge hidden"
           >
             0
           </span>
@@ -1918,7 +2463,7 @@ body.modal-open {
 
       <button
         class="drawer-item"
-        onclick="openAdminPlaceholder('本日の出勤確認')"
+        onclick="openAdminTodayAttendance()"
       >
         <span class="drawer-item-icon">✓</span>
         本日の出勤確認
@@ -1927,7 +2472,7 @@ body.modal-open {
 
       <button
         class="drawer-item"
-        onclick="openAdminPlaceholder('月間提出状況')"
+        onclick="openAdminMonthlySubmissions()"
       >
         <span class="drawer-item-icon">▤</span>
         月間提出状況
@@ -1938,7 +2483,6 @@ body.modal-open {
         id="drawerRegistrationButton"
         class="drawer-item"
         onclick="openAdminRegistrationRequests()"
-        style="position:relative;"
       >
         <span class="drawer-item-icon">♙</span>
 
@@ -1946,22 +2490,7 @@ body.modal-open {
 
         <span
           id="drawerRegistrationBadge"
-          class="hidden"
-          style="
-            position:absolute;
-            right:12px;
-            min-width:20px;
-            height:20px;
-            padding:0 6px;
-            border-radius:999px;
-            background:#e53935;
-            color:#fff;
-            font-size:10px;
-            font-weight:900;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-          "
+          class="registration-badge drawer-registration-badge hidden"
         >
           0
         </span>
@@ -2103,25 +2632,16 @@ body.modal-open {
 
           <div class="manual-time-field">
             <input
-              id="startHour"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
+              id="startTimeInput"
+              class="manual-time-input"
+              type="time"
+              step="60"
+              aria-label="出勤時間"
             >
+          </div>
 
-            <span class="manual-time-colon">:</span>
-
-            <input
-              id="startMinute"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              id="startTime"
-              type="hidden"
-            >
+          <div class="time-input-help">
+            タップして時間を選択
           </div>
         </div>
 
@@ -2137,25 +2657,16 @@ body.modal-open {
             class="manual-time-field"
           >
             <input
-              id="endHour"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
+              id="endTimeInput"
+              class="manual-time-input"
+              type="time"
+              step="60"
+              aria-label="退勤時間"
             >
+          </div>
 
-            <span class="manual-time-colon">:</span>
-
-            <input
-              id="endMinute"
-              class="manual-time-part"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              id="endTime"
-              type="hidden"
-            >
+          <div class="time-input-help">
+            タップして時間を選択
           </div>
         </div>
 
@@ -2410,25 +2921,16 @@ body.modal-open {
 
             <div class="manual-time-field">
               <input
-                id="bulkStartHour"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
+                id="bulkStartTimeInput"
+                class="manual-time-input"
+                type="time"
+                step="60"
+                aria-label="一括出勤時間"
               >
+            </div>
 
-              <span class="manual-time-colon">:</span>
-
-              <input
-                id="bulkStartMinute"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
-              >
-
-              <input
-                id="bulkStartTime"
-                type="hidden"
-              >
+            <div class="time-input-help">
+              タップして時間を選択
             </div>
           </div>
 
@@ -2444,25 +2946,16 @@ body.modal-open {
               class="manual-time-field"
             >
               <input
-                id="bulkEndHour"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
+                id="bulkEndTimeInput"
+                class="manual-time-input"
+                type="time"
+                step="60"
+                aria-label="一括退勤時間"
               >
+            </div>
 
-              <span class="manual-time-colon">:</span>
-
-              <input
-                id="bulkEndMinute"
-                class="manual-time-part"
-                inputmode="numeric"
-                maxlength="2"
-              >
-
-              <input
-                id="bulkEndTime"
-                type="hidden"
-              >
+            <div class="time-input-help">
+              タップして時間を選択
             </div>
           </div>
 
@@ -2686,10 +3179,78 @@ function applyCastFlowIcons() {
 
 /* ---------- 接続設定 ---------- */
 
-const LIFF_ID = "2011488723-gI54Hlt3";
+/* ---------- 環境設定 ---------- */
+
+const CAST_FLOW_ENVIRONMENTS =
+  Object.freeze({
+
+    production: {
+      key: "production",
+      label: "PROD",
+      liffId:
+        "2011488723-gI54Hlt3",
+      gasApiUrl:
+        "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec"
+    },
+
+    development: {
+      key: "development",
+      label: "DEV",
+      liffId:
+        "2011488723-CUmNFMxv",
+      gasApiUrl:
+        "https://script.google.com/macros/s/AKfycbz2yP4VAbqYzFisZ54eNcTIYiQh8V426JrsUVteK-YKoHp_76-msqKlawxFdjQubFI0/exec"
+    }
+
+  });
+
+
+function detectCastFlowEnvironment() {
+
+  const hostname =
+    String(
+      window.location.hostname || ""
+    )
+    .trim()
+    .toLowerCase();
+
+
+  /*
+   * 本番ドメインだけを明示的に本番扱い。
+   *
+   * Cloudflare Pages本体・Preview URL・localhost等は
+   * 誤って本番APIへ向かないようDEV扱いにする。
+   */
+  if (
+    hostname === "nexvra.github.io"
+  ) {
+
+    return (
+      CAST_FLOW_ENVIRONMENTS
+        .production
+    );
+
+  }
+
+
+  return (
+    CAST_FLOW_ENVIRONMENTS
+      .development
+  );
+
+}
+
+
+const CAST_FLOW_ENV =
+  detectCastFlowEnvironment();
+
+
+const LIFF_ID =
+  CAST_FLOW_ENV.liffId;
+
 
 const GAS_API_URL =
-  "https://script.google.com/macros/s/AKfycbwSZZNbraag8jTLbZbqoXbq9UDQfCeIwA404xkEcVP9l5UZ-7-cCdQCNVXKVq7wqo8pNg/exec";
+  CAST_FLOW_ENV.gasApiUrl;
 
 
 /* ---------- CAST FLOW Core設定 ---------- */
@@ -2809,13 +3370,94 @@ let suppressNextMonthAutoLoad = false;
 let customerVisits = [];
 let customerVisitsLoading = false;
 
+
+/* ---------- 管理者・月間提出状況 ---------- */
+
+const adminSubmissionNow = new Date();
+
+let adminSubmissionYear =
+  adminSubmissionNow.getFullYear();
+
+let adminSubmissionMonth =
+  adminSubmissionNow.getMonth() + 1;
+
+let adminSubmissionLoading = false;
+
+
+/* ---------- 管理者・本日の出勤確認 ---------- */
+
+let adminTodayAttendanceLoading = false;
+let adminTodayAttendanceData = null;
+
+
+/* =====================================================
+ * 環境表示
+ * ===================================================== */
+
+function applyEnvironmentIndicator() {
+
+  if (
+    CAST_FLOW_ENV.key !==
+    "development"
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    document.getElementById(
+      "environmentBadge"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const badge =
+    document.createElement(
+      "div"
+    );
+
+
+  badge.id =
+    "environmentBadge";
+
+
+  badge.className =
+    "environment-badge";
+
+
+  badge.textContent =
+    "DEV";
+
+
+  document.body.appendChild(
+    badge
+  );
+
+}
+
+
 /* =====================================================
  * 18. アプリ起動・API通信・認証確認
  * ===================================================== */
 
 /* ---------- 初期起動 ---------- */
 
-window.addEventListener("load", initializeApp);
+window.addEventListener(
+  "load",
+  () => {
+
+    applyEnvironmentIndicator();
+
+    initializeApp();
+
+  }
+);
 
 
 /* ---------- 読み込み長時間時の案内 ---------- */
@@ -2860,33 +3502,223 @@ async function initializeApp() {
 }
 
 
+/* ---------- LINE認証トークン管理 ---------- */
+
+function getLatestLineIdToken() {
+  const token =
+    liff.getIDToken();
+
+  if (!token) {
+    throw new Error(
+      "LINE認証情報を取得できませんでした"
+    );
+  }
+
+  currentIdToken =
+    token;
+
+  return token;
+}
+
+
+function isCurrentLineIdTokenExpired() {
+  try {
+    const decoded =
+      liff.getDecodedIDToken();
+
+    const exp =
+      Number(
+        decoded &&
+        decoded.exp
+      );
+
+    if (!exp) {
+      return false;
+    }
+
+    /*
+     * 通信中に期限切れになるのを避けるため
+     * 残り30秒未満も更新対象にする。
+     */
+    return (
+      exp * 1000 <=
+      Date.now() + 30000
+    );
+
+  } catch (error) {
+    console.warn(
+      "IDトークン有効期限の確認に失敗しました",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+function isLineIdTokenExpiredMessage(
+  value
+) {
+  const text =
+    String(
+      value || ""
+    ).toLowerCase();
+
+  return (
+    text.includes(
+      "idtoken expired"
+    ) ||
+    text.includes(
+      "id token expired"
+    )
+  );
+}
+
+
+function restartLineAuthentication() {
+  const redirectUri =
+    window.location.href;
+
+  showNotice(
+    "LINE認証を更新しています..."
+  );
+
+  /*
+   * LIFFブラウザでは liff.login() を使えないため、
+   * 再読込して liff.init() に認証更新を任せる。
+   */
+  if (
+    liff.isInClient()
+  ) {
+    window.location.reload();
+    return;
+  }
+
+  /*
+   * 外部ブラウザではログインをやり直して
+   * 新しい認証情報を取得する。
+   */
+  try {
+    if (
+      liff.isLoggedIn()
+    ) {
+      liff.logout();
+    }
+  } catch (error) {
+    console.warn(
+      "LINEログアウト処理をスキップしました",
+      error
+    );
+  }
+
+  liff.login({
+    redirectUri:
+      redirectUri
+  });
+}
+
+
 /* ---------- GAS API通信 ---------- */
 
 async function callApi(data) {
-  const params = new URLSearchParams();
+  const requestData = {
+    ...data
+  };
 
-  Object.keys(data).forEach(key => {
-    params.append(
-      key,
-      data[key] == null ? "" : String(data[key])
+  /*
+   * API呼び出しごとに
+   * LIFF SDKから最新のIDトークンを取得する。
+   *
+   * 起動時に保存した古いトークンを
+   * 長時間使い続けない。
+   */
+  if (
+    Object.prototype.hasOwnProperty.call(
+      requestData,
+      "idToken"
+    )
+  ) {
+    if (
+      isCurrentLineIdTokenExpired()
+    ) {
+      restartLineAuthentication();
+
+      throw new Error(
+        "LINE認証の期限が切れたため再接続しています"
+      );
+    }
+
+    requestData.idToken =
+      getLatestLineIdToken();
+  }
+
+  const params =
+    new URLSearchParams();
+
+  params.append(
+    "clientEnvironment",
+    CAST_FLOW_ENV.key
+  );
+
+  Object.keys(
+    requestData
+  ).forEach(
+    key => {
+      params.append(
+        key,
+        requestData[key] == null
+          ? ""
+          : String(
+              requestData[key]
+            )
+      );
+    }
+  );
+
+  const response =
+    await fetch(
+      GAS_API_URL,
+      {
+        method: "POST",
+        body: params
+      }
     );
-  });
 
-  const response = await fetch(GAS_API_URL, {
-    method: "POST",
-    body: params
-  });
+  const text =
+    await response.text();
 
-  const text = await response.text();
+  let result;
 
   try {
-    return JSON.parse(text);
+    result =
+      JSON.parse(
+        text
+      );
 
   } catch (error) {
     throw new Error(
       "サーバーから正しい応答を取得できませんでした"
     );
   }
+
+  /*
+   * サーバー側で期限切れを検知した場合も
+   * 自動的にLINE認証をやり直す。
+   */
+  if (
+    result &&
+    isLineIdTokenExpiredMessage(
+      result.error
+    )
+  ) {
+    restartLineAuthentication();
+
+    throw new Error(
+      "LINE認証の期限が切れたため再接続しています"
+    );
+  }
+
+  return result;
 }
 
 
@@ -3031,13 +3863,7 @@ async function startRegisteredApp() {
       window.location.pathname
     );
 
-    const isAdmin = !!(
-      currentCast &&
-      (
-        currentCast.isAdmin === true ||
-        currentCast.admin === true
-      )
-    );
+    const isAdmin = isCurrentCastAdmin();
 
     if (!isAdmin) {
       showHomeView();
@@ -3235,6 +4061,12 @@ async function openNormalShiftScreen() {
 /* ---------- カレンダー初期化 ---------- */
 
 function initializeCalendar() {
+  /* FullCalendarの二重生成を防止 */
+  if (calendar) {
+    calendar.destroy();
+    calendar = null;
+  }
+
   const next = new Date();
 
   next.setMonth(next.getMonth() + 1);
@@ -3425,53 +4257,137 @@ async function loadDisplayedMonth() {
 }
 
 
-/* ---------- カレンダー表示更新 ---------- */
+/* ---------- カレンダーイベント生成 ---------- */
+
+function buildCalendarEventData(entry) {
+  let title =
+    entry.status === "working"
+      ? "出勤"
+      : entry.status === "holiday"
+        ? "休み"
+        : "未定";
+
+  if (
+    entry.status === "working" &&
+    entry.startTime
+  ) {
+    title +=
+      " " +
+      entry.startTime +
+      (
+        entry.endTime
+          ? "〜" + entry.endTime
+          : ""
+      );
+  }
+
+  return {
+    id: entry.shiftId || entry.date,
+    start: entry.date,
+    allDay: true,
+    title,
+    classNames: ["shift-" + entry.status],
+    backgroundColor:
+      entry.status === "holiday"
+        ? "#a95b5b"
+        : entry.status === "undecided"
+          ? "#999"
+          : "#333"
+  };
+}
+
+
+/* ---------- カレンダー全体表示更新 ---------- */
 
 function refreshCalendarEvents() {
   if (!calendar) {
     return;
   }
 
-  calendar.removeAllEvents();
+  const events =
+    Object.values(shiftEntries)
+      .filter(entry => entry && entry.date)
+      .map(buildCalendarEventData);
 
-  Object.values(shiftEntries).forEach(entry => {
-    let title =
-      entry.status === "working"
-        ? "出勤"
-        : entry.status === "holiday"
-          ? "休み"
-          : "未定";
+  calendar.batchRendering(() => {
+    calendar.removeAllEvents();
 
-    if (
-      entry.status === "working" &&
-      entry.startTime
-    ) {
-      title +=
-        " " +
-        entry.startTime +
-        (
-          entry.endTime
-            ? "〜" + entry.endTime
-            : ""
-        );
+    if (events.length > 0) {
+      calendar.addEventSource(events);
     }
-
-    calendar.addEvent({
-      id: entry.shiftId || entry.date,
-      start: entry.date,
-      allDay: true,
-      title,
-      classNames: [
-        "shift-" + entry.status
-      ],
-      backgroundColor:
-        entry.status === "holiday"
-          ? "#a95b5b"
-          : entry.status === "undecided"
-            ? "#999"
-            : "#333"
-    });
   });
+}
+
+
+/* ---------- 指定日のイベント取得 ---------- */
+
+function getCalendarEventsForDate(dateString) {
+  if (!calendar) {
+    return [];
+  }
+
+  return calendar
+    .getEvents()
+    .filter(event =>
+      String(event.startStr || "").slice(0, 10) === dateString
+    );
+}
+
+
+/* ---------- 1日だけカレンダー反映 ---------- */
+
+function refreshCalendarEventForDate(dateString) {
+  if (!calendar || !dateString) {
+    return;
+  }
+
+  const entry = shiftEntries[dateString];
+
+  calendar.batchRendering(() => {
+    getCalendarEventsForDate(dateString)
+      .forEach(event => event.remove());
+
+    if (entry) {
+      calendar.addEvent(
+        buildCalendarEventData(entry)
+      );
+    }
+  });
+}
+
+
+/* ---------- 保存結果を即時反映 ---------- */
+
+function applyShiftEntryLocally(entry) {
+  if (!entry || !entry.date) {
+    return;
+  }
+
+  shiftEntries[entry.date] = {
+    ...entry,
+    status: entry.status || "undecided",
+    startTime: entry.startTime || "",
+    endTime: entry.endTime || "",
+    note: entry.note || ""
+  };
+
+  refreshCalendarEventForDate(entry.date);
+  updateProgress();
+  updateBulkPreview();
+}
+
+
+/* ---------- 削除結果を即時反映 ---------- */
+
+function removeShiftEntryLocally(dateString) {
+  if (!dateString) {
+    return;
+  }
+
+  delete shiftEntries[dateString];
+  refreshCalendarEventForDate(dateString);
+  updateProgress();
+  updateBulkPreview();
 }
 
 
@@ -4309,6 +5225,15 @@ async function saveSelectedDate() {
     }
 
 
+    /* 保存結果をその日だけ即時反映 */
+
+    if (result.entry) {
+      applyShiftEntryLocally(
+        result.entry
+      );
+    }
+
+
     /* 同伴・来店予定保存 */
 
     const visitResult = await callApi({
@@ -4357,7 +5282,6 @@ async function saveSelectedDate() {
         console.error(confirmError);
 
         closeShiftModalForce();
-        await loadDisplayedMonth();
 
         showNotice(
           "内容は保存済みですが、出勤確認の更新に失敗しました"
@@ -4377,8 +5301,6 @@ async function saveSelectedDate() {
         ? "変更内容を保存・確認しました"
         : "保存しました"
     );
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -4422,6 +5344,13 @@ async function clearSelectedDate() {
     }
 
 
+    /* 削除結果をその日だけ即時反映 */
+
+    removeShiftEntryLocally(
+      selectedDate
+    );
+
+
     /* 同伴・来店予定削除 */
 
     const visitResult = await callApi({
@@ -4447,8 +5376,6 @@ async function clearSelectedDate() {
     closeShiftModalForce();
 
     showNotice("削除しました");
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -4504,9 +5431,10 @@ async function submitMonth() {
       );
     }
 
-    showNotice("シフトを提出しました");
+    currentMonthSubmitted = true;
+    updateProgress();
 
-    await loadDisplayedMonth();
+    showNotice("シフトを提出しました");
 
   } catch (e) {
     showNotice(
@@ -4681,6 +5609,10 @@ function cancelMultiSelect() {
   isMultiSelectMode = false;
   multiSelectedDates = [];
 
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
+
   document
     .getElementById("multiSelectBar")
     .classList.add("hidden");
@@ -4718,6 +5650,10 @@ function openSelectedDatesInput() {
   }
 
   isMultiSelectMode = false;
+
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
 
   document
     .getElementById("multiSelectBar")
@@ -5036,13 +5972,31 @@ async function saveBulkShifts() {
 
     closeBulkModalForce();
 
+    if (
+      bulkMode === "selectedDates" &&
+      Array.isArray(result.entries)
+    ) {
+      result.entries.forEach(
+        applyShiftEntryLocally
+      );
+
+    } else {
+      /* 曜日一括は返却entriesがないため従来どおり再取得 */
+      await loadDisplayedMonth();
+    }
+
     multiSelectedDates = [];
+
+    document.body.classList.remove(
+      "multi-select-mode"
+    );
+
+    refreshMultiSelectedDays();
+    updateMultiSelectDisplay();
 
     showNotice(
       `${result.savedCount ?? dates.length}日保存しました`
     );
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -5075,155 +6029,20 @@ function closeBulkModalForce() {
 /* ---------- 時間入力初期化 ---------- */
 
 function initializeManualInputs() {
-  [
-    "start",
-    "end",
-    "bulkStart",
-    "bulkEnd"
-  ].forEach(prefix => {
-    const hour =
-      document.getElementById(
-        prefix + "Hour"
-      );
-
-    const minute =
-      document.getElementById(
-        prefix + "Minute"
-      );
-
-    if (!hour || !minute) {
-      return;
-    }
-
-
-    /* 既存値を選択して上書き可能にする */
-
-    hour.addEventListener(
-      "focus",
-      () => {
-        setTimeout(() => {
-          try {
-            hour.select();
-          } catch (e) {}
-        }, 0);
-      }
-    );
-
-    minute.addEventListener(
-      "focus",
-      () => {
-        setTimeout(() => {
-          try {
-            minute.select();
-          } catch (e) {}
-        }, 0);
-      }
-    );
-
-
-    /* HH入力 */
-
-    hour.addEventListener(
-      "input",
-      () => {
-        digits(hour);
-
-        // 2桁入力したらMMへ自動移動
-        if (hour.value.length === 2) {
-          minute.focus();
-
-          setTimeout(() => {
-            try {
-              minute.select();
-            } catch (e) {}
-          }, 0);
-        }
-      }
-    );
-
-
-    /* MM入力 */
-
-    minute.addEventListener(
-      "input",
-      () => {
-        digits(minute);
-      }
-    );
-
-
-    /* MMが空でBackspace → HHへ戻る */
-
-    minute.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Backspace" &&
-          minute.value === ""
-        ) {
-          event.preventDefault();
-
-          hour.focus();
-
-          setTimeout(() => {
-            try {
-              hour.select();
-            } catch (e) {}
-          }, 0);
-        }
-      }
-    );
-
-
-    /* 入力確定 */
-
-    hour.addEventListener(
-      "blur",
-      () => padPart(
-        hour,
-        23
-      )
-    );
-
-    minute.addEventListener(
-      "blur",
-      () => padPart(
-        minute,
-        59
-      )
-    );
-  });
+  /*
+   * type="time" のネイティブピッカーを使用するため
+   * 個別のキー入力イベント登録は不要。
+   * 既存呼び出しとの互換性のため関数だけ残す。
+   */
 }
 
 
-/* ---------- 数字入力補助 ---------- */
+/* ---------- 時刻入力取得 ---------- */
 
-function digits(el) {
-  el.value =
-    el.value
-      .replace(/\D/g, "")
-      .slice(0, 2);
-}
-
-
-function padPart(
-  el,
-  max
-) {
-  if (el.value === "") {
-    return;
-  }
-
-  let n =
-    Number(el.value);
-
-  if (n > max) {
-    n = max;
-  }
-
-  el.value =
-    String(n)
-      .padStart(2, "0");
+function getTimeInput(prefix) {
+  return document.getElementById(
+    prefix + "TimeInput"
+  );
 }
 
 
@@ -5237,6 +6056,13 @@ function setTime(
     return;
   }
 
+  const input =
+    getTimeInput(prefix);
+
+  if (!input) {
+    return;
+  }
+
   const fallback =
     prefix
       .toLowerCase()
@@ -5244,67 +6070,32 @@ function setTime(
         ? "01:00"
         : "20:00";
 
-  const [
-    hour,
-    minute
-  ] =
+  input.value =
     normalizeTime(
       time,
       fallback
-    )
-      .split(":");
-
-  document
-    .getElementById(
-      prefix + "Hour"
-    )
-    .value =
-      hour;
-
-  document
-    .getElementById(
-      prefix + "Minute"
-    )
-    .value =
-      minute;
+    );
 }
 
 
 /* ---------- 時刻取得 ---------- */
 
 function getTime(prefix) {
-  const hour =
-    document.getElementById(
-      prefix + "Hour"
-    );
+  const input =
+    getTimeInput(prefix);
 
-  const minute =
-    document.getElementById(
-      prefix + "Minute"
-    );
-
-  padPart(
-    hour,
-    23
-  );
-
-  padPart(
-    minute,
-    59
-  );
-
-  if (
-    !hour.value ||
-    !minute.value
-  ) {
+  if (!input) {
     return "";
   }
 
-  return (
-    hour.value +
-    ":" +
-    minute.value
-  );
+  const value =
+    String(
+      input.value || ""
+    ).trim();
+
+  return /^\d{2}:\d{2}$/.test(value)
+    ? value
+    : "";
 }
 
 
@@ -5331,19 +6122,15 @@ function setEndTimeLastState(value) {
       "endTimeLastButton"
     );
 
-  document
-    .getElementById(
-      "endHour"
-    )
-    .disabled =
-      isEndTimeLast;
+  const input =
+    getTimeInput(
+      "end"
+    );
 
-  document
-    .getElementById(
-      "endMinute"
-    )
-    .disabled =
+  if (input) {
+    input.disabled =
       isEndTimeLast;
+  }
 
   field.classList.toggle(
     "last-selected",
@@ -5385,19 +6172,15 @@ function setBulkEndTimeLastState(value) {
       "bulkEndTimeLastButton"
     );
 
-  document
-    .getElementById(
-      "bulkEndHour"
-    )
-    .disabled =
-      isBulkEndTimeLast;
+  const input =
+    getTimeInput(
+      "bulkEnd"
+    );
 
-  document
-    .getElementById(
-      "bulkEndMinute"
-    )
-    .disabled =
+  if (input) {
+    input.disabled =
       isBulkEndTimeLast;
+  }
 
   field.classList.toggle(
     "last-selected",
@@ -5983,6 +6766,1103 @@ async function refreshRegistrationBadge() {
       error
     );
   }
+}
+
+
+
+
+/* =====================================================
+ * 管理者・本日の出勤確認
+ * ===================================================== */
+
+async function openAdminTodayAttendance() {
+  closeDrawer();
+
+  if (!isCurrentCastAdmin()) {
+    showNotice("管理者権限がありません");
+    return;
+  }
+
+  document
+    .getElementById("homeView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  renderAdminTodayAttendanceShell();
+
+  await loadAdminTodayAttendance();
+}
+
+
+function renderAdminTodayAttendanceShell() {
+  const app =
+    document.getElementById("authApp");
+
+  if (!app) {
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="admin-header">
+      <div>
+        <div class="admin-page-label">ADMIN</div>
+        <h1 class="admin-page-title">本日の出勤確認</h1>
+      </div>
+    </div>
+
+    <p class="admin-page-description">
+      本日の出勤予定・確認状態・同伴・来店予定をまとめて確認できます。
+    </p>
+
+    <div
+      id="adminTodayDate"
+      class="today-admin-date"
+    >
+      -
+    </div>
+
+    <div class="today-admin-summary">
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayTotal">-</strong>
+        <span>出勤予定</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayOk">-</strong>
+        <span>出勤OK</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayCompanion">-</strong>
+        <span>同伴</span>
+      </div>
+
+      <div class="today-admin-summary-card">
+        <strong id="adminTodayVisit">-</strong>
+        <span>来店</span>
+      </div>
+    </div>
+
+    <div class="today-admin-actions">
+      <button
+        type="button"
+        class="today-admin-action"
+        onclick="showHomeView()"
+      >
+        ← ホームへ戻る
+      </button>
+
+      <button
+        type="button"
+        class="today-admin-action"
+        onclick="loadAdminTodayAttendance()"
+      >
+        ↻ 再読み込み
+      </button>
+    </div>
+
+    <div
+      id="adminTodayAttendanceList"
+      class="today-attendance-list"
+    >
+      <div class="loading">
+        <div class="spinner"></div>
+        本日の出勤情報を読み込んでいます...
+      </div>
+    </div>
+  `;
+}
+
+
+async function loadAdminTodayAttendance() {
+  const container =
+    document.getElementById(
+      "adminTodayAttendanceList"
+    );
+
+  if (
+    !container ||
+    adminTodayAttendanceLoading
+  ) {
+    return;
+  }
+
+  adminTodayAttendanceLoading = true;
+
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      本日の出勤情報を読み込んでいます...
+    </div>
+  `;
+
+  try {
+    const result =
+      await callApi({
+        action: "getAdminTodayAttendance",
+        idToken: currentIdToken
+      });
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
+      throw new Error(
+        result?.error ||
+        "本日の出勤情報を取得できませんでした"
+      );
+    }
+
+    adminTodayAttendanceData =
+      result;
+
+    renderAdminTodayAttendance(
+      result
+    );
+
+  } catch (error) {
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="error-message">
+        ${escapeHtml(
+          error?.message ||
+          String(error)
+        )}
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="loadAdminTodayAttendance()"
+      >
+        再読み込み
+      </button>
+    `;
+
+  } finally {
+    adminTodayAttendanceLoading = false;
+  }
+}
+
+
+function renderAdminTodayAttendance(result) {
+  const container =
+    document.getElementById(
+      "adminTodayAttendanceList"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const items =
+    Array.isArray(result?.items)
+      ? result.items
+      : [];
+
+  const dateElement =
+    document.getElementById(
+      "adminTodayDate"
+    );
+
+  if (dateElement) {
+    dateElement.textContent =
+      result?.displayDate ||
+      result?.date ||
+      "-";
+  }
+
+  let okCount = 0;
+  let companionCount = 0;
+  let visitCount = 0;
+
+  items.forEach(
+    item => {
+      if (
+        String(
+          item?.attendanceStatus || ""
+        ) === "出勤OK"
+      ) {
+        okCount++;
+      }
+
+      const visits =
+        Array.isArray(item?.visits)
+          ? item.visits
+          : [];
+
+      visits.forEach(
+        visit => {
+          if (visit?.type === "同伴") {
+            companionCount++;
+          }
+
+          if (visit?.type === "来店") {
+            visitCount++;
+          }
+        }
+      );
+    }
+  );
+
+  const summary = {
+    adminTodayTotal:
+      items.length,
+    adminTodayOk:
+      okCount,
+    adminTodayCompanion:
+      companionCount,
+    adminTodayVisit:
+      visitCount
+  };
+
+  Object.entries(summary)
+    .forEach(
+      ([id, value]) => {
+        const element =
+          document.getElementById(id);
+
+        if (element) {
+          element.textContent =
+            String(value);
+        }
+      }
+    );
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div class="today-attendance-empty">
+        本日の出勤予定はありません。
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML =
+    items
+      .map(
+        item =>
+          buildAdminTodayAttendanceCard(
+            item
+          )
+      )
+      .join("");
+}
+
+
+function buildAdminTodayAttendanceCard(item) {
+  const castName =
+    escapeHtml(
+      item?.castName || "名称未設定"
+    );
+
+  const castId =
+    escapeHtml(
+      item?.castId || ""
+    );
+
+  const attendanceStatus =
+    String(
+      item?.attendanceStatus ||
+      "未送信"
+    );
+
+  const stateClass =
+    attendanceStatus === "出勤OK"
+      ? "ok"
+      : (
+          attendanceStatus === "変更あり"
+            ? "changed"
+            : ""
+        );
+
+  const visits =
+    Array.isArray(item?.visits)
+      ? item.visits
+      : [];
+
+  const companionCount =
+    visits.filter(
+      visit =>
+        visit?.type === "同伴"
+    ).length;
+
+  const visitCount =
+    visits.filter(
+      visit =>
+        visit?.type === "来店"
+    ).length;
+
+  const visitHtml =
+    visits.length > 0
+      ? visits
+          .map(
+            visit =>
+              buildAdminTodayVisitItem(
+                item,
+                visit
+              )
+          )
+          .join("")
+      : `
+          <div class="visit-empty">
+            同伴・来店予定なし
+          </div>
+        `;
+
+  const note =
+    String(
+      item?.note || ""
+    ).trim();
+
+  return `
+    <div class="today-attendance-card">
+
+      <div class="today-attendance-head">
+        <div>
+          <div class="today-attendance-name">
+            ${castName}
+          </div>
+
+          <div class="today-attendance-id">
+            CAST ID : ${castId || "-"}
+          </div>
+        </div>
+
+        <div class="today-attendance-state ${stateClass}">
+          ${escapeHtml(attendanceStatus)}
+        </div>
+      </div>
+
+      <div class="today-attendance-shift">
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.startTime || "-")}
+          </strong>
+          <span>出勤</span>
+        </div>
+
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.endTime || "-")}
+          </strong>
+          <span>退勤</span>
+        </div>
+
+        <div class="today-attendance-value">
+          <strong>
+            ${escapeHtml(item?.transport || "-")}
+          </strong>
+          <span>送り</span>
+        </div>
+      </div>
+
+      ${
+        note
+          ? `
+            <div class="today-attendance-note">
+              ${escapeHtml(note)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="today-visit-summary">
+        <div class="today-visit-count">
+          同伴 ${companionCount}
+        </div>
+
+        <div class="today-visit-count">
+          来店 ${visitCount}
+        </div>
+      </div>
+
+      <div class="today-visit-list">
+        ${visitHtml}
+      </div>
+
+    </div>
+  `;
+}
+
+
+function buildAdminTodayVisitItem(
+  cast,
+  visit
+) {
+  const payload =
+    encodeURIComponent(
+      JSON.stringify({
+        castId:
+          cast?.castId || "",
+        castName:
+          cast?.castName || "",
+        customerName:
+          visit?.customerName || "",
+        type:
+          visit?.type || "",
+        time:
+          visit?.time || "",
+        note:
+          visit?.note || ""
+      })
+    );
+
+  return `
+    <button
+      type="button"
+      class="today-visit-item"
+      data-customer="${payload}"
+      onclick="openTodayCustomerPreview(this.dataset.customer)"
+    >
+      <div class="today-visit-main">
+        <span class="today-visit-customer">
+          ${escapeHtml(
+            visit?.customerName || "名称未設定"
+          )}
+        </span>
+
+        <span class="today-visit-time">
+          ${escapeHtml(
+            visit?.time || "-"
+          )}
+        </span>
+      </div>
+
+      <div class="today-visit-type">
+        ${escapeHtml(
+          visit?.type || ""
+        )}
+      </div>
+    </button>
+  `;
+}
+
+
+function openTodayCustomerPreview(
+  encodedPayload
+) {
+  closeTodayCustomerPreview();
+
+  let data = {};
+
+  try {
+    data =
+      JSON.parse(
+        decodeURIComponent(
+          String(
+            encodedPayload || ""
+          )
+        )
+      );
+  } catch (error) {
+    console.error(error);
+  }
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "todayCustomerOverlay";
+
+  overlay.className =
+    "today-customer-overlay";
+
+  overlay.innerHTML = `
+    <div
+      class="today-customer-card"
+      onclick="event.stopPropagation()"
+    >
+      <div class="today-customer-label">
+        CUSTOMER
+      </div>
+
+      <div class="today-customer-name">
+        ${escapeHtml(
+          data.customerName || "名称未設定"
+        )}
+      </div>
+
+      <div class="today-customer-grid">
+        <div class="today-customer-info">
+          <span>担当CAST</span>
+          <strong>
+            ${escapeHtml(
+              data.castName || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>本日の予定</span>
+          <strong>
+            ${escapeHtml(
+              data.type || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>予定時間</span>
+          <strong>
+            ${escapeHtml(
+              data.time || "-"
+            )}
+          </strong>
+        </div>
+
+        <div class="today-customer-info">
+          <span>CAST ID</span>
+          <strong>
+            ${escapeHtml(
+              data.castId || "-"
+            )}
+          </strong>
+        </div>
+      </div>
+
+      ${
+        String(
+          data.note || ""
+        ).trim()
+          ? `
+            <div class="today-customer-note">
+              ${escapeHtml(data.note)}
+            </div>
+          `
+          : ""
+      }
+
+      <div class="today-customer-help">
+        顧客マスター追加後、この画面に来店履歴・担当・メモなどを拡張します。
+      </div>
+
+      <button
+        type="button"
+        class="today-customer-close"
+        onclick="closeTodayCustomerPreview()"
+      >
+        閉じる
+      </button>
+    </div>
+  `;
+
+  overlay.addEventListener(
+    "click",
+    event => {
+      if (
+        event.target === overlay
+      ) {
+        closeTodayCustomerPreview();
+      }
+    }
+  );
+
+  document.body.appendChild(
+    overlay
+  );
+}
+
+
+function closeTodayCustomerPreview() {
+  const overlay =
+    document.getElementById(
+      "todayCustomerOverlay"
+    );
+
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
+
+/* =====================================================
+ * 管理者・月間提出状況
+ * ===================================================== */
+
+/* ---------- 月間提出状況を開く ---------- */
+
+async function openAdminMonthlySubmissions() {
+  closeDrawer();
+
+  if (!isCurrentCastAdmin()) {
+    showNotice("管理者権限がありません");
+    return;
+  }
+
+  document
+    .getElementById("homeView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("shiftView")
+    .classList.add("hidden");
+
+  document
+    .getElementById("authView")
+    .classList.remove("hidden");
+
+  renderAdminMonthlySubmissionShell();
+
+  await loadAdminMonthlySubmissionStatus();
+}
+
+
+/* ---------- 画面枠 ---------- */
+
+function renderAdminMonthlySubmissionShell() {
+  const app =
+    document.getElementById("authApp");
+
+  if (!app) {
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="admin-header">
+      <div>
+        <div class="admin-page-label">ADMIN</div>
+        <h1 class="admin-page-title">月間提出状況</h1>
+      </div>
+    </div>
+
+    <p class="admin-page-description">
+      CASTごとの提出状況と、出勤・△・休みの日数を確認できます。
+    </p>
+
+    <div class="monthly-admin-toolbar">
+      <button
+        type="button"
+        class="monthly-admin-nav-button"
+        onclick="changeAdminSubmissionMonth(-1)"
+        aria-label="前の月"
+      >
+        ‹
+      </button>
+
+      <div
+        id="adminSubmissionMonthLabel"
+        class="monthly-admin-month"
+      ></div>
+
+      <button
+        type="button"
+        class="monthly-admin-nav-button"
+        onclick="changeAdminSubmissionMonth(1)"
+        aria-label="次の月"
+      >
+        ›
+      </button>
+    </div>
+
+    <div class="monthly-summary-grid">
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionTotal">-</strong>
+        <span>対象CAST</span>
+      </div>
+
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionSubmitted">-</strong>
+        <span>提出済み</span>
+      </div>
+
+      <div class="monthly-summary-card">
+        <strong id="adminSubmissionPending">-</strong>
+        <span>未提出</span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="admin-back-button"
+      onclick="showHomeView()"
+    >
+      ← ホームへ戻る
+    </button>
+
+    <div
+      id="adminMonthlySubmissionList"
+      class="monthly-submission-list"
+    >
+      <div class="loading">
+        <div class="spinner"></div>
+        月間提出状況を読み込んでいます...
+      </div>
+    </div>
+  `;
+
+  updateAdminSubmissionMonthLabel();
+}
+
+
+/* ---------- 表示月変更 ---------- */
+
+async function changeAdminSubmissionMonth(delta) {
+  if (adminSubmissionLoading) {
+    return;
+  }
+
+  const date =
+    new Date(
+      adminSubmissionYear,
+      adminSubmissionMonth - 1 + Number(delta || 0),
+      1
+    );
+
+  adminSubmissionYear =
+    date.getFullYear();
+
+  adminSubmissionMonth =
+    date.getMonth() + 1;
+
+  updateAdminSubmissionMonthLabel();
+
+  await loadAdminMonthlySubmissionStatus();
+}
+
+
+function updateAdminSubmissionMonthLabel() {
+  const label =
+    document.getElementById(
+      "adminSubmissionMonthLabel"
+    );
+
+  if (!label) {
+    return;
+  }
+
+  label.textContent =
+    `${adminSubmissionYear}年${adminSubmissionMonth}月`;
+}
+
+
+/* ---------- 月間提出状況取得 ---------- */
+
+async function loadAdminMonthlySubmissionStatus() {
+  const container =
+    document.getElementById(
+      "adminMonthlySubmissionList"
+    );
+
+  if (!container || adminSubmissionLoading) {
+    return;
+  }
+
+  adminSubmissionLoading = true;
+
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      月間提出状況を読み込んでいます...
+    </div>
+  `;
+
+  try {
+    const result =
+      await callApi({
+        action: "getMonthlySubmissionStatus",
+        idToken: currentIdToken,
+        year: adminSubmissionYear,
+        month: adminSubmissionMonth
+      });
+
+    if (
+      !result ||
+      result.success !== true
+    ) {
+      throw new Error(
+        result?.error ||
+        "月間提出状況を取得できませんでした"
+      );
+    }
+
+    const items =
+      Array.isArray(result.items)
+        ? result.items
+        : (
+            Array.isArray(result.casts)
+              ? result.casts
+              : []
+          );
+
+    renderAdminMonthlySubmissionStatus(items);
+
+  } catch (error) {
+    console.error(error);
+
+    container.innerHTML = `
+      <div class="error-message">
+        ${escapeHtml(
+          error?.message ||
+          String(error)
+        )}
+      </div>
+
+      <button
+        type="button"
+        class="primary-button"
+        onclick="loadAdminMonthlySubmissionStatus()"
+      >
+        再読み込み
+      </button>
+    `;
+
+    updateAdminMonthlySubmissionSummary([]);
+
+  } finally {
+    adminSubmissionLoading = false;
+  }
+}
+
+
+/* ---------- 集計表示 ---------- */
+
+function updateAdminMonthlySubmissionSummary(items) {
+  const list =
+    Array.isArray(items)
+      ? items
+      : [];
+
+  const submitted =
+    list.filter(
+      item => item?.submitted === true
+    ).length;
+
+  const values = {
+    adminSubmissionTotal:
+      list.length,
+
+    adminSubmissionSubmitted:
+      submitted,
+
+    adminSubmissionPending:
+      Math.max(
+        0,
+        list.length - submitted
+      )
+  };
+
+  Object.entries(values)
+    .forEach(([id, value]) => {
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent =
+          String(value);
+      }
+    });
+}
+
+
+/* ---------- 一覧描画 ---------- */
+
+function renderAdminMonthlySubmissionStatus(items) {
+  const container =
+    document.getElementById(
+      "adminMonthlySubmissionList"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const list =
+    Array.isArray(items)
+      ? items
+      : [];
+
+  updateAdminMonthlySubmissionSummary(list);
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="monthly-submission-empty">
+        対象CASTがいません。
+      </div>
+    `;
+    return;
+  }
+
+  const sorted =
+    [...list].sort((a, b) => {
+      if (
+        a?.submitted === true &&
+        b?.submitted !== true
+      ) {
+        return 1;
+      }
+
+      if (
+        a?.submitted !== true &&
+        b?.submitted === true
+      ) {
+        return -1;
+      }
+
+      return String(
+        a?.castName || ""
+      ).localeCompare(
+        String(
+          b?.castName || ""
+        ),
+        "ja"
+      );
+    });
+
+  container.innerHTML =
+    sorted
+      .map(
+        item =>
+          buildAdminMonthlySubmissionCard(
+            item
+          )
+      )
+      .join("");
+}
+
+
+/* ---------- CASTカード ---------- */
+
+function buildAdminMonthlySubmissionCard(item) {
+  const castName =
+    escapeHtml(
+      item?.castName || "名称未設定"
+    );
+
+  const castId =
+    escapeHtml(
+      item?.castId || ""
+    );
+
+  const submitted =
+    item?.submitted === true;
+
+  const workingDays =
+    normalizeAdminSubmissionCount(
+      item?.workingDays ??
+      item?.working ??
+      0
+    );
+
+  const undecidedDays =
+    normalizeAdminSubmissionCount(
+      item?.undecidedDays ??
+      item?.undecided ??
+      0
+    );
+
+  const holidayDays =
+    normalizeAdminSubmissionCount(
+      item?.holidayDays ??
+      item?.holiday ??
+      0
+    );
+
+  const submittedAt =
+    escapeHtml(
+      item?.submittedAt || ""
+    );
+
+  const updatedAt =
+    escapeHtml(
+      item?.updatedAt ||
+      item?.lastUpdatedAt ||
+      ""
+    );
+
+  const meta = [];
+
+  if (submittedAt) {
+    meta.push(
+      `提出：${submittedAt}`
+    );
+  }
+
+  if (updatedAt) {
+    meta.push(
+      `最終更新：${updatedAt}`
+    );
+  }
+
+  return `
+    <div class="monthly-submission-card">
+      <div class="monthly-submission-head">
+        <div>
+          <div class="monthly-submission-name">
+            ${castName}
+          </div>
+
+          <div class="monthly-submission-id">
+            CAST ID : ${castId || "-"}
+          </div>
+        </div>
+
+        <div
+          class="monthly-submission-state ${
+            submitted
+              ? "submitted"
+              : ""
+          }"
+        >
+          ${
+            submitted
+              ? "提出済み"
+              : "未提出"
+          }
+        </div>
+      </div>
+
+      <div class="monthly-submission-counts">
+        <div class="monthly-submission-count">
+          <strong>${workingDays}</strong>
+          <span>出勤</span>
+        </div>
+
+        <div class="monthly-submission-count">
+          <strong>${undecidedDays}</strong>
+          <span>△</span>
+        </div>
+
+        <div class="monthly-submission-count">
+          <strong>${holidayDays}</strong>
+          <span>休み</span>
+        </div>
+      </div>
+
+      ${
+        meta.length > 0
+          ? `
+            <div class="monthly-submission-meta">
+              ${meta.join("<br>")}
+            </div>
+          `
+          : ""
+      }
+    </div>
+  `;
+}
+
+
+function normalizeAdminSubmissionCount(value) {
+  const number =
+    Number(value || 0);
+
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+    return 0;
+  }
+
+  return Math.floor(number);
 }
 
 
@@ -6970,14 +8850,7 @@ function setupCastFlowNavigation() {
       ? currentCast.castId
       : "";
 
-  const isAdmin =
-    !!(
-      currentCast &&
-      (
-        currentCast.isAdmin === true ||
-        currentCast.admin === true
-      )
-    );
+  const isAdmin = isCurrentCastAdmin();
 
 
   /* ---------- 名前・CAST ID反映 ---------- */
@@ -7069,13 +8942,7 @@ function applyModuleVisibility(isAdmin) {
 /* ---------- モジュール遷移 ---------- */
 
 function navigateToModule(moduleId) {
-  const isAdmin = !!(
-    currentCast &&
-    (
-      currentCast.isAdmin === true ||
-      currentCast.admin === true
-    )
-  );
+  const isAdmin = isCurrentCastAdmin();
 
   if (!isModuleAvailable(moduleId, isAdmin)) {
     showNotice("この機能は現在利用できません");
