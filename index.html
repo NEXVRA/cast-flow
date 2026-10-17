@@ -3525,38 +3525,223 @@ async function initializeApp() {
 }
 
 
+/* ---------- LINE認証トークン管理 ---------- */
+
+function getLatestLineIdToken() {
+  const token =
+    liff.getIDToken();
+
+  if (!token) {
+    throw new Error(
+      "LINE認証情報を取得できませんでした"
+    );
+  }
+
+  currentIdToken =
+    token;
+
+  return token;
+}
+
+
+function isCurrentLineIdTokenExpired() {
+  try {
+    const decoded =
+      liff.getDecodedIDToken();
+
+    const exp =
+      Number(
+        decoded &&
+        decoded.exp
+      );
+
+    if (!exp) {
+      return false;
+    }
+
+    /*
+     * 通信中に期限切れになるのを避けるため
+     * 残り30秒未満も更新対象にする。
+     */
+    return (
+      exp * 1000 <=
+      Date.now() + 30000
+    );
+
+  } catch (error) {
+    console.warn(
+      "IDトークン有効期限の確認に失敗しました",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+function isLineIdTokenExpiredMessage(
+  value
+) {
+  const text =
+    String(
+      value || ""
+    ).toLowerCase();
+
+  return (
+    text.includes(
+      "idtoken expired"
+    ) ||
+    text.includes(
+      "id token expired"
+    )
+  );
+}
+
+
+function restartLineAuthentication() {
+  const redirectUri =
+    window.location.href;
+
+  showNotice(
+    "LINE認証を更新しています..."
+  );
+
+  /*
+   * LIFFブラウザでは liff.login() を使えないため、
+   * 再読込して liff.init() に認証更新を任せる。
+   */
+  if (
+    liff.isInClient()
+  ) {
+    window.location.reload();
+    return;
+  }
+
+  /*
+   * 外部ブラウザではログインをやり直して
+   * 新しい認証情報を取得する。
+   */
+  try {
+    if (
+      liff.isLoggedIn()
+    ) {
+      liff.logout();
+    }
+  } catch (error) {
+    console.warn(
+      "LINEログアウト処理をスキップしました",
+      error
+    );
+  }
+
+  liff.login({
+    redirectUri:
+      redirectUri
+  });
+}
+
+
 /* ---------- GAS API通信 ---------- */
 
 async function callApi(data) {
-  const params = new URLSearchParams();
+  const requestData = {
+    ...data
+  };
+
+  /*
+   * API呼び出しごとに
+   * LIFF SDKから最新のIDトークンを取得する。
+   *
+   * 起動時に保存した古いトークンを
+   * 長時間使い続けない。
+   */
+  if (
+    Object.prototype.hasOwnProperty.call(
+      requestData,
+      "idToken"
+    )
+  ) {
+    if (
+      isCurrentLineIdTokenExpired()
+    ) {
+      restartLineAuthentication();
+
+      throw new Error(
+        "LINE認証の期限が切れたため再接続しています"
+      );
+    }
+
+    requestData.idToken =
+      getLatestLineIdToken();
+  }
+
+  const params =
+    new URLSearchParams();
 
   params.append(
     "clientEnvironment",
     CAST_FLOW_ENV.key
   );
 
-  Object.keys(data).forEach(key => {
-    params.append(
-      key,
-      data[key] == null ? "" : String(data[key])
+  Object.keys(
+    requestData
+  ).forEach(
+    key => {
+      params.append(
+        key,
+        requestData[key] == null
+          ? ""
+          : String(
+              requestData[key]
+            )
+      );
+    }
+  );
+
+  const response =
+    await fetch(
+      GAS_API_URL,
+      {
+        method: "POST",
+        body: params
+      }
     );
-  });
 
-  const response = await fetch(GAS_API_URL, {
-    method: "POST",
-    body: params
-  });
+  const text =
+    await response.text();
 
-  const text = await response.text();
+  let result;
 
   try {
-    return JSON.parse(text);
+    result =
+      JSON.parse(
+        text
+      );
 
   } catch (error) {
     throw new Error(
       "サーバーから正しい応答を取得できませんでした"
     );
   }
+
+  /*
+   * サーバー側で期限切れを検知した場合も
+   * 自動的にLINE認証をやり直す。
+   */
+  if (
+    result &&
+    isLineIdTokenExpiredMessage(
+      result.error
+    )
+  ) {
+    restartLineAuthentication();
+
+    throw new Error(
+      "LINE認証の期限が切れたため再接続しています"
+    );
+  }
+
+  return result;
 }
 
 
