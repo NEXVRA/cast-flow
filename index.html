@@ -4084,6 +4084,12 @@ async function openNormalShiftScreen() {
 /* ---------- カレンダー初期化 ---------- */
 
 function initializeCalendar() {
+  /* FullCalendarの二重生成を防止 */
+  if (calendar) {
+    calendar.destroy();
+    calendar = null;
+  }
+
   const next = new Date();
 
   next.setMonth(next.getMonth() + 1);
@@ -4274,53 +4280,137 @@ async function loadDisplayedMonth() {
 }
 
 
-/* ---------- カレンダー表示更新 ---------- */
+/* ---------- カレンダーイベント生成 ---------- */
+
+function buildCalendarEventData(entry) {
+  let title =
+    entry.status === "working"
+      ? "出勤"
+      : entry.status === "holiday"
+        ? "休み"
+        : "未定";
+
+  if (
+    entry.status === "working" &&
+    entry.startTime
+  ) {
+    title +=
+      " " +
+      entry.startTime +
+      (
+        entry.endTime
+          ? "〜" + entry.endTime
+          : ""
+      );
+  }
+
+  return {
+    id: entry.shiftId || entry.date,
+    start: entry.date,
+    allDay: true,
+    title,
+    classNames: ["shift-" + entry.status],
+    backgroundColor:
+      entry.status === "holiday"
+        ? "#a95b5b"
+        : entry.status === "undecided"
+          ? "#999"
+          : "#333"
+  };
+}
+
+
+/* ---------- カレンダー全体表示更新 ---------- */
 
 function refreshCalendarEvents() {
   if (!calendar) {
     return;
   }
 
-  calendar.removeAllEvents();
+  const events =
+    Object.values(shiftEntries)
+      .filter(entry => entry && entry.date)
+      .map(buildCalendarEventData);
 
-  Object.values(shiftEntries).forEach(entry => {
-    let title =
-      entry.status === "working"
-        ? "出勤"
-        : entry.status === "holiday"
-          ? "休み"
-          : "未定";
+  calendar.batchRendering(() => {
+    calendar.removeAllEvents();
 
-    if (
-      entry.status === "working" &&
-      entry.startTime
-    ) {
-      title +=
-        " " +
-        entry.startTime +
-        (
-          entry.endTime
-            ? "〜" + entry.endTime
-            : ""
-        );
+    if (events.length > 0) {
+      calendar.addEventSource(events);
     }
-
-    calendar.addEvent({
-      id: entry.shiftId || entry.date,
-      start: entry.date,
-      allDay: true,
-      title,
-      classNames: [
-        "shift-" + entry.status
-      ],
-      backgroundColor:
-        entry.status === "holiday"
-          ? "#a95b5b"
-          : entry.status === "undecided"
-            ? "#999"
-            : "#333"
-    });
   });
+}
+
+
+/* ---------- 指定日のイベント取得 ---------- */
+
+function getCalendarEventsForDate(dateString) {
+  if (!calendar) {
+    return [];
+  }
+
+  return calendar
+    .getEvents()
+    .filter(event =>
+      String(event.startStr || "").slice(0, 10) === dateString
+    );
+}
+
+
+/* ---------- 1日だけカレンダー反映 ---------- */
+
+function refreshCalendarEventForDate(dateString) {
+  if (!calendar || !dateString) {
+    return;
+  }
+
+  const entry = shiftEntries[dateString];
+
+  calendar.batchRendering(() => {
+    getCalendarEventsForDate(dateString)
+      .forEach(event => event.remove());
+
+    if (entry) {
+      calendar.addEvent(
+        buildCalendarEventData(entry)
+      );
+    }
+  });
+}
+
+
+/* ---------- 保存結果を即時反映 ---------- */
+
+function applyShiftEntryLocally(entry) {
+  if (!entry || !entry.date) {
+    return;
+  }
+
+  shiftEntries[entry.date] = {
+    ...entry,
+    status: entry.status || "undecided",
+    startTime: entry.startTime || "",
+    endTime: entry.endTime || "",
+    note: entry.note || ""
+  };
+
+  refreshCalendarEventForDate(entry.date);
+  updateProgress();
+  updateBulkPreview();
+}
+
+
+/* ---------- 削除結果を即時反映 ---------- */
+
+function removeShiftEntryLocally(dateString) {
+  if (!dateString) {
+    return;
+  }
+
+  delete shiftEntries[dateString];
+  refreshCalendarEventForDate(dateString);
+  updateProgress();
+  updateBulkPreview();
 }
 
 
@@ -5158,6 +5248,15 @@ async function saveSelectedDate() {
     }
 
 
+    /* 保存結果をその日だけ即時反映 */
+
+    if (result.entry) {
+      applyShiftEntryLocally(
+        result.entry
+      );
+    }
+
+
     /* 同伴・来店予定保存 */
 
     const visitResult = await callApi({
@@ -5206,7 +5305,6 @@ async function saveSelectedDate() {
         console.error(confirmError);
 
         closeShiftModalForce();
-        await loadDisplayedMonth();
 
         showNotice(
           "内容は保存済みですが、出勤確認の更新に失敗しました"
@@ -5226,8 +5324,6 @@ async function saveSelectedDate() {
         ? "変更内容を保存・確認しました"
         : "保存しました"
     );
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -5271,6 +5367,13 @@ async function clearSelectedDate() {
     }
 
 
+    /* 削除結果をその日だけ即時反映 */
+
+    removeShiftEntryLocally(
+      selectedDate
+    );
+
+
     /* 同伴・来店予定削除 */
 
     const visitResult = await callApi({
@@ -5296,8 +5399,6 @@ async function clearSelectedDate() {
     closeShiftModalForce();
 
     showNotice("削除しました");
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -5353,9 +5454,10 @@ async function submitMonth() {
       );
     }
 
-    showNotice("シフトを提出しました");
+    currentMonthSubmitted = true;
+    updateProgress();
 
-    await loadDisplayedMonth();
+    showNotice("シフトを提出しました");
 
   } catch (e) {
     showNotice(
@@ -5885,13 +5987,24 @@ async function saveBulkShifts() {
 
     closeBulkModalForce();
 
+    if (
+      bulkMode === "selectedDates" &&
+      Array.isArray(result.entries)
+    ) {
+      result.entries.forEach(
+        applyShiftEntryLocally
+      );
+
+    } else {
+      /* 曜日一括は返却entriesがないため従来どおり再取得 */
+      await loadDisplayedMonth();
+    }
+
     multiSelectedDates = [];
 
     showNotice(
       `${result.savedCount ?? dates.length}日保存しました`
     );
-
-    await loadDisplayedMonth();
 
   } catch (e) {
     showNotice(
@@ -5943,6 +6056,19 @@ function initializeManualInputs() {
     if (!hour || !minute) {
       return;
     }
+
+
+    /* イベントの二重登録を防止 */
+
+    if (
+      hour.dataset.castFlowInputReady === "1" &&
+      minute.dataset.castFlowInputReady === "1"
+    ) {
+      return;
+    }
+
+    hour.dataset.castFlowInputReady = "1";
+    minute.dataset.castFlowInputReady = "1";
 
 
     /* 既存値を選択して上書き可能にする */
