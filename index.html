@@ -1347,6 +1347,76 @@ body.modal-open {
 }
 
 
+/* ---------- キャスト / 管理者モード切替 ---------- */
+
+.mode-switch-panel {
+  margin-top: 15px;
+  padding-top: 14px;
+  border-top: 1px solid #ffffff24;
+}
+
+.mode-switch-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.mode-switch-meta span {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  opacity: .55;
+}
+
+.mode-switch-badge {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #ffffff18;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.mode-switch-button {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #ffffff38;
+  border-radius: 11px;
+  background: #fff;
+  color: #202020;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.mode-switch-button:active {
+  transform: scale(.985);
+}
+
+.drawer-user .mode-switch-panel {
+  margin-top: 11px;
+  padding-top: 11px;
+  border-top-color: #dedede;
+}
+
+.drawer-user .mode-switch-meta span {
+  color: #888;
+  opacity: 1;
+}
+
+.drawer-user .mode-switch-badge {
+  background: #202020;
+  color: #fff;
+}
+
+.drawer-user .mode-switch-button {
+  min-height: 38px;
+  border-color: #ddd;
+  background: #fff;
+  font-size: 10px;
+}
+
+
 /* ---------- ホームメニュー ---------- */
 
 .home-grid {
@@ -2166,7 +2236,12 @@ body.modal-open {
       <!-- ---------- ログイン中CAST ---------- -->
 
       <div class="home-user-card">
-        <div class="home-user-label">LOGGED IN CAST</div>
+        <div
+          id="homeUserRoleLabel"
+          class="home-user-label"
+        >
+          LOGGED IN CAST
+        </div>
 
         <div
           id="homeCastName"
@@ -2180,6 +2255,30 @@ body.modal-open {
           class="home-user-id"
         >
           -
+        </div>
+
+        <div
+          id="homeModeSwitchPanel"
+          class="mode-switch-panel hidden"
+        >
+          <div class="mode-switch-meta">
+            <span>利用モード</span>
+            <strong
+              id="homeModeLabel"
+              class="mode-switch-badge"
+            >
+              キャストモード
+            </strong>
+          </div>
+
+          <button
+            id="homeModeSwitchButton"
+            type="button"
+            class="mode-switch-button"
+            onclick="toggleUserMode()"
+          >
+            管理者モードに切替
+          </button>
         </div>
       </div>
 
@@ -2419,6 +2518,30 @@ body.modal-open {
         class="drawer-user-id"
       >
         -
+      </div>
+
+      <div
+        id="drawerModeSwitchPanel"
+        class="mode-switch-panel hidden"
+      >
+        <div class="mode-switch-meta">
+          <span>利用モード</span>
+          <strong
+            id="drawerModeLabel"
+            class="mode-switch-badge"
+          >
+            キャストモード
+          </strong>
+        </div>
+
+        <button
+          id="drawerModeSwitchButton"
+          type="button"
+          class="mode-switch-button"
+          onclick="toggleUserMode()"
+        >
+          管理者モードに切替
+        </button>
       </div>
     </div>
 
@@ -3270,12 +3393,14 @@ const CAST_FLOW_CONFIG = {
 
     shift: {
       enabled: true,
-      label: "シフト提出"
+      label: "シフト提出",
+      castOnly: true
     },
 
     attendance: {
       enabled: true,
-      label: "出勤確認"
+      label: "出勤確認",
+      castOnly: true
     },
 
     admin: {
@@ -3321,6 +3446,9 @@ const CAST_FLOW_CONFIG = {
 let currentIdToken = "";
 let currentLineDisplayName = "";
 let currentCast = null;
+let currentAdmin = null;
+let currentAuth = null;
+let currentUserMode = "cast";
 
 
 /* ---------- カレンダー・シフト ---------- */
@@ -3739,8 +3867,12 @@ async function checkAuthStatus() {
     );
   }
 
+  currentAuth = result || null;
+  currentAdmin = result.admin || null;
+
   if (result.registered) {
     currentCast = result.cast || {};
+    initializeUserMode(result);
     await startRegisteredApp();
     return;
   }
@@ -6659,15 +6791,262 @@ function showPending(request) {
  * 30. 管理者・登録申請一覧
  * ===================================================== */
 
-/* ---------- 管理者判定 ---------- */
+/* ---------- ロール・利用モード判定 ---------- */
 
-function isCurrentCastAdmin() {
+function hasCurrentCastRole() {
+  if (
+    currentAuth &&
+    typeof currentAuth.hasCastRole === "boolean"
+  ) {
+    return currentAuth.hasCastRole;
+  }
+
+  return !!(
+    currentCast &&
+    currentCast.castId
+  );
+}
+
+
+function hasCurrentAdminRole() {
+  if (
+    currentAuth &&
+    typeof currentAuth.hasAdminRole === "boolean"
+  ) {
+    return currentAuth.hasAdminRole;
+  }
+
   return !!(
     currentCast &&
     (
       currentCast.isAdmin === true ||
       currentCast.admin === true
     )
+  );
+}
+
+
+function getAvailableUserModes() {
+  if (
+    currentAuth &&
+    Array.isArray(currentAuth.availableModes)
+  ) {
+    return currentAuth.availableModes
+      .map(value => String(value || "").trim())
+      .filter(value => value === "cast" || value === "admin");
+  }
+
+  const modes = [];
+
+  if (hasCurrentCastRole()) {
+    modes.push("cast");
+  }
+
+  if (hasCurrentAdminRole()) {
+    modes.push("admin");
+  }
+
+  return modes;
+}
+
+
+function initializeUserMode(authResult) {
+  const modes =
+    authResult &&
+    Array.isArray(authResult.availableModes)
+      ? authResult.availableModes
+      : getAvailableUserModes();
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const launchAction =
+    String(
+      params.get("action") || ""
+    ).trim();
+
+  /*
+   * 管理者向けLINEリンクから開いた場合だけ
+   * 管理者モードで直接起動する。
+   */
+  if (
+    launchAction === "admin-registration" &&
+    modes.includes("admin")
+  ) {
+    currentUserMode = "admin";
+    return;
+  }
+
+  /*
+   * 両方の権限がある場合は
+   * 通常起動をキャストモードに固定する。
+   */
+  if (modes.includes("cast")) {
+    currentUserMode = "cast";
+    return;
+  }
+
+  if (modes.includes("admin")) {
+    currentUserMode = "admin";
+  }
+}
+
+
+/*
+ * 既存コードとの互換用関数。
+ * 「管理者権限を持っているか」ではなく、
+ * 現在が管理者モードかを返す。
+ *
+ * 実際の管理者API認証はGAS側 requireAdmin_() が行う。
+ */
+function isCurrentCastAdmin() {
+  return (
+    currentUserMode === "admin" &&
+    hasCurrentAdminRole()
+  );
+}
+
+
+function isCurrentCastMode() {
+  return (
+    currentUserMode === "cast" &&
+    hasCurrentCastRole()
+  );
+}
+
+
+function getActiveUserIdentity() {
+  if (
+    isCurrentCastAdmin() &&
+    currentAdmin
+  ) {
+    return {
+      name:
+        currentAdmin.adminName ||
+        currentCast?.castName ||
+        "-",
+
+      idLabel:
+        currentAdmin.adminId
+          ? "ADMIN ID : " + currentAdmin.adminId
+          : "管理者モード",
+
+      roleLabel:
+        "LOGGED IN ADMIN"
+    };
+  }
+
+  return {
+    name:
+      currentCast?.castName ||
+      "-",
+
+    idLabel:
+      currentCast?.castId
+        ? "CAST ID : " + currentCast.castId
+        : "",
+
+    roleLabel:
+      "LOGGED IN CAST"
+  };
+}
+
+
+function updateModeSwitchUI() {
+  const modes =
+    getAvailableUserModes();
+
+  const canSwitch =
+    modes.includes("cast") &&
+    modes.includes("admin");
+
+  const isAdminMode =
+    isCurrentCastAdmin();
+
+  const modeLabel =
+    isAdminMode
+      ? "管理者モード"
+      : "キャストモード";
+
+  const switchLabel =
+    isAdminMode
+      ? "キャストモードに切替"
+      : "管理者モードに切替";
+
+  [
+    "homeModeSwitchPanel",
+    "drawerModeSwitchPanel"
+  ].forEach(id => {
+    const element =
+      document.getElementById(id);
+
+    if (element) {
+      element.classList.toggle(
+        "hidden",
+        !canSwitch
+      );
+    }
+  });
+
+  [
+    "homeModeLabel",
+    "drawerModeLabel"
+  ].forEach(id => {
+    const element =
+      document.getElementById(id);
+
+    if (element) {
+      element.textContent =
+        modeLabel;
+    }
+  });
+
+  [
+    "homeModeSwitchButton",
+    "drawerModeSwitchButton"
+  ].forEach(id => {
+    const element =
+      document.getElementById(id);
+
+    if (element) {
+      element.textContent =
+        switchLabel;
+    }
+  });
+
+  document.body.dataset.castFlowMode =
+    currentUserMode;
+}
+
+
+function toggleUserMode() {
+  const modes =
+    getAvailableUserModes();
+
+  if (
+    !modes.includes("cast") ||
+    !modes.includes("admin")
+  ) {
+    showNotice(
+      "切り替え可能な権限がありません"
+    );
+    return;
+  }
+
+  currentUserMode =
+    currentUserMode === "admin"
+      ? "cast"
+      : "admin";
+
+  setupCastFlowNavigation();
+  showHomeView();
+
+  showNotice(
+    currentUserMode === "admin"
+      ? "管理者モードに切り替えました"
+      : "キャストモードに切り替えました"
   );
 }
 
@@ -8836,45 +9215,35 @@ async function rejectRequest(
 
 function setupCastFlowNavigation() {
 
-  /* ---------- CAST情報 ---------- */
+  const identity =
+    getActiveUserIdentity();
 
-  const castName =
-    currentCast &&
-    currentCast.castName
-      ? currentCast.castName
-      : "";
-
-  const castId =
-    currentCast &&
-    currentCast.castId
-      ? currentCast.castId
-      : "";
-
-  const isAdmin = isCurrentCastAdmin();
+  const isAdmin =
+    isCurrentCastAdmin();
 
 
-  /* ---------- 名前・CAST ID反映 ---------- */
+  /* ---------- 名前・ID・モード反映 ---------- */
 
   [
     [
       "homeCastName",
-      castName || "-"
+      identity.name || "-"
     ],
     [
       "drawerCastName",
-      castName || "-"
+      identity.name || "-"
     ],
     [
       "homeCastId",
-      castId
-        ? "CAST ID : " + castId
-        : ""
+      identity.idLabel || ""
     ],
     [
       "drawerCastId",
-      castId
-        ? "CAST ID : " + castId
-        : ""
+      identity.idLabel || ""
+    ],
+    [
+      "homeUserRoleLabel",
+      identity.roleLabel || ""
     ]
   ].forEach(([id, value]) => {
     const element =
@@ -8884,6 +9253,11 @@ function setupCastFlowNavigation() {
       element.textContent = value;
     }
   });
+
+
+  /* ---------- モード切替UI ---------- */
+
+  updateModeSwitchUI();
 
 
   /* ---------- 利用可能機能反映 ---------- */
@@ -8924,7 +9298,21 @@ function isModuleAvailable(moduleId, isAdmin) {
     return false;
   }
 
-  return module.adminOnly !== true || isAdmin === true;
+  if (
+    module.adminOnly === true &&
+    isAdmin !== true
+  ) {
+    return false;
+  }
+
+  if (
+    module.castOnly === true &&
+    !isCurrentCastMode()
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 function applyModuleVisibility(isAdmin) {
