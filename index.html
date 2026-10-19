@@ -1347,73 +1347,14 @@ body.modal-open {
 }
 
 
-/* ---------- キャスト / 管理者モード切替 ---------- */
+/* ---------- 権限切り替え ---------- */
 
-.mode-switch-panel {
-  margin-top: 15px;
-  padding-top: 14px;
-  border-top: 1px solid #ffffff24;
-}
-
-.mode-switch-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 9px;
-}
-
-.mode-switch-meta span {
-  font-size: 9px;
-  letter-spacing: 1.2px;
-  opacity: .55;
-}
-
-.mode-switch-badge {
-  padding: 5px 9px;
-  border-radius: 999px;
-  background: #ffffff18;
+.drawer-mode-status {
+  margin-left: auto;
+  color: #8b8b8b;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 800;
   white-space: nowrap;
-}
-
-.mode-switch-button {
-  width: 100%;
-  min-height: 42px;
-  border: 1px solid #ffffff38;
-  border-radius: 11px;
-  background: #fff;
-  color: #202020;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.mode-switch-button:active {
-  transform: scale(.985);
-}
-
-.drawer-user .mode-switch-panel {
-  margin-top: 11px;
-  padding-top: 11px;
-  border-top-color: #dedede;
-}
-
-.drawer-user .mode-switch-meta span {
-  color: #888;
-  opacity: 1;
-}
-
-.drawer-user .mode-switch-badge {
-  background: #202020;
-  color: #fff;
-}
-
-.drawer-user .mode-switch-button {
-  min-height: 38px;
-  border-color: #ddd;
-  background: #fff;
-  font-size: 10px;
 }
 
 
@@ -2257,29 +2198,6 @@ body.modal-open {
           -
         </div>
 
-        <div
-          id="homeModeSwitchPanel"
-          class="mode-switch-panel hidden"
-        >
-          <div class="mode-switch-meta">
-            <span>利用モード</span>
-            <strong
-              id="homeModeLabel"
-              class="mode-switch-badge"
-            >
-              キャストモード
-            </strong>
-          </div>
-
-          <button
-            id="homeModeSwitchButton"
-            type="button"
-            class="mode-switch-button"
-            onclick="toggleUserMode()"
-          >
-            管理者モードに切替
-          </button>
-        </div>
       </div>
 
 
@@ -2520,29 +2438,6 @@ body.modal-open {
         -
       </div>
 
-      <div
-        id="drawerModeSwitchPanel"
-        class="mode-switch-panel hidden"
-      >
-        <div class="mode-switch-meta">
-          <span>利用モード</span>
-          <strong
-            id="drawerModeLabel"
-            class="mode-switch-badge"
-          >
-            キャストモード
-          </strong>
-        </div>
-
-        <button
-          id="drawerModeSwitchButton"
-          type="button"
-          class="mode-switch-button"
-          onclick="toggleUserMode()"
-        >
-          管理者モードに切替
-        </button>
-      </div>
     </div>
 
 
@@ -2569,6 +2464,23 @@ body.modal-open {
     >
       <span class="drawer-item-icon">▣</span>
       シフト提出
+    </button>
+
+
+    <button
+      id="drawerModeSwitchItem"
+      type="button"
+      class="drawer-item hidden"
+      onclick="toggleUserMode()"
+    >
+      <span class="drawer-item-icon">⇄</span>
+      <span>権限切り替え</span>
+      <span
+        id="drawerModeCurrentLabel"
+        class="drawer-mode-status"
+      >
+        キャスト
+      </span>
     </button>
 
 
@@ -6962,59 +6874,29 @@ function updateModeSwitchUI() {
     modes.includes("cast") &&
     modes.includes("admin");
 
-  const isAdminMode =
-    isCurrentCastAdmin();
+  const switchItem =
+    document.getElementById(
+      "drawerModeSwitchItem"
+    );
 
-  const modeLabel =
-    isAdminMode
-      ? "管理者モード"
-      : "キャストモード";
+  if (switchItem) {
+    switchItem.classList.toggle(
+      "hidden",
+      !canSwitch
+    );
+  }
 
-  const switchLabel =
-    isAdminMode
-      ? "キャストモードに切替"
-      : "管理者モードに切替";
+  const currentLabel =
+    document.getElementById(
+      "drawerModeCurrentLabel"
+    );
 
-  [
-    "homeModeSwitchPanel",
-    "drawerModeSwitchPanel"
-  ].forEach(id => {
-    const element =
-      document.getElementById(id);
-
-    if (element) {
-      element.classList.toggle(
-        "hidden",
-        !canSwitch
-      );
-    }
-  });
-
-  [
-    "homeModeLabel",
-    "drawerModeLabel"
-  ].forEach(id => {
-    const element =
-      document.getElementById(id);
-
-    if (element) {
-      element.textContent =
-        modeLabel;
-    }
-  });
-
-  [
-    "homeModeSwitchButton",
-    "drawerModeSwitchButton"
-  ].forEach(id => {
-    const element =
-      document.getElementById(id);
-
-    if (element) {
-      element.textContent =
-        switchLabel;
-    }
-  });
+  if (currentLabel) {
+    currentLabel.textContent =
+      isCurrentCastAdmin()
+        ? "管理者"
+        : "キャスト";
+  }
 
   document.body.dataset.castFlowMode =
     currentUserMode;
