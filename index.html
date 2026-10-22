@@ -1,0 +1,8395 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <base target="_top">
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.21/index.global.min.js"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <style>
+
+/* =====================================================
+ * ROYAL SHIFT SYSTEM
+ * Style.html
+ *
+ * フロントエンド共通デザイン
+ * ===================================================== */
+
+
+/* =====================================================
+ * 01. デザイントークン
+ * ===================================================== */
+
+:root {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --surface-soft: #f8f8f8;
+
+  --text: #111111;
+  --text-soft: #747474;
+
+  --line: #e3e3e3;
+
+  --black: #111111;
+  --dark: #1d1d1d;
+
+  --gray-dark: #3a3a3a;
+  --gray-mid: #777777;
+  --gray-light: #ededed;
+
+  --working: #173b2c;
+  --working-soft: #dcebe3;
+
+  --holiday: #5f2222;
+  --holiday-soft: #f1dddd;
+
+  --undecided: #4d4d4d;
+  --undecided-soft: #e8e8e8;
+
+  --gold: #b59657;
+
+  --radius-small: 10px;
+  --radius-medium: 16px;
+  --radius-large: 24px;
+
+  --shadow-small:
+    0 4px 14px rgba(0, 0, 0, 0.06);
+
+  --shadow-medium:
+    0 12px 35px rgba(0, 0, 0, 0.12);
+
+  --safe-bottom:
+    env(safe-area-inset-bottom, 0px);
+}
+
+
+/* =====================================================
+ * 02. 基本設定
+ * ===================================================== */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+html {
+  width: 100%;
+  min-height: 100%;
+
+  background: var(--bg);
+}
+
+
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Yu Gothic",
+    YuGothic,
+    Arial,
+    sans-serif;
+
+  overscroll-behavior-y: none;
+}
+
+
+body.modal-open {
+  overflow: hidden;
+}
+
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+
+.hidden {
+  display: none !important;
+}
+
+
+#app {
+  min-height: 100vh;
+}
+
+
+/* =====================================================
+ * 03. 読み込み画面
+ * ===================================================== */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #262626 0%,
+      #121212 55%,
+      #050505 100%
+    );
+
+  opacity: 1;
+  visibility: visible;
+
+  transition:
+    opacity 0.45s ease,
+    visibility 0.45s ease;
+}
+
+
+.loading-screen.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+
+.loading-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 76px;
+  height: 76px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.72);
+
+  border-radius: 50%;
+
+  color: #ffffff;
+
+  font-family: Georgia, serif;
+  font-size: 37px;
+  letter-spacing: 1px;
+
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.025),
+    0 16px 45px rgba(0, 0, 0, 0.4);
+
+  animation:
+    loadingPulse
+    1.5s
+    ease-in-out
+    infinite;
+}
+
+
+.loading-text {
+  margin-top: 20px;
+
+  color:
+    rgba(255, 255, 255, 0.88);
+
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+}
+
+
+@keyframes loadingPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+
+  50% {
+    transform: scale(1.045);
+    opacity: 1;
+  }
+
+}
+
+
+/* =====================================================
+ * 04. ヘッダー
+ * ===================================================== */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  display: grid;
+  grid-template-columns:
+    44px
+    1fr
+    44px;
+
+  align-items: center;
+
+  min-height: 72px;
+
+  padding:
+    env(safe-area-inset-top, 0px)
+    14px
+    0;
+
+  background:
+    rgba(16, 16, 16, 0.96);
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+
+.header-title-area {
+  grid-column: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+}
+
+
+.header-logo {
+  color: #ffffff;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: 5px;
+}
+
+
+.header-subtitle {
+  margin-top: 6px;
+
+  color:
+    rgba(255, 255, 255, 0.55);
+
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 2.4px;
+}
+
+
+.header-diamond-button {
+  grid-column: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+  padding: 0;
+
+  background: transparent;
+  border-radius: 50%;
+}
+
+
+.header-diamond-button:active {
+  background:
+    rgba(255, 255, 255, 0.07);
+}
+
+
+.header-diamond {
+  width: 11px;
+  height: 11px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.85);
+
+  transform: rotate(45deg);
+}
+
+
+/* =====================================================
+ * 05. メイン画面
+ * ===================================================== */
+
+.main-content {
+  width: 100%;
+  max-width: 720px;
+
+  margin: 0 auto;
+
+  padding:
+    22px
+    16px
+    calc(42px + var(--safe-bottom));
+}
+
+
+.page {
+  width: 100%;
+}
+
+
+.shift-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+}
+
+
+.page-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--text-soft);
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.1px;
+}
+
+
+.shift-top h1 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 27px;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+}
+
+
+.month-status {
+  flex-shrink: 0;
+
+  min-width: 72px;
+
+  padding:
+    9px
+    12px;
+
+  background: var(--black);
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+
+.month-status.loading {
+  background: #6f6f6f;
+}
+
+
+/* =====================================================
+ * 06. 入力進捗
+ * ===================================================== */
+
+.progress-card {
+  margin-bottom: 15px;
+
+  padding: 18px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    var(--radius-medium);
+
+  box-shadow:
+    var(--shadow-small);
+}
+
+
+.progress-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 13px;
+}
+
+
+.progress-header > div {
+  display: flex;
+  align-items: baseline;
+
+  gap: 8px;
+}
+
+
+.progress-header span {
+  color: var(--text-soft);
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+
+.progress-header strong {
+  color: var(--text);
+
+  font-size: 20px;
+  line-height: 1;
+}
+
+
+.progress-header p {
+  margin: 0;
+
+  color: var(--text-soft);
+
+  font-size: 10px;
+  line-height: 1.45;
+  text-align: right;
+}
+
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  background: #e9e9e9;
+
+  border-radius: 999px;
+}
+
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+
+  background: var(--black);
+
+  border-radius: inherit;
+
+  transition:
+    width 0.35s ease;
+}
+
+
+/* =====================================================
+ * 07. カレンダー
+ * ===================================================== */
+
+.calendar-card {
+  overflow: hidden;
+
+  padding:
+    12px
+    10px
+    10px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    var(--line);
+
+  border-radius:
+    var(--radius-medium);
+
+  box-shadow:
+    var(--shadow-small);
+}
+
+
+#calendar {
+  width: 100%;
+}
+
+
+.fc {
+  --fc-border-color: #ececec;
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+  --fc-today-bg-color: #f2f2f2;
+}
+
+
+.fc .fc-toolbar {
+  margin-bottom: 13px;
+}
+
+
+.fc .fc-toolbar-title {
+  color: var(--text);
+
+  font-size: 17px;
+  font-weight: 750;
+  letter-spacing: -0.2px;
+}
+
+
+.fc .fc-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 34px;
+  height: 34px;
+
+  padding:
+    0
+    10px;
+
+  background: var(--black);
+
+  border: 0;
+  border-radius: 10px;
+
+  box-shadow: none;
+
+  color: #ffffff;
+}
+
+
+.fc .fc-button:hover,
+.fc .fc-button:focus,
+.fc .fc-button:active {
+  background: #292929;
+
+  border: 0;
+
+  box-shadow: none !important;
+}
+
+
+.fc .fc-col-header-cell {
+  padding:
+    7px
+    0;
+
+  background: transparent;
+
+  border-color: transparent;
+}
+
+
+.fc .fc-col-header-cell-cushion {
+  color: var(--text-soft);
+
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+
+.fc .fc-col-header-cell:first-child
+.fc-col-header-cell-cushion {
+  color: #a34b4b;
+}
+
+
+.fc .fc-col-header-cell:last-child
+.fc-col-header-cell-cushion {
+  color: #426798;
+}
+
+
+.fc .fc-scrollgrid {
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 12px;
+}
+
+
+.fc .fc-scrollgrid-section > * {
+  border: 0;
+}
+
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: #ededed;
+}
+
+
+.fc .fc-daygrid-day {
+  position: relative;
+
+  min-height: 72px;
+
+  background: #ffffff;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+
+.fc .fc-daygrid-day-frame {
+  position: relative;
+
+  min-height: 72px;
+
+  padding: 4px;
+
+  border:
+    2px solid
+    transparent;
+
+  border-radius: 9px;
+
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+
+.fc .fc-daygrid-day-top {
+  flex-direction: row;
+}
+
+
+.fc .fc-daygrid-day-number {
+  padding:
+    4px
+    5px;
+
+  color: #333333;
+
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+
+.fc .fc-day-sun
+.fc-daygrid-day-number {
+  color: #a34b4b;
+}
+
+
+.fc .fc-day-sat
+.fc-daygrid-day-number {
+  color: #426798;
+}
+
+
+.fc .fc-day-other {
+  background: #fafafa;
+}
+
+
+.fc .fc-day-other
+.fc-daygrid-day-number {
+  color: #c1c1c1;
+}
+
+
+.fc .fc-day-today {
+  background:
+    #f3f3f3 !important;
+}
+
+
+.fc .fc-day-today
+.fc-daygrid-day-frame {
+  box-shadow:
+    inset
+    0
+    0
+    0
+    1px
+    rgba(0, 0, 0, 0.08);
+}
+
+
+.fc .fc-daygrid-day-events {
+  min-height: 25px;
+
+  margin:
+    2px
+    2px
+    0;
+}
+
+
+.fc .fc-daygrid-event {
+  margin:
+    1px
+    0;
+
+  padding:
+    3px
+    3px;
+
+  border: 0;
+  border-radius: 6px;
+
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
+
+
+.fc .fc-event-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.shift-event-working {
+  background:
+    var(--working-soft) !important;
+
+  color:
+    var(--working) !important;
+}
+
+
+.shift-event-holiday {
+  background:
+    var(--holiday-soft) !important;
+
+  color:
+    var(--holiday) !important;
+}
+
+
+.shift-event-undecided {
+  background:
+    var(--undecided-soft) !important;
+
+  color:
+    var(--undecided) !important;
+}
+
+
+/* ---------- 複数日選択 ---------- */
+
+.fc .multi-selected-day
+.fc-daygrid-day-frame {
+  background: var(--gray-dark);
+
+  border-color: #ffffff;
+
+  box-shadow:
+    0 0 0 1px var(--gray-dark),
+    0 6px 14px rgba(0, 0, 0, 0.22);
+
+  transform: scale(0.94);
+
+  animation:
+    multiSelectPop
+    0.18s
+    ease-out;
+}
+
+
+.fc .multi-selected-day
+.fc-daygrid-day-number {
+  color:
+    #ffffff !important;
+}
+
+
+.fc .multi-selected-day::after {
+  content: "✓";
+
+  position: absolute;
+
+  top: 4px;
+  right: 4px;
+
+  z-index: 5;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 17px;
+  height: 17px;
+
+  background: #ffffff;
+
+  border-radius: 50%;
+
+  color: #222222;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  pointer-events: none;
+}
+
+
+.fc .multi-selected-day
+.fc-daygrid-event {
+  opacity: 0.58;
+}
+
+
+.fc.multi-select-active
+.fc-daygrid-day:not(.fc-day-other) {
+  cursor: pointer;
+}
+
+
+@keyframes multiSelectPop {
+
+  0% {
+    transform: scale(0.82);
+  }
+
+  70% {
+    transform: scale(0.98);
+  }
+
+  100% {
+    transform: scale(0.94);
+  }
+
+}
+
+
+/* =====================================================
+ * 08. カレンダー凡例
+ * ===================================================== */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap:
+    12px
+    18px;
+
+  margin:
+    14px
+    0
+    18px;
+}
+
+
+.legend > div {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  color: var(--text-soft);
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+}
+
+
+.legend-dot.working {
+  background: #729783;
+}
+
+
+.legend-dot.holiday {
+  background: #a66b6b;
+}
+
+
+.legend-dot.undecided {
+  background: #8e8e8e;
+}
+
+
+.legend-dot.empty {
+  background: transparent;
+
+  border:
+    1px solid
+    #bcbcbc;
+}
+
+
+/* =====================================================
+ * 09. メイン操作ボタン
+ * ===================================================== */
+
+.bulk-button,
+.submit-button {
+  width: 100%;
+  min-height: 52px;
+
+  border-radius: 14px;
+
+  font-size: 13px;
+  font-weight: 750;
+
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease,
+    background 0.12s ease;
+}
+
+
+.bulk-button:active,
+.submit-button:active {
+  transform: scale(0.985);
+}
+
+
+.bulk-button {
+  margin-bottom: 10px;
+
+  background: var(--surface);
+
+  border:
+    1px solid
+    #cacaca;
+
+  color: var(--text);
+}
+
+
+.submit-button {
+  background: var(--black);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 10px 24px
+    rgba(0, 0, 0, 0.16);
+}
+
+
+.submit-button:disabled {
+  background: #9f9f9f;
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+ * 10. モーダル
+ * ===================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  padding-top: 30px;
+
+  background:
+    rgba(0, 0, 0, 0.55);
+
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+
+.modal-card {
+  position: relative;
+
+  width: 100%;
+  max-width: 620px;
+
+  max-height:
+    calc(100vh - 30px);
+
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+  padding:
+    13px
+    20px
+    calc(25px + var(--safe-bottom));
+
+  background: var(--surface);
+
+  border-radius:
+    24px
+    24px
+    0
+    0;
+
+  box-shadow:
+    var(--shadow-medium);
+
+  animation:
+    modalSlideUp
+    0.23s
+    ease-out;
+}
+
+
+.bulk-modal-card {
+  max-height:
+    calc(100vh - 18px);
+}
+
+
+@keyframes modalSlideUp {
+
+  from {
+    transform: translateY(35px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+}
+
+
+.modal-handle {
+  width: 38px;
+  height: 4px;
+
+  margin:
+    0
+    auto
+    18px;
+
+  background: #d2d2d2;
+
+  border-radius: 999px;
+}
+
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  margin-bottom: 23px;
+}
+
+
+.modal-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--text-soft);
+
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+
+.modal-header h2 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 23px;
+  font-weight: 780;
+  line-height: 1.25;
+}
+
+
+.modal-header p {
+  margin:
+    5px
+    0
+    0;
+
+  color: var(--text-soft);
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 38px;
+  height: 38px;
+
+  background: #f0f0f0;
+
+  border-radius: 50%;
+
+  color: #333333;
+
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1;
+}
+
+
+.modal-close:active {
+  background: #dedede;
+}
+
+
+/* =====================================================
+ * 11. 共通フォーム
+ * ===================================================== */
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+
+.form-label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #363636;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.form-control {
+  width: 100%;
+  min-height: 48px;
+
+  padding:
+    0
+    13px;
+
+  background: #f5f5f5;
+
+  border:
+    1px solid
+    #dddddd;
+
+  border-radius: 12px;
+
+  outline: none;
+
+  color: var(--text);
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.form-control:focus {
+  background: #ffffff;
+
+  border-color: #777777;
+}
+
+
+.textarea {
+  min-height: 94px;
+
+  padding: 13px;
+
+  resize: none;
+
+  line-height: 1.55;
+}
+
+
+/* =====================================================
+ * 12. 勤務時間レイアウト
+ * ===================================================== */
+
+.time-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    22px
+    minmax(0, 1fr);
+
+  align-items: end;
+
+  gap: 8px;
+}
+
+
+.time-grid .form-section {
+  margin-bottom: 0;
+}
+
+
+.time-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 48px;
+
+  color: var(--text-soft);
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+ * 13. 手入力時間
+ *
+ * 時 → 分 の順番で数字入力する時間欄
+ * 見た目は「20 : 30」の1つの入力欄
+ * ===================================================== */
+
+.manual-time-field {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 4px;
+
+  width: 100%;
+  min-height: 50px;
+
+  padding:
+    0
+    10px;
+
+  overflow: hidden;
+
+  background: #f5f5f5;
+
+  border:
+    1px solid
+    #dddddd;
+
+  border-radius: 12px;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.manual-time-field:focus-within {
+  background: #ffffff;
+
+  border-color: #777777;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(0, 0, 0, 0.05);
+}
+
+
+/* ---------- 時・分 ---------- */
+
+.manual-time-part {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent;
+
+  border: 0;
+  border-radius: 0;
+
+  outline: none;
+
+  color: var(--text);
+
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 48px;
+
+  text-align: center;
+
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+
+.manual-time-part:focus {
+  background: transparent;
+
+  outline: none;
+}
+
+
+/* ---------- 固定コロン ---------- */
+
+.manual-time-colon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 10px;
+  height: 48px;
+
+  color: #777777;
+
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1;
+
+  user-select: none;
+}
+
+
+/* ---------- LAST選択時 ---------- */
+
+.manual-time-field.last-selected {
+  background: #242424;
+
+  border-color: #242424;
+
+  box-shadow:
+    0 7px 18px
+    rgba(0, 0, 0, 0.15);
+}
+
+
+.manual-time-field.last-selected
+.manual-time-part,
+.manual-time-field.last-selected
+.manual-time-colon {
+  color: #ffffff;
+
+  opacity: 0.35;
+}
+
+
+/* =====================================================
+ * 14. LAST
+ * ===================================================== */
+
+.last-time-section {
+  margin-top: 11px;
+  margin-bottom: 20px;
+}
+
+
+.last-time-button {
+  width: 100%;
+  min-height: 43px;
+
+  background: #f2f2f2;
+
+  border:
+    1px solid
+    #d9d9d9;
+
+  border-radius: 11px;
+
+  color: #4f4f4f;
+
+  font-size: 11px;
+  font-weight: 750;
+
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+
+.last-time-button:active {
+  transform: scale(0.985);
+}
+
+
+.last-time-button.selected {
+  background: #242424;
+
+  border-color: #242424;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+ * 15. 勤務区分
+ * ===================================================== */
+
+.status-selector {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+
+.status-button {
+  min-height: 46px;
+
+  background: #f3f3f3;
+
+  border:
+    1px solid
+    #dfdfdf;
+
+  border-radius: 11px;
+
+  color: #727272;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+
+.status-button:active {
+  transform: scale(0.97);
+}
+
+
+.status-button.selected {
+  background: var(--black);
+
+  border-color: var(--black);
+
+  color: #ffffff;
+}
+
+/* =====================================================
+ * 16. 一括入力モード
+ * ===================================================== */
+
+.bulk-mode-selector {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+
+.bulk-mode-button {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+  min-height: 70px;
+
+  padding:
+    12px
+    14px;
+
+  background: #f6f6f6;
+
+  border:
+    1px solid
+    #dfdfdf;
+
+  border-radius: 14px;
+
+  color: var(--text);
+
+  text-align: left;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
+}
+
+
+.bulk-mode-button:active {
+  transform: scale(0.985);
+}
+
+
+.bulk-mode-button.selected {
+  background: #242424;
+
+  border-color: #242424;
+
+  color: #ffffff;
+}
+
+
+.bulk-mode-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 39px;
+  height: 39px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #d5d5d5;
+
+  border-radius: 11px;
+
+  color: #222222;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+
+.bulk-mode-button.selected
+.bulk-mode-icon {
+  background: #ffffff;
+
+  border-color: #ffffff;
+
+  color: #222222;
+}
+
+
+.bulk-mode-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.bulk-mode-text strong {
+  font-size: 13px;
+}
+
+
+.bulk-mode-text small {
+  color: #8c8c8c;
+
+  font-size: 10px;
+  font-weight: 500;
+}
+
+
+.bulk-mode-button.selected
+.bulk-mode-text small {
+  color:
+    rgba(255, 255, 255, 0.62);
+}
+
+
+/* =====================================================
+ * 17. 選択日案内
+ * ===================================================== */
+
+.selected-dates-guide {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 12px;
+
+  padding: 14px;
+
+  background: #f5f5f5;
+
+  border:
+    1px solid
+    #e1e1e1;
+
+  border-radius: 13px;
+}
+
+
+.selected-dates-guide-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  background: #292929;
+
+  border-radius: 50%;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 300;
+}
+
+
+.selected-dates-guide strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 12px;
+}
+
+
+.selected-dates-guide p {
+  margin: 0;
+
+  color: var(--text-soft);
+
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+
+.calendar-select-button {
+  width: 100%;
+  min-height: 48px;
+
+  background: var(--black);
+
+  border-radius: 12px;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+
+.selected-dates-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 10px;
+
+  padding:
+    12px
+    14px;
+
+  background: #eeeeee;
+
+  border-radius: 11px;
+}
+
+
+.selected-dates-summary span {
+  color: var(--text-soft);
+
+  font-size: 10px;
+}
+
+
+.selected-dates-summary strong {
+  font-size: 14px;
+}
+
+
+/* =====================================================
+ * 18. 曜日選択
+ * ===================================================== */
+
+.weekday-selector {
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 5px;
+}
+
+
+.weekday-button {
+  aspect-ratio: 1 / 1;
+
+  min-width: 0;
+
+  padding: 0;
+
+  background: #f2f2f2;
+
+  border:
+    1px solid
+    #dddddd;
+
+  border-radius: 10px;
+
+  color: #555555;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    border-color 0.14s ease,
+    transform 0.12s ease;
+}
+
+
+.weekday-button:active {
+  transform: scale(0.93);
+}
+
+
+.weekday-button.saturday {
+  color: #426798;
+}
+
+
+.weekday-button.sunday {
+  color: #a34b4b;
+}
+
+
+.weekday-button.selected {
+  background: var(--black);
+
+  border-color: var(--black);
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+ * 19. 一括入力共通フォーム
+ * ===================================================== */
+
+.bulk-input-fields {
+  margin-top: 20px;
+}
+
+
+.bulk-form-divider {
+  width: 100%;
+  height: 1px;
+
+  margin-bottom: 20px;
+
+  background: var(--line);
+}
+
+
+/* =====================================================
+ * 20. 上書き設定
+ * ===================================================== */
+
+.overwrite-option {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px;
+
+  background: #f5f5f5;
+
+  border:
+    1px solid
+    #e1e1e1;
+
+  border-radius: 13px;
+
+  cursor: pointer;
+}
+
+
+.overwrite-option input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+
+.overwrite-check {
+  position: relative;
+
+  display: block;
+
+  flex-shrink: 0;
+
+  width: 23px;
+  height: 23px;
+
+  background: #ffffff;
+
+  border:
+    1px solid
+    #cfcfcf;
+
+  border-radius: 7px;
+}
+
+
+.overwrite-option input:checked
++ .overwrite-check {
+  background: var(--black);
+
+  border-color: var(--black);
+}
+
+
+.overwrite-option input:checked
++ .overwrite-check::after {
+  content: "";
+
+  position: absolute;
+
+  left: 7px;
+  top: 3px;
+
+  width: 6px;
+  height: 11px;
+
+  border-right:
+    2px solid
+    #ffffff;
+
+  border-bottom:
+    2px solid
+    #ffffff;
+
+  transform: rotate(45deg);
+}
+
+
+.overwrite-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+.overwrite-text strong {
+  color: var(--text);
+
+  font-size: 11px;
+}
+
+
+.overwrite-text small {
+  color: var(--text-soft);
+
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+
+/* =====================================================
+ * 21. 一括登録予定件数
+ * ===================================================== */
+
+.bulk-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+
+  padding:
+    14px
+    15px;
+
+  background: #eeeeee;
+
+  border-radius: 12px;
+}
+
+
+.bulk-preview span {
+  color: var(--text-soft);
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+.bulk-preview strong {
+  color: var(--text);
+
+  font-size: 17px;
+}
+
+
+/* =====================================================
+ * 22. モーダル操作ボタン
+ * ===================================================== */
+
+.modal-save-button {
+  width: 100%;
+  min-height: 51px;
+
+  background: var(--black);
+
+  border-radius: 13px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 750;
+
+  box-shadow:
+    0 9px 22px
+    rgba(0, 0, 0, 0.14);
+
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+
+
+.modal-save-button:active {
+  transform: scale(0.985);
+}
+
+
+.clear-button {
+  width: 100%;
+  min-height: 45px;
+
+  margin-top: 9px;
+
+  background: transparent;
+
+  border:
+    1px solid
+    #d6bebe;
+
+  border-radius: 12px;
+
+  color: #8c3535;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+ * 23. 複数日選択固定バー
+ * ===================================================== */
+
+.multi-select-bar {
+  position: fixed;
+
+  left: 50%;
+
+  bottom:
+    calc(
+      12px +
+      var(--safe-bottom)
+    );
+
+  z-index: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 13px;
+
+  width:
+    calc(100% - 24px);
+
+  max-width: 696px;
+
+  padding:
+    12px
+    13px;
+
+  background:
+    rgba(27, 27, 27, 0.97);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.16);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 15px 38px
+    rgba(0, 0, 0, 0.33);
+
+  transform:
+    translateX(-50%);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  animation:
+    selectBarUp
+    0.2s
+    ease-out;
+}
+
+
+@keyframes selectBarUp {
+
+  from {
+    transform:
+      translate(-50%, 18px);
+
+    opacity: 0;
+  }
+
+  to {
+    transform:
+      translate(-50%, 0);
+
+    opacity: 1;
+  }
+
+}
+
+
+.multi-select-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  min-width: 76px;
+}
+
+
+.multi-select-info span {
+  color:
+    rgba(255, 255, 255, 0.6);
+
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.7px;
+}
+
+
+.multi-select-info strong {
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+
+.multi-select-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.multi-select-cancel,
+.multi-select-next {
+  min-height: 40px;
+
+  padding:
+    0
+    13px;
+
+  border-radius: 10px;
+
+  font-size: 10px;
+  font-weight: 750;
+}
+
+
+.multi-select-cancel {
+  background:
+    rgba(255, 255, 255, 0.09);
+
+  color:
+    rgba(255, 255, 255, 0.82);
+}
+
+
+.multi-select-next {
+  background: #ffffff;
+
+  color: #1c1c1c;
+}
+
+
+.multi-select-next:disabled {
+  background:
+    rgba(255, 255, 255, 0.14);
+
+  color:
+    rgba(255, 255, 255, 0.38);
+}
+
+
+body.multi-select-mode
+.main-content {
+  padding-bottom:
+    calc(
+      130px +
+      var(--safe-bottom)
+    );
+}
+
+
+/* =====================================================
+ * 24. トースト通知
+ * ===================================================== */
+
+.toast {
+  position: fixed;
+
+  left: 50%;
+
+  bottom:
+    calc(
+      24px +
+      var(--safe-bottom)
+    );
+
+  z-index: 6000;
+
+  max-width:
+    calc(100% - 32px);
+
+  padding:
+    12px
+    17px;
+
+  background:
+    rgba(20, 20, 20, 0.94);
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: center;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform:
+    translate(-50%, 14px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 9px 25px
+    rgba(0, 0, 0, 0.27);
+}
+
+
+.toast.show {
+  opacity: 1;
+
+  transform:
+    translate(-50%, 0);
+}
+
+
+/* =====================================================
+ * 25. スマホ調整
+ * ===================================================== */
+
+@media (max-width: 420px) {
+
+  .main-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+
+  .shift-top h1 {
+    font-size: 25px;
+  }
+
+
+  .calendar-card {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+
+  .fc .fc-toolbar-title {
+    font-size: 15px;
+  }
+
+
+  .fc .fc-daygrid-day,
+  .fc .fc-daygrid-day-frame {
+    min-height: 66px;
+  }
+
+
+  .fc .fc-daygrid-event {
+    font-size: 7px;
+  }
+
+
+  .modal-card {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+
+  /* ---------- 手入力時間 ---------- */
+
+  .time-grid {
+    grid-template-columns:
+      minmax(0, 1fr)
+      16px
+      minmax(0, 1fr);
+
+    gap: 5px;
+  }
+
+
+  .manual-time-field {
+    min-height: 48px;
+
+    padding:
+      0
+      7px;
+
+    gap: 2px;
+  }
+
+
+  .manual-time-part {
+    height: 46px;
+
+    font-size: 17px;
+    line-height: 46px;
+  }
+
+
+  .manual-time-colon {
+    width: 8px;
+    height: 46px;
+
+    font-size: 17px;
+  }
+
+
+  .time-separator {
+    min-height: 48px;
+
+    font-size: 12px;
+  }
+
+
+  .multi-select-bar {
+    width:
+      calc(100% - 16px);
+
+    bottom:
+      calc(
+        8px +
+        var(--safe-bottom)
+      );
+  }
+
+
+  .multi-select-cancel,
+  .multi-select-next {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+}
+
+
+/* =====================================================
+ * 26. PC・タブレット調整
+ * ===================================================== */
+
+@media (min-width: 621px) {
+
+  .modal-overlay {
+    align-items: center;
+
+    padding: 24px;
+  }
+
+
+  .modal-card {
+    max-height:
+      calc(100vh - 48px);
+
+    border-radius: 24px;
+  }
+
+}
+
+
+/* =====================================================
+ * END
+ * ===================================================== */
+
+</style>
+</head>
+
+<body>
+
+  <div id="app">
+
+    <!-- =========================================
+         読み込み画面
+    ========================================== -->
+    <div
+      id="loadingScreen"
+      class="loading-screen"
+    >
+
+      <div class="loading-logo">
+        R
+      </div>
+
+      <div class="loading-text">
+        ROYAL SHIFT
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         ヘッダー
+    ========================================== -->
+    <header class="app-header">
+
+      <div class="header-title-area">
+
+        <div class="header-logo">
+          ROYAL
+        </div>
+
+        <div
+          id="headerSubtitle"
+          class="header-subtitle"
+        >
+          SHIFT SUBMISSION
+        </div>
+
+      </div>
+
+
+      <button
+        class="header-diamond-button"
+        type="button"
+        onclick="showNotice('通知機能は準備中です')"
+        aria-label="通知"
+      >
+        <span class="header-diamond"></span>
+      </button>
+
+    </header>
+
+
+    <!-- =========================================
+         メイン
+    ========================================== -->
+    <main class="main-content">
+
+      <section
+        id="shiftPage"
+        class="page"
+      >
+
+        <!-- 上部タイトル -->
+        <div class="shift-top">
+
+          <div>
+
+            <span class="page-label">
+              SHIFT SUBMISSION
+            </span>
+
+            <h1>
+              シフト提出
+            </h1>
+
+          </div>
+
+
+          <div
+            id="monthStatus"
+            class="month-status"
+          >
+            未提出
+          </div>
+
+        </div>
+
+
+        <!-- 入力進捗 -->
+        <div class="progress-card">
+
+          <div class="progress-header">
+
+            <div>
+
+              <span>
+                入力状況
+              </span>
+
+              <strong id="progressPercent">
+                0%
+              </strong>
+
+            </div>
+
+
+            <p id="progressMessage">
+              日付を選択して入力してください
+            </p>
+
+          </div>
+
+
+          <div class="progress-track">
+
+            <div
+              id="progressBar"
+              class="progress-bar"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- カレンダー -->
+        <div class="calendar-card">
+
+          <div id="calendar"></div>
+
+        </div>
+
+
+        <!-- 凡例 -->
+        <div class="legend">
+
+          <div>
+            <span class="legend-dot working"></span>
+            出勤
+          </div>
+
+          <div>
+            <span class="legend-dot holiday"></span>
+            休み
+          </div>
+
+          <div>
+            <span class="legend-dot undecided"></span>
+            未定
+          </div>
+
+          <div>
+            <span class="legend-dot empty"></span>
+            未入力
+          </div>
+
+        </div>
+
+
+        <!-- 一括入力 -->
+        <button
+          id="openBulkButton"
+          class="bulk-button"
+          type="button"
+          onclick="openBulkModal()"
+        >
+          一括入力
+        </button>
+
+
+        <!-- 月間提出 -->
+        <button
+          id="submitMonthButton"
+          class="submit-button"
+          type="button"
+          onclick="submitMonth()"
+        >
+          この内容で提出する
+        </button>
+
+      </section>
+
+    </main>
+
+
+    <!-- =========================================
+         複数日選択中の固定バー
+    ========================================== -->
+    <div
+      id="multiSelectBar"
+      class="multi-select-bar hidden"
+    >
+
+      <div class="multi-select-info">
+
+        <span>
+          複数日選択中
+        </span>
+
+        <strong id="multiSelectCount">
+          0日選択
+        </strong>
+
+      </div>
+
+
+      <div class="multi-select-actions">
+
+        <button
+          class="multi-select-cancel"
+          type="button"
+          onclick="cancelMultiSelect()"
+        >
+          キャンセル
+        </button>
+
+
+        <button
+          id="multiSelectNextButton"
+          class="multi-select-next"
+          type="button"
+          onclick="openSelectedDatesInput()"
+          disabled
+        >
+          まとめて入力
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         1日入力モーダル
+    ========================================== -->
+    <div
+      id="shiftModal"
+      class="modal-overlay hidden"
+      onclick="handleOverlayClick(event)"
+    >
+
+      <div class="modal-card">
+
+        <div class="modal-handle"></div>
+
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-label">
+              SHIFT SETTINGS
+            </span>
+
+            <h2 id="modalDateTitle">
+              8月1日
+            </h2>
+
+            <p id="modalWeekday">
+              土曜日
+            </p>
+
+          </div>
+
+
+          <button
+            class="modal-close"
+            type="button"
+            onclick="closeShiftModal()"
+            aria-label="閉じる"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- 勤務区分 -->
+        <div class="form-section">
+
+          <label class="form-label">
+            勤務区分
+          </label>
+
+
+          <div class="status-selector">
+
+            <button
+              id="statusWorking"
+              class="status-button selected"
+              type="button"
+              onclick="selectStatus('working')"
+            >
+              出勤
+            </button>
+
+
+            <button
+              id="statusHoliday"
+              class="status-button"
+              type="button"
+              onclick="selectStatus('holiday')"
+            >
+              休み
+            </button>
+
+
+            <button
+              id="statusUndecided"
+              class="status-button"
+              type="button"
+              onclick="selectStatus('undecided')"
+            >
+              未定
+            </button>
+
+          </div>
+
+        </div>
+
+
+<!-- =====================================================
+     勤務時間
+===================================================== -->
+        <div id="workingFields">
+          <div class="time-grid">
+
+            <div class="form-section">
+              <label class="form-label">出勤時間</label>
+              <div class="manual-time-field">
+                <input id="startHour" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="20" autocomplete="off" aria-label="出勤時間・時">
+                <span class="manual-time-colon">:</span>
+                <input id="startMinute" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="00" autocomplete="off" aria-label="出勤時間・分">
+                <input id="startTime" type="hidden" value="">
+              </div>
+            </div>
+
+            <div class="time-separator">〜</div>
+
+            <div class="form-section">
+              <label class="form-label">退勤時間</label>
+              <div id="endTimeField" class="manual-time-field">
+                <input id="endHour" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="01" autocomplete="off" aria-label="退勤時間・時">
+                <span class="manual-time-colon">:</span>
+                <input id="endMinute" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="00" autocomplete="off" aria-label="退勤時間・分">
+                <input id="endTime" type="hidden" value="">
+              </div>
+            </div>
+
+          </div>
+
+          <div id="endTimeLastSection" class="last-time-section">
+            <button id="endTimeLastButton" class="last-time-button" type="button" onclick="toggleEndTimeLast()">
+              退勤時間をLASTにする
+            </button>
+          </div>
+        </div>
+
+
+        <!-- 備考 -->
+        <div class="form-section">
+
+          <label
+            class="form-label"
+            for="shiftNote"
+          >
+            備考
+          </label>
+
+
+          <textarea
+            id="shiftNote"
+            class="form-control textarea"
+            maxlength="100"
+            placeholder="連絡事項がある場合のみ入力"
+          ></textarea>
+
+        </div>
+
+
+        <button
+          id="saveSelectedDateButton"
+          class="modal-save-button"
+          type="button"
+          onclick="saveSelectedDate()"
+        >
+          この日の内容を保存
+        </button>
+
+
+        <button
+          id="clearDateButton"
+          class="clear-button hidden"
+          type="button"
+          onclick="clearSelectedDate()"
+        >
+          入力を削除
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================================
+         一括入力モーダル
+    ========================================== -->
+    <div
+      id="bulkModal"
+      class="modal-overlay hidden"
+      onclick="handleBulkOverlayClick(event)"
+    >
+
+      <div class="modal-card bulk-modal-card">
+
+        <div class="modal-handle"></div>
+
+
+        <div class="modal-header">
+
+          <div>
+
+            <span class="modal-label">
+              BULK SHIFT SETTINGS
+            </span>
+
+            <h2>
+              一括入力
+            </h2>
+
+            <p id="bulkTargetMonthText">
+              表示中の月へまとめて入力します
+            </p>
+
+          </div>
+
+
+          <button
+            class="modal-close"
+            type="button"
+            onclick="closeBulkModal()"
+            aria-label="閉じる"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <!-- 入力方法 -->
+        <div class="form-section">
+
+          <label class="form-label">
+            入力方法
+          </label>
+
+
+          <div class="bulk-mode-selector">
+
+            <button
+              id="bulkModeSelectedDates"
+              class="bulk-mode-button selected"
+              type="button"
+              onclick="selectBulkMode('selectedDates')"
+            >
+
+              <span class="bulk-mode-icon">
+                ✓
+              </span>
+
+
+              <span class="bulk-mode-text">
+
+                <strong>
+                  選択した日
+                </strong>
+
+                <small>
+                  カレンダーから自由に選択
+                </small>
+
+              </span>
+
+            </button>
+
+
+            <button
+              id="bulkModeWeekdays"
+              class="bulk-mode-button"
+              type="button"
+              onclick="selectBulkMode('weekdays')"
+            >
+
+              <span class="bulk-mode-icon">
+                週
+              </span>
+
+
+              <span class="bulk-mode-text">
+
+                <strong>
+                  曜日でまとめて
+                </strong>
+
+                <small>
+                  毎週同じ曜日に入力
+                </small>
+
+              </span>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- 選択した日 -->
+        <div id="selectedDatesModePanel">
+
+          <div class="selected-dates-guide">
+
+            <span class="selected-dates-guide-icon">
+              ＋
+            </span>
+
+
+            <div>
+
+              <strong>
+                カレンダーから日付を選択
+              </strong>
+
+              <p>
+                入力したい日をすべてタップしてください
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <button
+            id="startMultiSelectButton"
+            class="calendar-select-button"
+            type="button"
+            onclick="startMultiSelect()"
+          >
+            日付の選択を開始
+          </button>
+
+
+          <div
+            id="selectedDatesSummary"
+            class="selected-dates-summary hidden"
+          >
+
+            <span>
+              選択中
+            </span>
+
+            <strong id="selectedDatesSummaryCount">
+              0日
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- 曜日まとめ -->
+        <div
+          id="weekdaysModePanel"
+          class="hidden"
+        >
+
+          <div class="form-section">
+
+            <label class="form-label">
+              入力する曜日
+            </label>
+
+
+            <div class="weekday-selector">
+
+              <button
+                id="bulkWeekday1"
+                class="weekday-button"
+                type="button"
+                data-weekday="1"
+                onclick="toggleBulkWeekday(1)"
+              >
+                月
+              </button>
+
+
+              <button
+                id="bulkWeekday2"
+                class="weekday-button"
+                type="button"
+                data-weekday="2"
+                onclick="toggleBulkWeekday(2)"
+              >
+                火
+              </button>
+
+
+              <button
+                id="bulkWeekday3"
+                class="weekday-button"
+                type="button"
+                data-weekday="3"
+                onclick="toggleBulkWeekday(3)"
+              >
+                水
+              </button>
+
+
+              <button
+                id="bulkWeekday4"
+                class="weekday-button"
+                type="button"
+                data-weekday="4"
+                onclick="toggleBulkWeekday(4)"
+              >
+                木
+              </button>
+
+
+              <button
+                id="bulkWeekday5"
+                class="weekday-button"
+                type="button"
+                data-weekday="5"
+                onclick="toggleBulkWeekday(5)"
+              >
+                金
+              </button>
+
+
+              <button
+                id="bulkWeekday6"
+                class="weekday-button saturday"
+                type="button"
+                data-weekday="6"
+                onclick="toggleBulkWeekday(6)"
+              >
+                土
+              </button>
+
+
+              <button
+                id="bulkWeekday0"
+                class="weekday-button sunday"
+                type="button"
+                data-weekday="0"
+                onclick="toggleBulkWeekday(0)"
+              >
+                日
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- 共通入力 -->
+        <div
+          id="bulkInputFields"
+          class="bulk-input-fields"
+        >
+
+          <div class="bulk-form-divider"></div>
+
+
+          <!-- 勤務区分 -->
+          <div class="form-section">
+
+            <label class="form-label">
+              勤務区分
+            </label>
+
+
+            <div class="status-selector">
+
+              <button
+                id="bulkStatusWorking"
+                class="status-button selected"
+                type="button"
+                onclick="selectBulkStatus('working')"
+              >
+                出勤
+              </button>
+
+
+              <button
+                id="bulkStatusHoliday"
+                class="status-button"
+                type="button"
+                onclick="selectBulkStatus('holiday')"
+              >
+                休み
+              </button>
+
+
+              <button
+                id="bulkStatusUndecided"
+                class="status-button"
+                type="button"
+                onclick="selectBulkStatus('undecided')"
+              >
+                未定
+              </button>
+
+            </div>
+
+          </div>
+
+
+<!-- =====================================================
+     一括入力・勤務時間
+===================================================== -->
+          <div id="bulkWorkingFields">
+            <div class="time-grid">
+
+              <div class="form-section">
+                <label class="form-label">出勤時間</label>
+                <div class="manual-time-field">
+                  <input id="bulkStartHour" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="20" autocomplete="off" aria-label="一括出勤時間・時">
+                  <span class="manual-time-colon">:</span>
+                  <input id="bulkStartMinute" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="00" autocomplete="off" aria-label="一括出勤時間・分">
+                  <input id="bulkStartTime" type="hidden" value="">
+                </div>
+              </div>
+
+              <div class="time-separator">〜</div>
+
+              <div class="form-section">
+                <label class="form-label">退勤時間</label>
+                <div id="bulkEndTimeField" class="manual-time-field">
+                  <input id="bulkEndHour" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="01" autocomplete="off" aria-label="一括退勤時間・時">
+                  <span class="manual-time-colon">:</span>
+                  <input id="bulkEndMinute" class="manual-time-part" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="00" autocomplete="off" aria-label="一括退勤時間・分">
+                  <input id="bulkEndTime" type="hidden" value="">
+                </div>
+              </div>
+
+            </div>
+
+            <div id="bulkEndTimeLastSection" class="last-time-section">
+              <button id="bulkEndTimeLastButton" class="last-time-button" type="button" onclick="toggleBulkEndTimeLast()">
+                退勤時間をLASTにする
+              </button>
+            </div>
+          </div>
+
+
+          <!-- 備考 -->
+          <div class="form-section">
+
+            <label
+              class="form-label"
+              for="bulkShiftNote"
+            >
+              備考
+            </label>
+
+
+            <textarea
+              id="bulkShiftNote"
+              class="form-control textarea"
+              maxlength="100"
+              placeholder="対象の日すべてに同じ備考を入力"
+            ></textarea>
+
+          </div>
+
+
+          <!-- 上書き -->
+          <div class="form-section">
+
+            <label class="overwrite-option">
+
+              <input
+                id="bulkOverwrite"
+                type="checkbox"
+              >
+
+
+              <span class="overwrite-check"></span>
+
+
+              <span class="overwrite-text">
+
+                <strong>
+                  入力済みの日も上書きする
+                </strong>
+
+                <small>
+                  OFFの場合は未入力の日だけ登録します
+                </small>
+
+              </span>
+
+            </label>
+
+          </div>
+
+
+          <!-- 件数 -->
+          <div
+            id="bulkPreview"
+            class="bulk-preview"
+          >
+
+            <span>
+              登録予定
+            </span>
+
+            <strong id="bulkPreviewCount">
+              0日
+            </strong>
+
+          </div>
+
+
+          <button
+            id="saveBulkButton"
+            class="modal-save-button"
+            type="button"
+            onclick="saveBulkInput()"
+          >
+            一括登録する
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- =========================================
+         通知
+    ========================================== -->
+    <div
+      id="toast"
+      class="toast"
+    ></div>
+
+  </div>
+
+
+<script>
+  const INITIAL_PAGE = "shift";
+</script>
+
+<script>
+
+/* =====================================================
+ * ROYAL SHIFT SYSTEM
+ * Script.html
+ *
+ * シフト提出画面
+ * フロントエンド全体制御
+ * ===================================================== */
+
+
+/* =====================================================
+ * 01. 状態管理
+ * ===================================================== */
+
+
+/* ---------- LIFF ---------- */
+
+const LIFF_ID =
+  "2011488723-gl54Hlt3";
+
+let liffProfile = null;
+let liffIdToken = "";
+
+let isLiffReady = false;
+
+
+/* ---------- カレンダー ---------- */
+
+let calendar = null;
+
+
+/* ---------- システム設定 ---------- */
+
+let shiftSettings = null;
+let isLoadingSettings = false;
+
+
+/* ---------- キャスト契約時間 ---------- */
+
+let currentCastDefaults = null;
+let isLoadingCastDefaults = false;
+
+
+/* ---------- 1日入力 ---------- */
+
+let selectedDate = "";
+let selectedStatus = "working";
+
+let isSaving = false;
+let isEndTimeLast = false;
+
+
+/* ---------- 月間データ ---------- */
+
+let isLoadingMonth = false;
+let currentMonthSubmitted = false;
+
+const shiftEntries = {};
+
+
+/* ---------- 一括入力 ---------- */
+
+let bulkMode = "selectedDates";
+let bulkStatus = "working";
+
+let bulkWeekdays = [];
+let multiSelectedDates = [];
+
+let isMultiSelectMode = false;
+let isBulkSaving = false;
+let isBulkEndTimeLast = false;
+
+
+/* ---------- UI ---------- */
+
+let toastTimer = null;
+
+
+/* =====================================================
+ * 02. システム初期化
+ * ===================================================== */
+
+/**
+ * DOM読み込み完了後に
+ * ROYAL SHIFTを起動する。
+ */
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    initializeSystem();
+
+  }
+);
+
+
+/**
+ * システム全体の起動フロー。
+ *
+ * 1. LIFF初期化
+ * 2. LINEログイン
+ * 3. SETTINGS取得
+ * 4. CAST契約時間取得
+ * 5. アプリ起動
+ */
+function initializeSystem() {
+
+  initializeLiff();
+
+}
+
+
+/* =====================================================
+ * 03. LIFF初期化
+ * ===================================================== */
+
+/**
+ * LIFFを初期化し、
+ * LINEログイン状態を確認する。
+ */
+async function initializeLiff() {
+
+  try {
+
+    if (
+      typeof liff ===
+      "undefined"
+    ) {
+
+      throw new Error(
+        "LIFF SDKを読み込めませんでした"
+      );
+
+    }
+
+
+    await liff.init({
+      liffId:
+        LIFF_ID
+    });
+
+
+    /*
+     * 未ログインの場合
+     */
+    if (
+      !liff.isLoggedIn()
+    ) {
+
+      liff.login();
+
+      return;
+
+    }
+
+
+    /*
+     * LINEプロフィール取得
+     */
+    liffProfile =
+      await liff.getProfile();
+
+
+    /*
+     * IDトークン取得
+     *
+     * 後でGAS側で本人確認に使用する。
+     */
+    liffIdToken =
+      liff.getIDToken() || "";
+
+
+    isLiffReady =
+      true;
+
+
+    console.log(
+      "LIFF接続成功",
+      {
+        displayName:
+          liffProfile
+            ? liffProfile.displayName
+            : ""
+      }
+    );
+
+
+    /*
+     * 現段階では、
+     * LIFF接続後に既存システムを起動。
+     *
+     * CAST本人認証は次の段階で追加する。
+     */
+    loadShiftSettings();
+
+
+  } catch (error) {
+
+    console.error(
+      "LIFF初期化エラー",
+      error
+    );
+
+
+    hideLoadingScreen();
+
+
+    showNotice(
+      "LINEログインに失敗しました"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+ * 04. SETTINGS連携
+ * ===================================================== */
+
+/**
+ * SETTINGSシートから設定を取得する。
+ */
+function loadShiftSettings() {
+
+  if (isLoadingSettings) {
+    return;
+  }
+
+
+  isLoadingSettings =
+    true;
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (settings) => {
+
+        isLoadingSettings =
+          false;
+
+
+        try {
+
+          shiftSettings =
+            normalizeShiftSettings(
+              settings
+            );
+
+
+          validateShiftSettings();
+
+
+          startShiftApplication();
+
+
+        } catch (error) {
+
+          hideLoadingScreen();
+
+
+          showNotice(
+            getErrorMessage(
+              error,
+              "シフト設定の読み込みに失敗しました"
+            )
+          );
+
+        }
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        isLoadingSettings =
+          false;
+
+
+        hideLoadingScreen();
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "シフト設定の読み込みに失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .getShiftSettings();
+
+}
+
+
+/**
+ * GASから取得した設定を
+ * フロント用に整形する。
+ */
+function normalizeShiftSettings(
+  settings
+) {
+
+  if (!settings) {
+
+    throw new Error(
+      "SETTINGSのデータが取得できませんでした"
+    );
+
+  }
+
+
+  return {
+
+    startHourList:
+      Array.isArray(
+        settings.startHourList
+      )
+        ? settings.startHourList
+        : [],
+
+
+    endHourList:
+      Array.isArray(
+        settings.endHourList
+      )
+        ? settings.endHourList
+        : [],
+
+
+    minuteList:
+      Array.isArray(
+        settings.minuteList
+      )
+        ? settings.minuteList
+        : [],
+
+
+    enableLast:
+      Boolean(
+        settings.enableLast
+      ),
+
+
+    defaultStartHour:
+      String(
+        settings.defaultStartHour ??
+        "20"
+      ).padStart(
+        2,
+        "0"
+      ),
+
+
+    defaultStartMinute:
+      String(
+        settings.defaultStartMinute ??
+        "00"
+      ).padStart(
+        2,
+        "0"
+      ),
+
+
+    defaultEndHour:
+      String(
+        settings.defaultEndHour ??
+        "01"
+      ).padStart(
+        2,
+        "0"
+      ),
+
+
+    defaultEndMinute:
+      String(
+        settings.defaultEndMinute ??
+        "00"
+      ).padStart(
+        2,
+        "0"
+      )
+
+  };
+
+}
+
+
+/**
+ * 必須設定をチェックする。
+ */
+function validateShiftSettings() {
+
+  if (
+    shiftSettings.startHourList.length ===
+    0
+  ) {
+
+    throw new Error(
+      "START_HOUR_MIN / START_HOUR_MAX の設定を確認してください"
+    );
+
+  }
+
+
+  if (
+    shiftSettings.endHourList.length ===
+    0
+  ) {
+
+    throw new Error(
+      "END_HOURS の設定を確認してください"
+    );
+
+  }
+
+
+  if (
+    shiftSettings.minuteList.length ===
+    0
+  ) {
+
+    throw new Error(
+      "MINUTE_STEP の設定を確認してください"
+    );
+
+  }
+
+}
+
+
+/**
+ * SETTINGS取得後の起動フロー。
+ */
+function startShiftApplication() {
+
+  loadCurrentCastDefaults();
+
+}
+
+
+/* =====================================================
+ * 04-2. CAST契約時間連携
+ * ===================================================== */
+
+/**
+ * 現在利用中のキャストの
+ * デフォルト勤務時間を取得する。
+ *
+ * 現段階ではまだS001仮ユーザー。
+ */
+function loadCurrentCastDefaults() {
+
+  if (
+    isLoadingCastDefaults
+  ) {
+    return;
+  }
+
+
+  isLoadingCastDefaults =
+    true;
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        isLoadingCastDefaults =
+          false;
+
+
+        currentCastDefaults = {
+
+          castId:
+            result &&
+            result.castId
+
+              ? String(
+                  result.castId
+                )
+
+              : "",
+
+
+          castName:
+            result &&
+            result.castName
+
+              ? String(
+                  result.castName
+                )
+
+              : "",
+
+
+          defaultStartTime:
+            normalizeTimeInputValue(
+              result &&
+              result.defaultStartTime,
+              getSettingsDefaultStartTime()
+            ),
+
+
+          defaultEndTime:
+            normalizeTimeInputValue(
+              result &&
+              result.defaultEndTime,
+              getSettingsDefaultEndTime()
+            )
+
+        };
+
+
+        launchShiftApplication();
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        isLoadingCastDefaults =
+          false;
+
+
+        currentCastDefaults = {
+
+          castId:
+            "",
+
+          castName:
+            "",
+
+          defaultStartTime:
+            getSettingsDefaultStartTime(),
+
+          defaultEndTime:
+            getSettingsDefaultEndTime()
+
+        };
+
+
+        console.error(
+          "CAST契約時間の取得に失敗しました",
+          error
+        );
+
+
+        launchShiftApplication();
+
+      }
+    )
+
+    .getCurrentCastDefaultTimes();
+
+}
+
+
+/**
+ * SETTINGS・CAST取得完了後に
+ * アプリ本体を起動する。
+ */
+function launchShiftApplication() {
+
+  initializeManualTimeInputs();
+
+  initializeCalendar();
+
+
+  window.setTimeout(
+    () => {
+
+      hideLoadingScreen();
+
+    },
+    650
+  );
+
+}
+
+
+/**
+ * ローディング画面を閉じる。
+ */
+function hideLoadingScreen() {
+
+  const loadingScreen =
+    document.getElementById(
+      "loadingScreen"
+    );
+
+
+  if (!loadingScreen) {
+    return;
+  }
+
+
+  loadingScreen.classList.add(
+    "hide"
+  );
+
+}
+
+/* =====================================================
+ * 05. カレンダー初期化
+ * ===================================================== */
+
+function initializeCalendar() {
+
+  const calendarElement =
+    document.getElementById(
+      "calendar"
+    );
+
+
+  if (!calendarElement) {
+
+    showNotice(
+      "カレンダーの表示に失敗しました"
+    );
+
+    return;
+
+  }
+
+
+  const nextMonth =
+    new Date();
+
+
+  nextMonth.setMonth(
+    nextMonth.getMonth() + 1
+  );
+
+
+  nextMonth.setDate(1);
+
+
+  calendar =
+    new FullCalendar.Calendar(
+      calendarElement,
+      {
+
+        initialView:
+          "dayGridMonth",
+
+        initialDate:
+          nextMonth,
+
+        locale:
+          "ja",
+
+        firstDay:
+          0,
+
+        fixedWeekCount:
+          false,
+
+        showNonCurrentDates:
+          true,
+
+        height:
+          "auto",
+
+
+        headerToolbar: {
+
+          left:
+            "prev",
+
+          center:
+            "title",
+
+          right:
+            "next"
+
+        },
+
+
+        titleFormat: {
+
+          year:
+            "numeric",
+
+          month:
+            "long"
+
+        },
+
+
+        dayHeaderFormat: {
+
+          weekday:
+            "short"
+
+        },
+
+
+        dateClick:
+          (info) => {
+
+            handleCalendarDateClick(
+              info
+            );
+
+          },
+
+
+        eventClick:
+          (info) => {
+
+            handleCalendarEventClick(
+              info
+            );
+
+          },
+
+
+        datesSet:
+          () => {
+
+            handleCalendarMonthChange();
+
+          },
+
+
+        dayCellDidMount:
+          (info) => {
+
+            applyMultiSelectClass(
+              info.el,
+              formatDateObject(
+                info.date
+              )
+            );
+
+          },
+
+
+        eventDisplay:
+          "block",
+
+        displayEventTime:
+          false
+
+      }
+    );
+
+
+  calendar.render();
+
+}
+
+
+/* =====================================================
+ * 06. カレンダー操作
+ * ===================================================== */
+
+function handleCalendarDateClick(
+  info
+) {
+
+  if (
+    !isCurrentCalendarMonth(
+      info.date
+    )
+  ) {
+    return;
+  }
+
+
+  if (isMultiSelectMode) {
+
+    toggleMultiSelectedDate(
+      info.dateStr
+    );
+
+    return;
+
+  }
+
+
+  openShiftModal(
+    info.dateStr
+  );
+
+}
+
+
+function handleCalendarEventClick(
+  info
+) {
+
+  info.jsEvent.preventDefault();
+  info.jsEvent.stopPropagation();
+
+
+  const dateString =
+    info.event.startStr
+      .substring(
+        0,
+        10
+      );
+
+
+  if (isMultiSelectMode) {
+
+    toggleMultiSelectedDate(
+      dateString
+    );
+
+    return;
+
+  }
+
+
+  openShiftModal(
+    dateString
+  );
+
+}
+
+
+function handleCalendarMonthChange() {
+
+  if (isMultiSelectMode) {
+
+    cancelMultiSelect();
+
+  }
+
+
+  updateBulkTargetMonthText();
+
+
+  window.setTimeout(
+    () => {
+
+      loadDisplayedMonth();
+
+    },
+    0
+  );
+
+}
+
+
+function isCurrentCalendarMonth(
+  date
+) {
+
+  if (!calendar) {
+    return false;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  return (
+
+    date.getFullYear() ===
+      current.getFullYear() &&
+
+    date.getMonth() ===
+      current.getMonth()
+
+  );
+
+}
+
+
+/* =====================================================
+ * 07. 月間データ読み込み
+ * ===================================================== */
+
+function loadDisplayedMonth() {
+
+  if (
+    !calendar ||
+    isLoadingMonth
+  ) {
+    return;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const year =
+    current.getFullYear();
+
+
+  const month =
+    current.getMonth() + 1;
+
+
+  setMonthLoading(
+    true
+  );
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        clearMonthEntries(
+          year,
+          month
+        );
+
+
+        const entries =
+          result &&
+          Array.isArray(
+            result.entries
+          )
+            ? result.entries
+            : [];
+
+
+        entries.forEach(
+          (entry) => {
+
+            shiftEntries[
+              entry.date
+            ] =
+              normalizeClientEntry(
+                entry
+              );
+
+          }
+        );
+
+
+        currentMonthSubmitted =
+          Boolean(
+            result &&
+            result.submitted
+          );
+
+
+        refreshCalendarEvents();
+
+        updateProgress(
+          currentMonthSubmitted
+        );
+
+        updateBulkPreview();
+
+        setMonthLoading(
+          false
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        setMonthLoading(
+          false
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "シフトの読み込みに失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .getMonthlyShiftData(
+      year,
+      month
+    );
+
+}
+
+
+function clearMonthEntries(
+  year,
+  month
+) {
+
+  Object
+    .keys(
+      shiftEntries
+    )
+    .forEach(
+      (dateString) => {
+
+        const date =
+          parseLocalDate(
+            dateString
+          );
+
+
+        if (
+
+          date.getFullYear() ===
+            year &&
+
+          date.getMonth() ===
+            month - 1
+
+        ) {
+
+          delete shiftEntries[
+            dateString
+          ];
+
+        }
+
+      }
+    );
+
+}
+
+
+/**
+ * サーバーのシフトデータを
+ * フロント用へ整形する。
+ */
+function normalizeClientEntry(
+  entry
+) {
+
+  return {
+
+    shiftId:
+      entry.shiftId || "",
+
+    targetMonth:
+      entry.targetMonth || "",
+
+    date:
+      entry.date || "",
+
+    weekday:
+      entry.weekday || "",
+
+    castId:
+      entry.castId || "",
+
+    castName:
+      entry.castName || "",
+
+    status:
+      entry.status || "undecided",
+
+    startTime:
+      entry.startTime || "",
+
+    endTime:
+      entry.endTime || "",
+
+    note:
+      entry.note || ""
+
+  };
+
+}
+
+
+function setMonthLoading(
+  loading
+) {
+
+  isLoadingMonth =
+    loading;
+
+
+  const status =
+    document.getElementById(
+      "monthStatus"
+    );
+
+
+  if (!status) {
+    return;
+  }
+
+
+  if (loading) {
+
+    status.textContent =
+      "読込中";
+
+
+    status.classList.add(
+      "loading"
+    );
+
+
+    return;
+
+  }
+
+
+  status.classList.remove(
+    "loading"
+  );
+
+}
+
+
+/* =====================================================
+ * 08. 1日入力モーダル
+ * ===================================================== */
+
+/**
+ * 1日入力を開くフロー。
+ */
+function openShiftModal(
+  dateString
+) {
+
+  if (isSaving) {
+    return;
+  }
+
+
+  selectedDate =
+    dateString;
+
+
+  const date =
+    parseLocalDate(
+      dateString
+    );
+
+
+  const existing =
+    shiftEntries[
+      dateString
+    ];
+
+
+  updateShiftModalDate(
+    date
+  );
+
+
+  if (existing) {
+
+    loadExistingShiftToForm(
+      existing
+    );
+
+  } else {
+
+    loadNewShiftToForm();
+
+  }
+
+
+  updateStatusButtons();
+
+  updateWorkingFields();
+
+  showShiftModal();
+
+}
+
+
+/**
+ * 日付・曜日表示を更新する。
+ */
+function updateShiftModalDate(
+  date
+) {
+
+  const weekdays = [
+
+    "日曜日",
+    "月曜日",
+    "火曜日",
+    "水曜日",
+    "木曜日",
+    "金曜日",
+    "土曜日"
+
+  ];
+
+
+  document
+    .getElementById(
+      "modalDateTitle"
+    )
+    .textContent =
+      `${date.getMonth() + 1}月` +
+      `${date.getDate()}日`;
+
+
+  document
+    .getElementById(
+      "modalWeekday"
+    )
+    .textContent =
+      weekdays[
+        date.getDay()
+      ];
+
+}
+
+
+/**
+ * 保存済みデータをフォームへ反映する。
+ */
+function loadExistingShiftToForm(
+  existing
+) {
+
+  selectedStatus =
+    existing.status ||
+    "working";
+
+
+  setManualTimeValue(
+    "start",
+    normalizeTimeInputValue(
+      existing.startTime,
+      getDefaultStartTime()
+    )
+  );
+
+
+  setEndTimeLastState(
+
+    String(
+      existing.endTime || ""
+    ).toUpperCase() ===
+      "LAST",
+
+    normalizeTimeInputValue(
+      existing.endTime,
+      getDefaultEndTime()
+    )
+
+  );
+
+
+  document
+    .getElementById(
+      "shiftNote"
+    )
+    .value =
+      existing.note || "";
+
+
+  document
+    .getElementById(
+      "clearDateButton"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+}
+
+
+/**
+ * 新規入力の初期値を設定する。
+ */
+function loadNewShiftToForm() {
+
+  selectedStatus =
+    "working";
+
+
+  setManualTimeValue(
+    "start",
+    getDefaultStartTime()
+  );
+
+
+  setEndTimeLastState(
+    false,
+    getDefaultEndTime()
+  );
+
+
+  document
+    .getElementById(
+      "shiftNote"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "clearDateButton"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+}
+
+
+/**
+ * 1日入力モーダルを表示する。
+ */
+function showShiftModal() {
+
+  document
+    .getElementById(
+      "shiftModal"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+}
+
+
+function closeShiftModal() {
+
+  if (isSaving) {
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "shiftModal"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+
+  selectedDate = "";
+
+}
+
+
+function handleOverlayClick(
+  event
+) {
+
+  if (
+    event.target.id ===
+    "shiftModal"
+  ) {
+
+    closeShiftModal();
+
+  }
+
+}
+
+
+/* =====================================================
+ * 09. 勤務区分
+ * ===================================================== */
+
+function selectStatus(
+  status
+) {
+
+  if (
+    !isAllowedStatus(
+      status
+    )
+  ) {
+    return;
+  }
+
+
+  selectedStatus =
+    status;
+
+
+  updateStatusButtons();
+
+  updateWorkingFields();
+
+}
+
+
+function updateStatusButtons() {
+
+  const ids = {
+
+    working:
+      "statusWorking",
+
+    holiday:
+      "statusHoliday",
+
+    undecided:
+      "statusUndecided"
+
+  };
+
+
+  Object
+    .keys(
+      ids
+    )
+    .forEach(
+      (status) => {
+
+        const button =
+          document.getElementById(
+            ids[
+              status
+            ]
+          );
+
+
+        if (!button) {
+          return;
+        }
+
+
+        button.classList.toggle(
+
+          "selected",
+
+          selectedStatus ===
+            status
+
+        );
+
+      }
+    );
+
+}
+
+
+function updateWorkingFields() {
+
+  const workingFields =
+    document.getElementById(
+      "workingFields"
+    );
+
+
+  if (!workingFields) {
+    return;
+  }
+
+
+  workingFields.classList.toggle(
+
+    "hidden",
+
+    selectedStatus !==
+      "working"
+
+  );
+
+}
+
+
+/* =====================================================
+ * 10. 手入力時間・設定
+ * ===================================================== */
+
+/**
+ * 時間入力欄のID設定を取得する。
+ */
+function getManualTimeConfig(
+  target
+) {
+
+  const configs = {
+
+    start: {
+      hourId: "startHour",
+      minuteId: "startMinute",
+      hiddenId: "startTime"
+    },
+
+    end: {
+      hourId: "endHour",
+      minuteId: "endMinute",
+      hiddenId: "endTime"
+    },
+
+    bulkStart: {
+      hourId: "bulkStartHour",
+      minuteId: "bulkStartMinute",
+      hiddenId: "bulkStartTime"
+    },
+
+    bulkEnd: {
+      hourId: "bulkEndHour",
+      minuteId: "bulkEndMinute",
+      hiddenId: "bulkEndTime"
+    }
+
+  };
+
+
+  return configs[
+    target
+  ] || null;
+
+}
+
+
+/* =====================================================
+ * 11. 手入力時間・全体初期化
+ * ===================================================== */
+
+function initializeManualTimeInputs() {
+
+  [
+    "start",
+    "end",
+    "bulkStart",
+    "bulkEnd"
+  ].forEach(
+    (target) => {
+
+      initializeManualTimeField(
+        target
+      );
+
+    }
+  );
+
+
+  setManualTimeValue(
+    "start",
+    getDefaultStartTime()
+  );
+
+
+  setManualTimeValue(
+    "end",
+    getDefaultEndTime()
+  );
+
+
+  setManualTimeValue(
+    "bulkStart",
+    getDefaultStartTime()
+  );
+
+
+  setManualTimeValue(
+    "bulkEnd",
+    getDefaultEndTime()
+  );
+
+}
+
+
+/* =====================================================
+ * 12. 手入力時間・イベント登録
+ * ===================================================== */
+
+function initializeManualTimeField(
+  target
+) {
+
+  const config =
+    getManualTimeConfig(
+      target
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  if (
+    !hourInput ||
+    !minuteInput
+  ) {
+    return;
+  }
+
+
+  /* ---------- 時：フォーカス ---------- */
+
+  hourInput.addEventListener(
+    "focus",
+    () => {
+
+      selectTimeInputText(
+        hourInput
+      );
+
+    }
+  );
+
+
+  hourInput.addEventListener(
+    "click",
+    () => {
+
+      selectTimeInputText(
+        hourInput
+      );
+
+    }
+  );
+
+
+  /* ---------- 時：入力 ---------- */
+
+  hourInput.addEventListener(
+    "input",
+    () => {
+
+      handleHourInput(
+        target
+      );
+
+    }
+  );
+
+
+  /* ---------- 時：フォーカス解除 ---------- */
+
+  hourInput.addEventListener(
+    "blur",
+    () => {
+
+      normalizeManualTimePart(
+        hourInput,
+        23
+      );
+
+
+      syncManualTimeValue(
+        target
+      );
+
+    }
+  );
+
+
+  /* ---------- 分：フォーカス ---------- */
+
+  minuteInput.addEventListener(
+    "focus",
+    () => {
+
+      selectTimeInputText(
+        minuteInput
+      );
+
+    }
+  );
+
+
+  minuteInput.addEventListener(
+    "click",
+    () => {
+
+      selectTimeInputText(
+        minuteInput
+      );
+
+    }
+  );
+
+
+  /* ---------- 分：入力 ---------- */
+
+  minuteInput.addEventListener(
+    "input",
+    () => {
+
+      handleMinuteInput(
+        target
+      );
+
+    }
+  );
+
+
+  /* ---------- 分：フォーカス解除 ---------- */
+
+  minuteInput.addEventListener(
+    "blur",
+    () => {
+
+      normalizeManualTimePart(
+        minuteInput,
+        59
+      );
+
+
+      syncManualTimeValue(
+        target
+      );
+
+    }
+  );
+
+
+  /* ---------- 分：Backspace ---------- */
+
+  minuteInput.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (
+        event.key === "Backspace" &&
+        minuteInput.value === ""
+      ) {
+
+        event.preventDefault();
+
+
+        hourInput.focus();
+
+
+        selectTimeInputText(
+          hourInput
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+ * 13. 手入力時間・時入力
+ * ===================================================== */
+
+function handleHourInput(
+  target
+) {
+
+  const config =
+    getManualTimeConfig(
+      target
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  if (
+    !hourInput ||
+    !minuteInput
+  ) {
+    return;
+  }
+
+
+  hourInput.value =
+    sanitizeManualTimeDigits(
+      hourInput.value
+    );
+
+
+  syncManualTimeValue(
+    target
+  );
+
+
+  if (
+    hourInput.value.length !==
+    2
+  ) {
+    return;
+  }
+
+
+  const hour =
+    Number(
+      hourInput.value
+    );
+
+
+  if (
+    !Number.isInteger(hour) ||
+    hour < 0 ||
+    hour > 23
+  ) {
+    return;
+  }
+
+
+  moveToMinuteInput(
+    minuteInput
+  );
+
+}
+
+
+/* =====================================================
+ * 14. 手入力時間・分入力
+ * ===================================================== */
+
+function handleMinuteInput(
+  target
+) {
+
+  const config =
+    getManualTimeConfig(
+      target
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  if (!minuteInput) {
+    return;
+  }
+
+
+  minuteInput.value =
+    sanitizeManualTimeDigits(
+      minuteInput.value
+    );
+
+
+  syncManualTimeValue(
+    target
+  );
+
+
+  /*
+   * 2桁入力されるまでは
+   * 次へ進まない。
+   */
+  if (
+    minuteInput.value.length !==
+    2
+  ) {
+    return;
+  }
+
+
+  const minute =
+    Number(
+      minuteInput.value
+    );
+
+
+  if (
+    !Number.isInteger(minute) ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return;
+  }
+
+
+  /*
+   * 1日入力
+   *
+   * 出勤・分
+   * ↓
+   * 退勤・時
+   */
+  if (
+    target === "start"
+  ) {
+
+    moveToNextTimeInput(
+      "endHour"
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * 一括入力
+   *
+   * 出勤・分
+   * ↓
+   * 退勤・時
+   */
+  if (
+    target === "bulkStart"
+  ) {
+
+    moveToNextTimeInput(
+      "bulkEndHour"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+ * 15. 手入力時間・フォーカス制御
+ * ===================================================== */
+
+function selectTimeInputText(
+  input
+) {
+
+  if (!input) {
+    return;
+  }
+
+
+  try {
+
+    input.select();
+
+  } catch (error) {
+
+    try {
+
+      input.setSelectionRange(
+        0,
+        input.value.length
+      );
+
+    } catch (ignore) {
+      // 何もしない
+    }
+
+  }
+
+}
+
+
+/**
+ * 時入力後、
+ * 分入力へ移動する。
+ */
+function moveToMinuteInput(
+  minuteInput
+) {
+
+  if (
+    !minuteInput ||
+    minuteInput.disabled
+  ) {
+    return;
+  }
+
+
+  requestAnimationFrame(
+    () => {
+
+      minuteInput.focus();
+
+
+      requestAnimationFrame(
+        () => {
+
+          selectTimeInputText(
+            minuteInput
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/**
+ * 次の時間入力欄へ移動する。
+ */
+function moveToNextTimeInput(
+  elementId
+) {
+
+  const input =
+    document.getElementById(
+      elementId
+    );
+
+
+  if (
+    !input ||
+    input.disabled
+  ) {
+    return;
+  }
+
+
+  requestAnimationFrame(
+    () => {
+
+      input.focus();
+
+
+      requestAnimationFrame(
+        () => {
+
+          selectTimeInputText(
+            input
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+ * 16. 手入力時間・数字整形
+ * ===================================================== */
+
+function sanitizeManualTimeDigits(
+  value
+) {
+
+  return String(
+    value || ""
+  )
+    .replace(
+      /\D/g,
+      ""
+    )
+    .slice(
+      0,
+      2
+    );
+
+}
+
+
+function normalizeManualTimePart(
+  input,
+  max
+) {
+
+  if (
+    !input ||
+    input.value === ""
+  ) {
+    return;
+  }
+
+
+  const number =
+    Number(
+      input.value
+    );
+
+
+  if (
+    !Number.isInteger(number) ||
+    number < 0 ||
+    number > max
+  ) {
+
+    input.value = "";
+
+    return;
+
+  }
+
+
+  input.value =
+    String(number)
+      .padStart(
+        2,
+        "0"
+      );
+
+}
+
+
+/* =====================================================
+ * 17. 手入力時間・hidden同期
+ * ===================================================== */
+
+function syncManualTimeValue(
+  target
+) {
+
+  const config =
+    getManualTimeConfig(
+      target
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  const hiddenInput =
+    document.getElementById(
+      config.hiddenId
+    );
+
+
+  if (
+    !hourInput ||
+    !minuteInput ||
+    !hiddenInput
+  ) {
+    return;
+  }
+
+
+  const hour =
+    hourInput.value;
+
+
+  const minute =
+    minuteInput.value;
+
+
+  if (
+    hour.length !== 2 ||
+    minute.length !== 2
+  ) {
+
+    hiddenInput.value = "";
+
+    return;
+
+  }
+
+
+  const hourNumber =
+    Number(hour);
+
+
+  const minuteNumber =
+    Number(minute);
+
+
+  if (
+    hourNumber < 0 ||
+    hourNumber > 23 ||
+    minuteNumber < 0 ||
+    minuteNumber > 59
+  ) {
+
+    hiddenInput.value = "";
+
+    return;
+
+  }
+
+
+  hiddenInput.value =
+    `${hour}:${minute}`;
+
+}
+
+
+/* =====================================================
+ * 18. 手入力時間・画面反映
+ * ===================================================== */
+
+function setManualTimeValue(
+  target,
+  value
+) {
+
+  const config =
+    getManualTimeConfig(
+      target
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const normalized =
+    normalizeTimeInputValue(
+      value,
+      ""
+    );
+
+
+  if (!normalized) {
+    return;
+  }
+
+
+  const [
+    hour,
+    minute
+  ] =
+    normalized.split(":");
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  const hiddenInput =
+    document.getElementById(
+      config.hiddenId
+    );
+
+
+  if (hourInput) {
+
+    hourInput.value =
+      hour;
+
+  }
+
+
+  if (minuteInput) {
+
+    minuteInput.value =
+      minute;
+
+  }
+
+
+  if (hiddenInput) {
+
+    hiddenInput.value =
+      normalized;
+
+  }
+
+}
+
+
+/* =====================================================
+ * 19. 時間デフォルト・整形
+ * ===================================================== */
+
+/**
+ * 現在キャストのデフォルト出勤時間。
+ *
+ * 優先順位
+ * 1. CAST
+ * 2. SETTINGS
+ */
+function getDefaultStartTime() {
+
+  if (
+    currentCastDefaults &&
+    currentCastDefaults.defaultStartTime
+  ) {
+
+    return (
+      currentCastDefaults.defaultStartTime
+    );
+
+  }
+
+
+  return getSettingsDefaultStartTime();
+
+}
+
+
+/**
+ * 現在キャストのデフォルト退勤時間。
+ *
+ * 優先順位
+ * 1. CAST
+ * 2. SETTINGS
+ */
+function getDefaultEndTime() {
+
+  if (
+    currentCastDefaults &&
+    currentCastDefaults.defaultEndTime
+  ) {
+
+    return (
+      currentCastDefaults.defaultEndTime
+    );
+
+  }
+
+
+  return getSettingsDefaultEndTime();
+
+}
+
+
+/**
+ * SETTINGS共通デフォルト出勤時間。
+ */
+function getSettingsDefaultStartTime() {
+
+  if (!shiftSettings) {
+    return "20:00";
+  }
+
+
+  return (
+    shiftSettings.defaultStartHour +
+    ":" +
+    shiftSettings.defaultStartMinute
+  );
+
+}
+
+
+/**
+ * SETTINGS共通デフォルト退勤時間。
+ */
+function getSettingsDefaultEndTime() {
+
+  if (!shiftSettings) {
+    return "01:00";
+  }
+
+
+  return (
+    shiftSettings.defaultEndHour +
+    ":" +
+    shiftSettings.defaultEndMinute
+  );
+
+}
+
+
+/**
+ * 時間をHH:mmへ整形する。
+ *
+ * 22:30 → 22:30
+ * 0:15  → 00:15
+ */
+function normalizeTimeInputValue(
+  value,
+  fallbackValue
+) {
+
+  const text =
+    String(
+      value || ""
+    ).trim();
+
+
+  const match =
+    text.match(
+      /^(\d{1,2}):(\d{1,2})$/
+    );
+
+
+  if (!match) {
+    return fallbackValue;
+  }
+
+
+  const hour =
+    Number(
+      match[1]
+    );
+
+
+  const minute =
+    Number(
+      match[2]
+    );
+
+
+  if (
+    !Number.isInteger(hour) ||
+    !Number.isInteger(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+
+    return fallbackValue;
+
+  }
+
+
+  return (
+    String(hour)
+      .padStart(
+        2,
+        "0"
+      ) +
+    ":" +
+    String(minute)
+      .padStart(
+        2,
+        "0"
+      )
+  );
+
+}
+
+
+/* =====================================================
+ * 20. LAST・1日入力
+ * ===================================================== */
+
+function toggleEndTimeLast() {
+
+  setEndTimeLastState(
+    !isEndTimeLast
+  );
+
+}
+
+
+function setEndTimeLastState(
+  useLast,
+  normalTime
+) {
+
+  isEndTimeLast =
+    Boolean(
+      useLast
+    );
+
+
+  if (normalTime) {
+
+    setManualTimeValue(
+      "end",
+      normalTime
+    );
+
+  }
+
+
+  const config =
+    getManualTimeConfig(
+      "end"
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  const field =
+    document.getElementById(
+      "endTimeField"
+    );
+
+
+  const button =
+    document.getElementById(
+      "endTimeLastButton"
+    );
+
+
+  if (hourInput) {
+
+    hourInput.disabled =
+      isEndTimeLast;
+
+  }
+
+
+  if (minuteInput) {
+
+    minuteInput.disabled =
+      isEndTimeLast;
+
+  }
+
+
+  if (field) {
+
+    field.classList.toggle(
+      "last-selected",
+      isEndTimeLast
+    );
+
+  }
+
+
+  if (button) {
+
+    button.classList.toggle(
+      "selected",
+      isEndTimeLast
+    );
+
+
+    button.textContent =
+      isEndTimeLast
+        ? "LASTを解除する"
+        : "退勤時間をLASTにする";
+
+  }
+
+}
+
+
+/* =====================================================
+ * 21. 一括入力モーダル
+ * ===================================================== */
+
+function openBulkModal() {
+
+  if (
+    isSaving ||
+    isBulkSaving
+  ) {
+    return;
+  }
+
+
+  resetBulkForm();
+
+  updateBulkTargetMonthText();
+
+
+  selectBulkMode(
+    "selectedDates"
+  );
+
+
+  document
+    .getElementById(
+      "bulkModal"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+}
+
+
+function closeBulkModal() {
+
+  if (isBulkSaving) {
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "bulkModal"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+
+  document.body.classList.remove(
+    "modal-open"
+  );
+
+}
+
+
+function handleBulkOverlayClick(
+  event
+) {
+
+  if (
+    event.target.id ===
+    "bulkModal"
+  ) {
+
+    closeBulkModal();
+
+  }
+
+}
+
+
+function resetBulkForm() {
+
+  bulkMode =
+    "selectedDates";
+
+
+  bulkStatus =
+    "working";
+
+
+  bulkWeekdays = [];
+
+
+  document
+    .querySelectorAll(
+      ".weekday-button"
+    )
+    .forEach(
+      (button) => {
+
+        button.classList.remove(
+          "selected"
+        );
+
+      }
+    );
+
+
+  setManualTimeValue(
+    "bulkStart",
+    getDefaultStartTime()
+  );
+
+
+  setBulkEndTimeLastState(
+    false,
+    getDefaultEndTime()
+  );
+
+
+  document
+    .getElementById(
+      "bulkShiftNote"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "bulkOverwrite"
+    )
+    .checked =
+      false;
+
+
+  selectBulkStatus(
+    "working"
+  );
+
+
+  updateBulkPreview();
+
+}
+
+
+function selectBulkMode(
+  mode
+) {
+
+  if (
+
+    mode !==
+      "selectedDates" &&
+
+    mode !==
+      "weekdays"
+
+  ) {
+    return;
+  }
+
+
+  bulkMode =
+    mode;
+
+
+  document
+    .getElementById(
+      "bulkModeSelectedDates"
+    )
+    .classList.toggle(
+      "selected",
+      mode ===
+        "selectedDates"
+    );
+
+
+  document
+    .getElementById(
+      "bulkModeWeekdays"
+    )
+    .classList.toggle(
+      "selected",
+      mode ===
+        "weekdays"
+    );
+
+
+  document
+    .getElementById(
+      "selectedDatesModePanel"
+    )
+    .classList.toggle(
+      "hidden",
+      mode !==
+        "selectedDates"
+    );
+
+
+  document
+    .getElementById(
+      "weekdaysModePanel"
+    )
+    .classList.toggle(
+      "hidden",
+      mode !==
+        "weekdays"
+    );
+
+
+  updateBulkSaveButtonText();
+
+  updateBulkPreview();
+
+}
+
+
+function selectBulkStatus(
+  status
+) {
+
+  if (
+    !isAllowedStatus(
+      status
+    )
+  ) {
+    return;
+  }
+
+
+  bulkStatus =
+    status;
+
+
+  const ids = {
+
+    working:
+      "bulkStatusWorking",
+
+    holiday:
+      "bulkStatusHoliday",
+
+    undecided:
+      "bulkStatusUndecided"
+
+  };
+
+
+  Object
+    .keys(
+      ids
+    )
+    .forEach(
+      (key) => {
+
+        const button =
+          document.getElementById(
+            ids[
+              key
+            ]
+          );
+
+
+        if (!button) {
+          return;
+        }
+
+
+        button.classList.toggle(
+          "selected",
+          key ===
+            status
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "bulkWorkingFields"
+    )
+    .classList.toggle(
+      "hidden",
+      status !==
+        "working"
+    );
+
+}
+
+
+function updateBulkTargetMonthText() {
+
+  if (!calendar) {
+    return;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const text =
+    `${current.getFullYear()}年` +
+    `${current.getMonth() + 1}月へ` +
+    `まとめて入力します`;
+
+
+  const element =
+    document.getElementById(
+      "bulkTargetMonthText"
+    );
+
+
+  if (element) {
+
+    element.textContent =
+      text;
+
+  }
+
+}
+
+
+/* =====================================================
+ * 22. LAST・一括入力
+ * ===================================================== */
+
+function toggleBulkEndTimeLast() {
+
+  setBulkEndTimeLastState(
+    !isBulkEndTimeLast
+  );
+
+}
+
+
+function setBulkEndTimeLastState(
+  useLast,
+  normalTime
+) {
+
+  isBulkEndTimeLast =
+    Boolean(
+      useLast
+    );
+
+
+  if (normalTime) {
+
+    setManualTimeValue(
+      "bulkEnd",
+      normalTime
+    );
+
+  }
+
+
+  const config =
+    getManualTimeConfig(
+      "bulkEnd"
+    );
+
+
+  if (!config) {
+    return;
+  }
+
+
+  const hourInput =
+    document.getElementById(
+      config.hourId
+    );
+
+
+  const minuteInput =
+    document.getElementById(
+      config.minuteId
+    );
+
+
+  const field =
+    document.getElementById(
+      "bulkEndTimeField"
+    );
+
+
+  const button =
+    document.getElementById(
+      "bulkEndTimeLastButton"
+    );
+
+
+  if (hourInput) {
+
+    hourInput.disabled =
+      isBulkEndTimeLast;
+
+  }
+
+
+  if (minuteInput) {
+
+    minuteInput.disabled =
+      isBulkEndTimeLast;
+
+  }
+
+
+  if (field) {
+
+    field.classList.toggle(
+      "last-selected",
+      isBulkEndTimeLast
+    );
+
+  }
+
+
+  if (button) {
+
+    button.classList.toggle(
+      "selected",
+      isBulkEndTimeLast
+    );
+
+
+    button.textContent =
+      isBulkEndTimeLast
+        ? "LASTを解除する"
+        : "退勤時間をLASTにする";
+
+  }
+
+}
+
+
+/* =====================================================
+ * 23. 複数日選択
+ * ===================================================== */
+
+function startMultiSelect() {
+
+  if (!calendar) {
+    return;
+  }
+
+
+  closeBulkModal();
+
+
+  isMultiSelectMode =
+    true;
+
+
+  multiSelectedDates = [];
+
+
+  calendarElementToggleClass(
+    "multi-select-active",
+    true
+  );
+
+
+  document.body.classList.add(
+    "multi-select-mode"
+  );
+
+
+  document
+    .getElementById(
+      "multiSelectBar"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  refreshMultiSelectedDays();
+
+  updateMultiSelectDisplay();
+
+
+  showNotice(
+    "入力したい日付を選択してください"
+  );
+
+}
+
+
+function toggleMultiSelectedDate(
+  dateString
+) {
+
+  if (!isMultiSelectMode) {
+    return;
+  }
+
+
+  const date =
+    parseLocalDate(
+      dateString
+    );
+
+
+  if (
+    !isCurrentCalendarMonth(
+      date
+    )
+  ) {
+    return;
+  }
+
+
+  const index =
+    multiSelectedDates.indexOf(
+      dateString
+    );
+
+
+  if (index >= 0) {
+
+    multiSelectedDates.splice(
+      index,
+      1
+    );
+
+  } else {
+
+    multiSelectedDates.push(
+      dateString
+    );
+
+  }
+
+
+  multiSelectedDates.sort();
+
+
+  refreshMultiSelectedDays();
+
+  updateMultiSelectDisplay();
+
+  updateBulkPreview();
+
+}
+
+
+function cancelMultiSelect() {
+
+  isMultiSelectMode =
+    false;
+
+
+  multiSelectedDates = [];
+
+
+  calendarElementToggleClass(
+    "multi-select-active",
+    false
+  );
+
+
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
+
+
+  const bar =
+    document.getElementById(
+      "multiSelectBar"
+    );
+
+
+  if (bar) {
+
+    bar.classList.add(
+      "hidden"
+    );
+
+  }
+
+
+  refreshMultiSelectedDays();
+
+  updateMultiSelectDisplay();
+
+}
+
+
+function openSelectedDatesInput() {
+
+  if (
+    multiSelectedDates.length ===
+    0
+  ) {
+
+    showNotice(
+      "日付を1日以上選択してください"
+    );
+
+    return;
+
+  }
+
+
+  isMultiSelectMode =
+    false;
+
+
+  calendarElementToggleClass(
+    "multi-select-active",
+    false
+  );
+
+
+  document.body.classList.remove(
+    "multi-select-mode"
+  );
+
+
+  document
+    .getElementById(
+      "multiSelectBar"
+    )
+    .classList.add(
+      "hidden"
+    );
+
+
+  refreshMultiSelectedDays();
+
+
+  resetBulkForm();
+
+
+  bulkMode =
+    "selectedDates";
+
+
+  selectBulkMode(
+    "selectedDates"
+  );
+
+
+  updateBulkPreview();
+
+
+  document
+    .getElementById(
+      "bulkModal"
+    )
+    .classList.remove(
+      "hidden"
+    );
+
+
+  document.body.classList.add(
+    "modal-open"
+  );
+
+
+  window.setTimeout(
+    () => {
+
+      const bulkFields =
+        document.getElementById(
+          "bulkInputFields"
+        );
+
+
+      if (bulkFields) {
+
+        bulkFields.scrollIntoView({
+
+          behavior:
+            "smooth",
+
+          block:
+            "start"
+
+        });
+
+      }
+
+    },
+    100
+  );
+
+}
+
+
+function refreshMultiSelectedDays() {
+
+  document
+    .querySelectorAll(
+      ".fc-daygrid-day"
+    )
+    .forEach(
+      (dayElement) => {
+
+        const dateString =
+          dayElement.getAttribute(
+            "data-date"
+          );
+
+
+        applyMultiSelectClass(
+          dayElement,
+          dateString
+        );
+
+      }
+    );
+
+}
+
+
+function applyMultiSelectClass(
+  dayElement,
+  dateString
+) {
+
+  if (
+    !dayElement ||
+    !dateString
+  ) {
+    return;
+  }
+
+
+  dayElement.classList.toggle(
+
+    "multi-selected-day",
+
+    multiSelectedDates.includes(
+      dateString
+    )
+
+  );
+
+}
+
+
+function updateMultiSelectDisplay() {
+
+  const count =
+    multiSelectedDates.length;
+
+
+  const countText =
+    `${count}日選択`;
+
+
+  const countElement =
+    document.getElementById(
+      "multiSelectCount"
+    );
+
+
+  const summaryCount =
+    document.getElementById(
+      "selectedDatesSummaryCount"
+    );
+
+
+  const summary =
+    document.getElementById(
+      "selectedDatesSummary"
+    );
+
+
+  const nextButton =
+    document.getElementById(
+      "multiSelectNextButton"
+    );
+
+
+  if (countElement) {
+
+    countElement.textContent =
+      countText;
+
+  }
+
+
+  if (summaryCount) {
+
+    summaryCount.textContent =
+      `${count}日`;
+
+  }
+
+
+  if (summary) {
+
+    summary.classList.toggle(
+      "hidden",
+      count ===
+        0
+    );
+
+  }
+
+
+  if (nextButton) {
+
+    nextButton.disabled =
+      count ===
+        0;
+
+  }
+
+}
+
+
+function calendarElementToggleClass(
+  className,
+  enabled
+) {
+
+  const calendarElement =
+    document.querySelector(
+      "#calendar .fc"
+    );
+
+
+  if (!calendarElement) {
+    return;
+  }
+
+
+  calendarElement.classList.toggle(
+    className,
+    enabled
+  );
+
+}
+
+
+/* =====================================================
+ * 24. 曜日選択
+ * ===================================================== */
+
+function toggleBulkWeekday(
+  weekday
+) {
+
+  const number =
+    Number(
+      weekday
+    );
+
+
+  if (
+
+    !Number.isInteger(
+      number
+    ) ||
+
+    number < 0 ||
+
+    number > 6
+
+  ) {
+    return;
+  }
+
+
+  const index =
+    bulkWeekdays.indexOf(
+      number
+    );
+
+
+  if (index >= 0) {
+
+    bulkWeekdays.splice(
+      index,
+      1
+    );
+
+  } else {
+
+    bulkWeekdays.push(
+      number
+    );
+
+  }
+
+
+  bulkWeekdays.sort(
+    (a, b) =>
+      a - b
+  );
+
+
+  const button =
+    document.getElementById(
+      `bulkWeekday${number}`
+    );
+
+
+  if (button) {
+
+    button.classList.toggle(
+
+      "selected",
+
+      bulkWeekdays.includes(
+        number
+      )
+
+    );
+
+  }
+
+
+  updateBulkPreview();
+
+}
+
+
+/* =====================================================
+ * 25. 一括登録件数
+ * ===================================================== */
+
+function updateBulkPreview() {
+
+  let count = 0;
+
+
+  if (
+    bulkMode ===
+    "selectedDates"
+  ) {
+
+    count =
+      multiSelectedDates.length;
+
+  }
+
+
+  if (
+    bulkMode ===
+    "weekdays"
+  ) {
+
+    count =
+      getWeekdayTargetDates()
+        .length;
+
+  }
+
+
+  const preview =
+    document.getElementById(
+      "bulkPreviewCount"
+    );
+
+
+  if (preview) {
+
+    preview.textContent =
+      `${count}日`;
+
+  }
+
+
+  updateMultiSelectDisplay();
+
+  updateBulkSaveButtonText();
+
+}
+
+
+function getWeekdayTargetDates() {
+
+  if (
+
+    !calendar ||
+
+    bulkWeekdays.length ===
+      0
+
+  ) {
+    return [];
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const year =
+    current.getFullYear();
+
+
+  const month =
+    current.getMonth();
+
+
+  const lastDay =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+
+  const dates = [];
+
+
+  for (
+    let day = 1;
+    day <= lastDay;
+    day += 1
+  ) {
+
+    const date =
+      new Date(
+        year,
+        month,
+        day
+      );
+
+
+    if (
+      bulkWeekdays.includes(
+        date.getDay()
+      )
+    ) {
+
+      dates.push(
+        formatDateObject(
+          date
+        )
+      );
+
+    }
+
+  }
+
+
+  return dates;
+
+}
+
+
+function updateBulkSaveButtonText() {
+
+  const button =
+    document.getElementById(
+      "saveBulkButton"
+    );
+
+
+  if (!button) {
+    return;
+  }
+
+
+  if (isBulkSaving) {
+
+    button.textContent =
+      "登録しています...";
+
+    return;
+
+  }
+
+
+  button.textContent =
+    bulkMode ===
+      "selectedDates"
+
+      ? "選択した日へ一括登録"
+
+      : "選択した曜日へ一括登録";
+
+}
+
+
+/* =====================================================
+ * 26. 1日保存
+ * ===================================================== */
+
+function saveSelectedDate() {
+
+  if (isSaving) {
+    return;
+  }
+
+
+  if (!selectedDate) {
+
+    showNotice(
+      "日付が選択されていません"
+    );
+
+    return;
+
+  }
+
+
+  const entry =
+    createShiftEntryFromForm({
+
+      date:
+        selectedDate,
+
+      status:
+        selectedStatus,
+
+      startElementId:
+        "startTime",
+
+      endElementId:
+        "endTime",
+
+      noteElementId:
+        "shiftNote"
+
+    });
+
+
+  if (!entry) {
+    return;
+  }
+
+
+  setSingleSavingState(
+    true
+  );
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        const savedEntry =
+          result &&
+          result.entry
+
+            ? normalizeClientEntry(
+                result.entry
+              )
+
+            : entry;
+
+
+        shiftEntries[
+          selectedDate
+        ] =
+          savedEntry;
+
+
+        currentMonthSubmitted =
+          false;
+
+
+        refreshCalendarEvents();
+
+        updateProgress(
+          false
+        );
+
+
+        setSingleSavingState(
+          false
+        );
+
+
+        closeShiftModal();
+
+
+        showNotice(
+          "シフトを保存しました"
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        setSingleSavingState(
+          false
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "シフトの保存に失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .saveShiftEntry(
+      entry
+    );
+
+}
+
+
+function clearSelectedDate() {
+
+  if (
+
+    isSaving ||
+
+    !selectedDate ||
+
+    !shiftEntries[
+      selectedDate
+    ]
+
+  ) {
+    return;
+  }
+
+
+  const targetDate =
+    selectedDate;
+
+
+  setSingleSavingState(
+    true
+  );
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      () => {
+
+        delete shiftEntries[
+          targetDate
+        ];
+
+
+        currentMonthSubmitted =
+          false;
+
+
+        refreshCalendarEvents();
+
+        updateProgress(
+          false
+        );
+
+
+        setSingleSavingState(
+          false
+        );
+
+
+        closeShiftModal();
+
+
+        showNotice(
+          "入力を削除しました"
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        setSingleSavingState(
+          false
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "入力の削除に失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .deleteShiftEntry(
+      targetDate
+    );
+
+}
+
+
+function setSingleSavingState(
+  saving
+) {
+
+  isSaving =
+    saving;
+
+
+  const saveButton =
+    document.getElementById(
+      "saveSelectedDateButton"
+    );
+
+
+  const clearButton =
+    document.getElementById(
+      "clearDateButton"
+    );
+
+
+  if (saveButton) {
+
+    saveButton.disabled =
+      saving;
+
+
+    saveButton.textContent =
+      saving
+
+        ? "保存しています..."
+
+        : "この日の内容を保存";
+
+  }
+
+
+  if (clearButton) {
+
+    clearButton.disabled =
+      saving;
+
+  }
+
+}
+
+
+/* =====================================================
+ * 27. 一括保存
+ * ===================================================== */
+
+function saveBulkInput() {
+
+  if (
+    isBulkSaving ||
+    isSaving
+  ) {
+    return;
+  }
+
+
+  if (
+    bulkMode ===
+    "selectedDates"
+  ) {
+
+    saveMultiSelectedDates();
+
+    return;
+
+  }
+
+
+  saveSelectedWeekdays();
+
+}
+
+
+function saveMultiSelectedDates() {
+
+  if (
+    multiSelectedDates.length ===
+    0
+  ) {
+
+    showNotice(
+      "日付を1日以上選択してください"
+    );
+
+    return;
+
+  }
+
+
+  const commonData =
+    createBulkCommonData();
+
+
+  if (!commonData) {
+    return;
+  }
+
+
+  const payload = {
+
+    dates:
+      [
+        ...multiSelectedDates
+      ],
+
+    status:
+      commonData.status,
+
+    startTime:
+      commonData.startTime,
+
+    endTime:
+      commonData.endTime,
+
+    note:
+      commonData.note,
+
+    overwrite:
+      commonData.overwrite
+
+  };
+
+
+  setBulkSavingState(
+    true
+  );
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        handleBulkSaveSuccess(
+          result
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        setBulkSavingState(
+          false
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "一括登録に失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .saveMultiShifts(
+      payload
+    );
+
+}
+
+
+function saveSelectedWeekdays() {
+
+  if (
+    bulkWeekdays.length ===
+    0
+  ) {
+
+    showNotice(
+      "曜日を1つ以上選択してください"
+    );
+
+    return;
+
+  }
+
+
+  if (!calendar) {
+    return;
+  }
+
+
+  const commonData =
+    createBulkCommonData();
+
+
+  if (!commonData) {
+    return;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const payload = {
+
+    targetMonth:
+      `${current.getFullYear()}-` +
+      `${String(
+        current.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      )}`,
+
+    weekdays:
+      [
+        ...bulkWeekdays
+      ],
+
+    status:
+      commonData.status,
+
+    startTime:
+      commonData.startTime,
+
+    endTime:
+      commonData.endTime,
+
+    note:
+      commonData.note,
+
+    overwrite:
+      commonData.overwrite
+
+  };
+
+
+  setBulkSavingState(
+    true
+  );
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        handleBulkSaveSuccess(
+          result
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        setBulkSavingState(
+          false
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "曜日一括登録に失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .saveBulkShifts(
+      payload
+    );
+
+}
+
+
+/**
+ * 一括保存成功後の共通処理。
+ */
+function handleBulkSaveSuccess(
+  result
+) {
+
+  setBulkSavingState(
+    false
+  );
+
+
+  const savedEntries =
+    result &&
+    Array.isArray(
+      result.entries
+    )
+
+      ? result.entries
+
+      : [];
+
+
+  savedEntries.forEach(
+    (entry) => {
+
+      const normalized =
+        normalizeClientEntry(
+          entry
+        );
+
+
+      shiftEntries[
+        normalized.date
+      ] =
+        normalized;
+
+    }
+  );
+
+
+  currentMonthSubmitted =
+    false;
+
+
+  closeBulkModal();
+
+  cancelMultiSelect();
+
+  refreshCalendarEvents();
+
+  updateProgress(
+    false
+  );
+
+
+  if (
+    savedEntries.length ===
+    0
+  ) {
+
+    loadDisplayedMonth();
+
+  }
+
+
+  const savedCount =
+    result &&
+    Number.isFinite(
+      Number(
+        result.savedCount
+      )
+    )
+
+      ? Number(
+          result.savedCount
+        )
+
+      : savedEntries.length;
+
+
+  const skippedCount =
+    result &&
+    Number.isFinite(
+      Number(
+        result.skippedCount
+      )
+    )
+
+      ? Number(
+          result.skippedCount
+        )
+
+      : 0;
+
+
+  showBulkSaveResult(
+    savedCount,
+    skippedCount
+  );
+
+}
+
+
+/**
+ * 一括フォーム共通データを生成する。
+ */
+function createBulkCommonData() {
+
+  const status =
+    bulkStatus;
+
+
+  const startTime =
+    status ===
+      "working"
+
+      ? document
+          .getElementById(
+            "bulkStartTime"
+          )
+          .value
+
+      : "";
+
+
+  const endTime =
+    status ===
+      "working"
+
+      ? (
+          isBulkEndTimeLast
+
+            ? "LAST"
+
+            : document
+                .getElementById(
+                  "bulkEndTime"
+                )
+                .value
+        )
+
+      : "";
+
+
+  if (
+
+    status ===
+      "working" &&
+
+    (
+      !startTime ||
+      !endTime
+    )
+
+  ) {
+
+    showNotice(
+      "出勤時間と退勤時間を入力してください"
+    );
+
+    return null;
+
+  }
+
+
+  return {
+
+    status:
+      status,
+
+    startTime:
+      startTime,
+
+    endTime:
+      endTime,
+
+    note:
+      document
+        .getElementById(
+          "bulkShiftNote"
+        )
+        .value
+        .trim(),
+
+    overwrite:
+      document
+        .getElementById(
+          "bulkOverwrite"
+        )
+        .checked
+
+  };
+
+}
+
+
+function setBulkSavingState(
+  saving
+) {
+
+  isBulkSaving =
+    saving;
+
+
+  const button =
+    document.getElementById(
+      "saveBulkButton"
+    );
+
+
+  const closeButton =
+    document.querySelector(
+      "#bulkModal .modal-close"
+    );
+
+
+  if (button) {
+
+    button.disabled =
+      saving;
+
+  }
+
+
+  if (closeButton) {
+
+    closeButton.disabled =
+      saving;
+
+  }
+
+
+  updateBulkSaveButtonText();
+
+}
+
+
+function showBulkSaveResult(
+  savedCount,
+  skippedCount
+) {
+
+  if (
+    skippedCount > 0
+  ) {
+
+    showNotice(
+      `${savedCount}日登録・` +
+      `${skippedCount}日スキップしました`
+    );
+
+
+    return;
+
+  }
+
+
+  showNotice(
+    `${savedCount}日分を一括登録しました`
+  );
+
+}
+
+
+/* =====================================================
+ * 28. 入力データ生成
+ * ===================================================== */
+
+function createShiftEntryFromForm(
+  options
+) {
+
+  const entry = {
+
+    date:
+      options.date,
+
+    status:
+      options.status,
+
+    startTime:
+      "",
+
+    endTime:
+      "",
+
+    note:
+      document
+        .getElementById(
+          options.noteElementId
+        )
+        .value
+        .trim()
+
+  };
+
+
+  if (
+    options.status ===
+    "working"
+  ) {
+
+    entry.startTime =
+      document
+        .getElementById(
+          options.startElementId
+        )
+        .value;
+
+
+    const useLast =
+      options.endElementId ===
+        "endTime"
+
+        ? isEndTimeLast
+
+        : isBulkEndTimeLast;
+
+
+    entry.endTime =
+      useLast
+
+        ? "LAST"
+
+        : document
+            .getElementById(
+              options.endElementId
+            )
+            .value;
+
+
+    if (
+
+      !entry.startTime ||
+
+      !entry.endTime
+
+    ) {
+
+      showNotice(
+        "出勤時間と退勤時間を入力してください"
+      );
+
+
+      return null;
+
+    }
+
+  }
+
+
+  return entry;
+
+}
+
+
+function isAllowedStatus(
+  status
+) {
+
+  return [
+
+    "working",
+    "holiday",
+    "undecided"
+
+  ].includes(
+    status
+  );
+
+}
+
+
+/* =====================================================
+ * 29. シフトイベント表示
+ * ===================================================== */
+
+function refreshCalendarEvents() {
+
+  if (!calendar) {
+    return;
+  }
+
+
+  calendar.removeAllEvents();
+
+
+  Object
+    .values(
+      shiftEntries
+    )
+    .forEach(
+      (entry) => {
+
+        calendar.addEvent(
+          createCalendarEvent(
+            entry
+          )
+        );
+
+      }
+    );
+
+
+  window.setTimeout(
+    () => {
+
+      refreshMultiSelectedDays();
+
+    },
+    0
+  );
+
+}
+
+
+function createCalendarEvent(
+  entry
+) {
+
+  let title = "";
+  let className = "";
+
+
+  if (
+    entry.status ===
+    "working"
+  ) {
+
+    title =
+      `${entry.startTime}〜` +
+      `${entry.endTime}`;
+
+
+    className =
+      "shift-event-working";
+
+  }
+
+
+  if (
+    entry.status ===
+    "holiday"
+  ) {
+
+    title =
+      "休み";
+
+
+    className =
+      "shift-event-holiday";
+
+  }
+
+
+  if (
+    entry.status ===
+    "undecided"
+  ) {
+
+    title =
+      "未定";
+
+
+    className =
+      "shift-event-undecided";
+
+  }
+
+
+  return {
+
+    id:
+      entry.date,
+
+    title:
+      title,
+
+    start:
+      entry.date,
+
+    allDay:
+      true,
+
+    classNames: [
+      className
+    ]
+
+  };
+
+}
+
+
+/* =====================================================
+ * 30. 入力進捗
+ * ===================================================== */
+
+function updateProgress(
+  submitted
+) {
+
+  if (!calendar) {
+    return;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const year =
+    current.getFullYear();
+
+
+  const month =
+    current.getMonth();
+
+
+  const daysInMonth =
+    new Date(
+      year,
+      month + 1,
+      0
+    ).getDate();
+
+
+  let completedDays = 0;
+
+
+  Object
+    .keys(
+      shiftEntries
+    )
+    .forEach(
+      (dateString) => {
+
+        const date =
+          parseLocalDate(
+            dateString
+          );
+
+
+        if (
+
+          date.getFullYear() ===
+            year &&
+
+          date.getMonth() ===
+            month
+
+        ) {
+
+          completedDays += 1;
+
+        }
+
+      }
+    );
+
+
+  const percent =
+    Math.round(
+      completedDays /
+      daysInMonth *
+      100
+    );
+
+
+  document
+    .getElementById(
+      "progressPercent"
+    )
+    .textContent =
+      `${percent}%`;
+
+
+  document
+    .getElementById(
+      "progressBar"
+    )
+    .style.width =
+      `${percent}%`;
+
+
+  document
+    .getElementById(
+      "progressMessage"
+    )
+    .textContent =
+
+      completedDays ===
+        0
+
+        ? "日付を選択して入力してください"
+
+        : `${completedDays}日分入力済み`;
+
+
+  const status =
+    document.getElementById(
+      "monthStatus"
+    );
+
+
+  status.textContent =
+    submitted
+
+      ? "提出済み"
+
+      : "未提出";
+
+
+  updateSubmitButton(
+    completedDays,
+    submitted
+  );
+
+}
+
+
+function updateSubmitButton(
+  completedDays,
+  submitted
+) {
+
+  const button =
+    document.getElementById(
+      "submitMonthButton"
+    );
+
+
+  if (!button) {
+    return;
+  }
+
+
+  button.disabled =
+    completedDays ===
+      0;
+
+
+  button.textContent =
+    submitted
+
+      ? "この内容で再提出する"
+
+      : "この内容で提出する";
+
+}
+
+
+/* =====================================================
+ * 31. 月間提出
+ * ===================================================== */
+
+function submitMonth() {
+
+  if (
+
+    !calendar ||
+
+    isSaving ||
+
+    isBulkSaving
+
+  ) {
+    return;
+  }
+
+
+  const current =
+    calendar.getDate();
+
+
+  const year =
+    current.getFullYear();
+
+
+  const month =
+    current.getMonth();
+
+
+  const entries =
+    Object
+      .values(
+        shiftEntries
+      )
+      .filter(
+        (entry) => {
+
+          const date =
+            parseLocalDate(
+              entry.date
+            );
+
+
+          return (
+
+            date.getFullYear() ===
+              year &&
+
+            date.getMonth() ===
+              month
+
+          );
+
+        }
+      );
+
+
+  if (
+    entries.length ===
+    0
+  ) {
+
+    showNotice(
+      "シフトを1日以上入力してください"
+    );
+
+    return;
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "submitMonthButton"
+    );
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "提出しています...";
+
+
+  google.script.run
+
+    .withSuccessHandler(
+      (result) => {
+
+        currentMonthSubmitted =
+          true;
+
+
+        updateProgress(
+          true
+        );
+
+
+        const entryCount =
+          result &&
+          result.entryCount
+
+            ? result.entryCount
+
+            : entries.length;
+
+
+        showNotice(
+          `${entryCount}日分のシフトを提出しました`
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      (error) => {
+
+        updateProgress(
+          currentMonthSubmitted
+        );
+
+
+        showNotice(
+          getErrorMessage(
+            error,
+            "月間シフトの提出に失敗しました"
+          )
+        );
+
+      }
+    )
+
+    .submitMonthlyShift(
+      year,
+      month + 1
+    );
+
+}
+
+
+/* =====================================================
+ * 32. 日付操作
+ * ===================================================== */
+
+function parseLocalDate(
+  dateString
+) {
+
+  const parts =
+    dateString
+      .split(
+        "-"
+      )
+      .map(
+        Number
+      );
+
+
+  return new Date(
+
+    parts[0],
+
+    parts[1] - 1,
+
+    parts[2]
+
+  );
+
+}
+
+
+function formatDateObject(
+  date
+) {
+
+  return (
+
+    String(
+      date.getFullYear()
+    ) +
+
+    "-" +
+
+    String(
+      date.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    ) +
+
+    "-" +
+
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      "0"
+    )
+
+  );
+
+}
+
+
+/* =====================================================
+ * 33. エラー・通知
+ * ===================================================== */
+
+function getErrorMessage(
+  error,
+  fallbackMessage
+) {
+
+  if (!error) {
+    return fallbackMessage;
+  }
+
+
+  if (error.message) {
+
+    return String(
+      error.message
+    ).replace(
+      /^Exception:\s*/,
+      ""
+    );
+
+  }
+
+
+  return fallbackMessage;
+
+}
+
+
+function showNotice(
+  message
+) {
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+
+  if (!toast) {
+    return;
+  }
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  if (toastTimer) {
+
+    clearTimeout(
+      toastTimer
+    );
+
+  }
+
+
+  toastTimer =
+    window.setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      3000
+    );
+
+}
+
+
+/* =====================================================
+ * END
+ * ===================================================== */
+
+</script>
+</body>
+
+</html>
