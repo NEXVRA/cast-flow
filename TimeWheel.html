@@ -1,0 +1,1048 @@
+<script>
+
+/* =====================================================
+ * ROYAL SHIFT SYSTEM
+ * TimeWheel.html
+ *
+ * 時間ホイール専用処理
+ * ===================================================== */
+
+
+/* =====================================================
+ * 状態管理
+ * ===================================================== */
+
+/* ---------- 編集対象 ---------- */
+
+/**
+ * 現在編集中の時間。
+ *
+ * start     = 1日入力・出勤
+ * end       = 1日入力・退勤
+ * bulkStart = 一括入力・出勤
+ * bulkEnd   = 一括入力・退勤
+ */
+let currentTimeWheelTarget = null;
+
+
+/* ---------- 選択中の時間 ---------- */
+
+let currentWheelHour = "";
+let currentWheelMinute = "";
+let currentWheelIsLast = false;
+
+
+/* =====================================================
+ * メイン処理
+ * ===================================================== */
+
+/**
+ * 時間ホイールを開く。
+ *
+ * この関数では細かい処理を行わず、
+ * 「ホイールを開くまでの流れ」だけを管理する。
+ *
+ * @param {string} target
+ */
+function openTimeWheel(target) {
+
+  setTimeWheelTarget(target);
+
+  loadTimeWheelValue();
+
+  updateTimeWheelHeader();
+
+  renderTimeWheelHours();
+  renderTimeWheelMinutes();
+
+  updateTimeWheelCurrentValue();
+
+  updateTimeWheelLastVisibility();
+
+  /* 先に表示する */
+  showTimeWheelModal();
+
+  /* 表示後にホイールを初期化 */
+  initializeTimeWheelScroll();
+
+}
+
+
+/**
+ * 時間ホイールを閉じる。
+ */
+function closeTimeWheel() {
+
+  hideTimeWheelModal();
+
+  resetTimeWheelState();
+
+}
+
+
+/* =====================================================
+ * 編集対象
+ * ===================================================== */
+
+/**
+ * 編集対象を設定する。
+ *
+ * @param {string} target
+ */
+function setTimeWheelTarget(target) {
+
+  const allowedTargets = [
+    "start",
+    "end",
+    "bulkStart",
+    "bulkEnd"
+  ];
+
+  if (
+    !allowedTargets.includes(target)
+  ) {
+
+    throw new Error(
+      "時間ホイールの対象が正しくありません"
+    );
+
+  }
+
+  currentTimeWheelTarget = target;
+
+}
+
+
+/**
+ * 編集対象に対応するhidden inputを取得する。
+ *
+ * @returns {HTMLInputElement}
+ */
+function getTimeWheelTargetInput() {
+
+  const targetMap = {
+
+    start:
+      "startTime",
+
+    end:
+      "endTime",
+
+    bulkStart:
+      "bulkStartTime",
+
+    bulkEnd:
+      "bulkEndTime"
+
+  };
+
+  const inputId =
+    targetMap[
+      currentTimeWheelTarget
+    ];
+
+  const input =
+    document.getElementById(
+      inputId
+    );
+
+  if (!input) {
+
+    throw new Error(
+      "時間入力欄が見つかりません"
+    );
+
+  }
+
+  return input;
+
+}
+
+
+/* =====================================================
+ * 現在値取得
+ * ===================================================== */
+
+/**
+ * 現在保存されている時間を
+ * ホイールの状態へ読み込む。
+ */
+function loadTimeWheelValue() {
+
+  const input =
+    getTimeWheelTargetInput();
+
+  const savedValue =
+    String(
+      input.value || ""
+    );
+
+  currentWheelIsLast =
+    savedValue === "LAST";
+
+
+  if (currentWheelIsLast) {
+
+    loadDefaultTimeWheelValue();
+
+    return;
+
+  }
+
+
+  if (
+    isValidTimeWheelValue(
+      savedValue
+    )
+  ) {
+
+    const [
+      hour,
+      minute
+    ] =
+      savedValue.split(":");
+
+    currentWheelHour = hour;
+    currentWheelMinute = minute;
+
+    return;
+
+  }
+
+
+  loadDefaultTimeWheelValue();
+
+}
+
+
+/**
+ * 対象に応じたデフォルト時間を設定する。
+ */
+function loadDefaultTimeWheelValue() {
+
+  if (
+    isTimeWheelStartTarget()
+  ) {
+
+    currentWheelHour =
+      shiftSettings
+        .defaultStartHour;
+
+    currentWheelMinute =
+      shiftSettings
+        .defaultStartMinute;
+
+    return;
+
+  }
+
+
+  currentWheelHour =
+    shiftSettings
+      .defaultEndHour;
+
+  currentWheelMinute =
+    shiftSettings
+      .defaultEndMinute;
+
+}
+
+
+/**
+ * HH:mm形式か確認する。
+ *
+ * @param {string} value
+ * @returns {boolean}
+ */
+function isValidTimeWheelValue(
+  value
+) {
+
+  return (
+    /^\d{2}:\d{2}$/
+      .test(value)
+  );
+
+}
+
+
+/* =====================================================
+ * 対象判定
+ * ===================================================== */
+
+/**
+ * 出勤時間を編集しているか。
+ *
+ * @returns {boolean}
+ */
+function isTimeWheelStartTarget() {
+
+  return (
+    currentTimeWheelTarget ===
+      "start" ||
+
+    currentTimeWheelTarget ===
+      "bulkStart"
+  );
+
+}
+
+
+/**
+ * 退勤時間を編集しているか。
+ *
+ * @returns {boolean}
+ */
+function isTimeWheelEndTarget() {
+
+  return (
+    currentTimeWheelTarget ===
+      "end" ||
+
+    currentTimeWheelTarget ===
+      "bulkEnd"
+  );
+
+}
+
+
+/* =====================================================
+ * ヘッダー表示
+ * ===================================================== */
+
+/**
+ * ホイール上部のタイトルを更新する。
+ */
+function updateTimeWheelHeader() {
+
+  const title =
+    document.getElementById(
+      "timeWheelTitle"
+    );
+
+  if (!title) {
+    return;
+  }
+
+
+  if (
+    isTimeWheelStartTarget()
+  ) {
+
+    title.textContent =
+      "出勤時間";
+
+    return;
+
+  }
+
+
+  title.textContent =
+    "退勤時間";
+
+}
+
+
+/* =====================================================
+ * 現在値表示
+ * ===================================================== */
+
+/**
+ * ホイール上部の現在値を更新する。
+ */
+function updateTimeWheelCurrentValue() {
+
+  const display =
+    document.getElementById(
+      "timeWheelCurrentValue"
+    );
+
+  if (!display) {
+    return;
+  }
+
+
+  if (currentWheelIsLast) {
+
+    display.textContent =
+      "LAST";
+
+    return;
+
+  }
+
+
+  display.textContent =
+    getCurrentTimeWheelValue();
+
+}
+
+
+/**
+ * 現在選択中の時間をHH:mmで返す。
+ *
+ * @returns {string}
+ */
+function getCurrentTimeWheelValue() {
+
+  return (
+    currentWheelHour +
+    ":" +
+    currentWheelMinute
+  );
+
+}
+
+
+/* =====================================================
+ * LAST表示制御
+ * ===================================================== */
+
+/**
+ * LAST選択エリアの表示状態を更新する。
+ *
+ * LASTは退勤時間だけで使用する。
+ */
+function updateTimeWheelLastVisibility() {
+
+  const lastArea =
+    document.getElementById(
+      "timeWheelLastArea"
+    );
+
+  if (!lastArea) {
+    return;
+  }
+
+
+  const canUseLast =
+    isTimeWheelEndTarget() &&
+    shiftSettings &&
+    shiftSettings.enableLast;
+
+
+  lastArea.classList.toggle(
+    "hidden",
+    !canUseLast
+  );
+
+}
+
+
+/* =====================================================
+ * モーダル表示
+ * ===================================================== */
+
+/**
+ * 時間ホイールモーダルを表示する。
+ */
+function showTimeWheelModal() {
+
+  const modal =
+    document.getElementById(
+      "timeWheelModal"
+    );
+
+  if (!modal) {
+
+    throw new Error(
+      "時間ホイールモーダルが見つかりません"
+    );
+
+  }
+
+  modal.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/**
+ * 時間ホイールモーダルを非表示にする。
+ */
+function hideTimeWheelModal() {
+
+  const modal =
+    document.getElementById(
+      "timeWheelModal"
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  modal.classList.add(
+    "hidden"
+  );
+
+}
+
+
+/**
+ * モーダル背景をタップしたときだけ閉じる。
+ *
+ * @param {MouseEvent} event
+ */
+function handleTimeWheelOverlayClick(
+  event
+) {
+
+  if (
+    event.target.id !==
+    "timeWheelModal"
+  ) {
+    return;
+  }
+
+  closeTimeWheel();
+
+}
+
+
+/* =====================================================
+ * 状態リセット
+ * ===================================================== */
+
+/**
+ * ホイール終了時に
+ * 一時的な状態をリセットする。
+ */
+function resetTimeWheelState() {
+
+  currentTimeWheelTarget = null;
+
+  currentWheelHour = "";
+  currentWheelMinute = "";
+  currentWheelIsLast = false;
+
+}
+
+/* =====================================================
+ * ホイール描画
+ * ===================================================== */
+
+/**
+ * 時ホイールを描画する。
+ *
+ * 出勤時はstartHourList、
+ * 退勤時はendHourListを使用する。
+ */
+function renderTimeWheelHours() {
+
+  console.log(
+    "shiftSettings:",
+    shiftSettings
+  );
+
+  console.log(
+    "startHourList:",
+    shiftSettings?.startHourList
+  );
+
+  console.log(
+    "endHourList:",
+    shiftSettings?.endHourList
+  );
+
+  console.log(
+    "minuteList:",
+    shiftSettings?.minuteList
+  );
+
+
+  const hourWheel =
+    document.getElementById(
+      "timeWheelHour"
+    );
+
+  if (!hourWheel) {
+    return;
+  }
+
+  hourWheel.innerHTML = "";
+
+
+  const hourList =
+    isTimeWheelStartTarget()
+      ? shiftSettings.startHourList
+      : shiftSettings.endHourList;
+
+
+  if (
+    !Array.isArray(hourList) ||
+    hourList.length === 0
+  ) {
+
+    hourWheel.innerHTML =
+      '<div class="time-wheel-item selected">設定なし</div>';
+
+    return;
+
+  }
+
+
+  hourList.forEach(
+    (hour) => {
+
+      const item =
+        createTimeWheelItem(
+          String(hour).padStart(2, "0"),
+          "hour"
+        );
+
+      hourWheel.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/**
+ * 分ホイールを描画する。
+ */
+function renderTimeWheelMinutes() {
+
+  const minuteWheel =
+    document.getElementById(
+      "timeWheelMinute"
+    );
+
+  if (!minuteWheel) {
+    return;
+  }
+
+  minuteWheel.innerHTML = "";
+
+
+  const minuteList =
+    shiftSettings?.minuteList;
+
+
+  if (
+    !Array.isArray(minuteList) ||
+    minuteList.length === 0
+  ) {
+
+    minuteWheel.innerHTML =
+      '<div class="time-wheel-item selected">--</div>';
+
+    return;
+
+  }
+
+
+  minuteList.forEach(
+    (minute) => {
+
+      const item =
+        createTimeWheelItem(
+          String(minute).padStart(2, "0"),
+          "minute"
+        );
+
+      minuteWheel.appendChild(
+        item
+      );
+
+    }
+  );
+
+}
+
+
+/**
+ * ホイール1項目を生成する。
+ *
+ * @param {string} value
+ * @param {"hour"|"minute"} type
+ * @returns {HTMLDivElement}
+ */
+function createTimeWheelItem(
+  value,
+  type
+) {
+
+  const item =
+    document.createElement(
+      "div"
+    );
+
+  item.className =
+    "time-wheel-item";
+
+  item.textContent =
+    value;
+
+  item.dataset.value =
+    value;
+
+  item.dataset.type =
+    type;
+
+
+  const isSelected =
+    type === "hour"
+      ? value === currentWheelHour
+      : value === currentWheelMinute;
+
+
+  item.classList.toggle(
+    "selected",
+    isSelected
+  );
+
+
+  return item;
+
+}
+
+/* =====================================================
+ * スクロールエンジン
+ * ===================================================== */
+
+const TIME_WHEEL_ITEM_HEIGHT = 52;
+
+
+/**
+ * ホイールスクロール全体を初期化する。
+ *
+ * 流れ
+ * 1. スクロール監視を設定
+ * 2. 保存中の時間へ移動
+ * 3. 選択表示を同期
+ */
+function initializeTimeWheelScroll() {
+
+  attachTimeWheelScrollEvents();
+
+  requestAnimationFrame(
+    () => {
+
+      scrollTimeWheelToCurrentValue();
+
+      requestAnimationFrame(
+        () => {
+
+          updateAllTimeWheelSelections();
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+ * スクロール監視
+ * ===================================================== */
+
+/**
+ * 時・分ホイールへイベントを設定する。
+ */
+function attachTimeWheelScrollEvents() {
+
+  attachTimeWheelColumnScroll(
+    "timeWheelHour",
+    "hour"
+  );
+
+  attachTimeWheelColumnScroll(
+    "timeWheelMinute",
+    "minute"
+  );
+
+}
+
+
+/**
+ * 1列のスクロールを監視する。
+ *
+ * @param {string} elementId
+ * @param {"hour"|"minute"} type
+ */
+function attachTimeWheelColumnScroll(
+  elementId,
+  type
+) {
+
+  const column =
+    document.getElementById(
+      elementId
+    );
+
+  if (!column) {
+    return;
+  }
+
+
+  column.onscroll =
+    () => {
+
+      requestAnimationFrame(
+        () => {
+
+          updateTimeWheelColumnByScroll(
+            column,
+            type
+          );
+
+        }
+      );
+
+    };
+
+}
+
+
+/* =====================================================
+ * 初期位置
+ * ===================================================== */
+
+/**
+ * 現在値へ時・分ホイールを移動する。
+ */
+function scrollTimeWheelToCurrentValue() {
+
+  scrollTimeWheelColumnToValue(
+    "timeWheelHour",
+    currentWheelHour
+  );
+
+  scrollTimeWheelColumnToValue(
+    "timeWheelMinute",
+    currentWheelMinute
+  );
+
+}
+
+
+/**
+ * 指定した値を中央へ配置する。
+ *
+ * @param {string} elementId
+ * @param {string} value
+ */
+function scrollTimeWheelColumnToValue(
+  elementId,
+  value
+) {
+
+  const column =
+    document.getElementById(
+      elementId
+    );
+
+  if (!column) {
+    return;
+  }
+
+
+  const items =
+    Array.from(
+      column.querySelectorAll(
+        ".time-wheel-item"
+      )
+    );
+
+
+  const index =
+    items.findIndex(
+      (item) =>
+        item.dataset.value ===
+        String(value)
+    );
+
+
+  if (index < 0) {
+    return;
+  }
+
+
+  /*
+   * 1項目52pxなので、
+   * index × 52px がその項目の中央位置。
+   */
+  column.scrollTop =
+    index *
+    TIME_WHEEL_ITEM_HEIGHT;
+
+}
+
+
+/* =====================================================
+ * スクロール位置 → 選択値
+ * ===================================================== */
+
+/**
+ * スクロール位置から
+ * 現在中央にある項目を決定する。
+ *
+ * @param {HTMLElement} column
+ * @param {"hour"|"minute"} type
+ */
+function updateTimeWheelColumnByScroll(
+  column,
+  type
+) {
+
+  const items =
+    Array.from(
+      column.querySelectorAll(
+        ".time-wheel-item"
+      )
+    );
+
+
+  if (items.length === 0) {
+    return;
+  }
+
+
+  let index =
+    Math.round(
+      column.scrollTop /
+      TIME_WHEEL_ITEM_HEIGHT
+    );
+
+
+  index =
+    Math.max(
+      0,
+      Math.min(
+        index,
+        items.length - 1
+      )
+    );
+
+
+  const selectedItem =
+    items[index];
+
+
+  applyTimeWheelSelectedClass(
+    items,
+    selectedItem
+  );
+
+
+  updateTimeWheelSelectedValue(
+    type,
+    selectedItem.dataset.value
+  );
+
+}
+
+
+/**
+ * 時・分両方を現在の位置へ同期する。
+ */
+function updateAllTimeWheelSelections() {
+
+  const hourColumn =
+    document.getElementById(
+      "timeWheelHour"
+    );
+
+  const minuteColumn =
+    document.getElementById(
+      "timeWheelMinute"
+    );
+
+
+  if (hourColumn) {
+
+    updateTimeWheelColumnByScroll(
+      hourColumn,
+      "hour"
+    );
+
+  }
+
+
+  if (minuteColumn) {
+
+    updateTimeWheelColumnByScroll(
+      minuteColumn,
+      "minute"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+ * 選択表示
+ * ===================================================== */
+
+/**
+ * 選択中の1項目だけselectedにする。
+ *
+ * @param {HTMLElement[]} items
+ * @param {HTMLElement} selectedItem
+ */
+function applyTimeWheelSelectedClass(
+  items,
+  selectedItem
+) {
+
+  items.forEach(
+    (item) => {
+
+      item.classList.toggle(
+        "selected",
+        item === selectedItem
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+ * 選択値更新
+ * ===================================================== */
+
+/**
+ * 選択した値を状態へ反映する。
+ *
+ * @param {"hour"|"minute"} type
+ * @param {string} value
+ */
+function updateTimeWheelSelectedValue(
+  type,
+  value
+) {
+
+  if (type === "hour") {
+
+    currentWheelHour =
+      value;
+
+  }
+
+
+  if (type === "minute") {
+
+    currentWheelMinute =
+      value;
+
+  }
+
+
+  currentWheelIsLast =
+    false;
+
+
+  updateTimeWheelCurrentValue();
+
+}
+
+</script>
